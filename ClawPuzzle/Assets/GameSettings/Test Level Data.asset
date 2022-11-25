@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a31fc0a6cfd9f24ab7952b023481271, type: 3}
+  m_Name: Test Level Data
+  m_EditorClassIdentifier: 
+  gridSetting: {fileID: 11400000, guid: db5deb0e7492dc7498fc618b81e7c48f, type: 2}
