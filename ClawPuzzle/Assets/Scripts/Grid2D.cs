@@ -25,7 +25,7 @@ public class Grid2D
         for(int i = 0; i < length; ++i)
         {
             for (int j = 0; j < width; ++j)
-            {   
+            {  
                 cellArray[i, j] = new Cell(i,j, this, levelData.initCellMatrix[i, j]);
                 cellArray[i, j].Initialize();
             }
