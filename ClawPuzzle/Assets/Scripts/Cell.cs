@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using MyBox;
 
-public enum CellType
+[System.Serializable]
+public enum UnitType
 {
-    Default = 0,
-    Empty = 1
+    Empty = 0,
+    Ground = 1,
+    Player = 2
 }
 
 public class Cell
@@ -14,27 +16,34 @@ public class Cell
     [ReadOnly]
     //pos.x: [0, length-1]
     //pos.y: [0, width-1]
-    public Vector2 pos;
+    //pos.z: [0, height-1]
+    public Vector3 pos;
     [ReadOnly]
-    public Grid2D grid;
+    public Grid3D grid;
     [ReadOnly]
-    public CellType cellType;
+    public UnitType unitType;
     [ReadOnly]
-    public GameObject cellObject;
+    public GameObject unitObject;
 
-    public Cell(int i, int j, Grid2D grid, CellType cellType)
+    public Cell(int i, int j, int k, Grid3D grid, UnitType unitType)
     {
         this.grid = grid;
-        this.cellType = cellType;
+        this.unitType = unitType;
         pos.x = i;
         pos.y = j;
+        pos.z = k;
     }
     public void Initialize()
     {
-        cellObject = GameObject.Instantiate(Resources.Load(cellType.ToString(), typeof(GameObject))) as GameObject;
-        cellObject.transform.position =
-            grid.parentTransform.position +
-            new Vector3(pos.x * (grid.size + grid.spacing), 0, pos.y * (grid.size + grid.spacing));
-        cellObject.transform.parent = grid.parentTransform;
+        //Length: axis_x
+        //Width: axis_z
+        //height: axis_y
+
+        if (unitType == UnitType.Empty) return;
+        unitObject = GameObject.Instantiate(Resources.Load(unitType.ToString(), typeof(GameObject))) as GameObject;
+        unitObject.transform.position =
+            grid.parentTransform.position + grid.offset + 
+            new Vector3(pos.x * (grid.size + grid.spacing), pos.z * (grid.size + grid.spacing), pos.y * (grid.size + grid.spacing));
+        unitObject.transform.parent = grid.parentTransform;
     }
 }

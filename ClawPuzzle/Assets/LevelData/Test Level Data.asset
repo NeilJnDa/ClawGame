@@ -9,12 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec108829fc480df4b891bda3ddedaf67, type: 3}
-  m_Name: BaseGridSetting
+  m_Script: {fileID: 11500000, guid: 0a31fc0a6cfd9f24ab7952b023481271, type: 3}
+  m_Name: Test Level Data
   m_EditorClassIdentifier: 
-  length: 8
-  width: 6
-  height: 4
-  offset: {x: 0.5, y: 0.5, z: 0.5}
-  size: 1
-  spacing: 0
+  description: 1
+  gridSetting: {fileID: 11400000, guid: db5deb0e7492dc7498fc618b81e7c48f, type: 2}
