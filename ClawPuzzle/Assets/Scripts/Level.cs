@@ -84,7 +84,15 @@ public class Level : MonoBehaviour
     }
     private void ParseJsonToScriptableObject()
     {
-        JsonHelper.LoadFromFile("/LevelData", levelData.name, levelData);
+        try
+        {
+            JsonHelper.LoadFromFile("/LevelData", levelData.name, levelData);
+
+        }
+        catch
+        {
+            Debug.LogError("Parse Json failed");
+        }
     }
     #endregion
 
@@ -96,15 +104,19 @@ public class Level : MonoBehaviour
 
     private void Initialize()
     {
-        for (int i = 0; i < transform.childCount; ++i)
+        Debug.Log("Delete " + transform.childCount + " children of " +  transform.name );
+
+        while(transform.childCount > 0)
         {
             if (Application.isPlaying)
-                Destroy(transform.GetChild(i).gameObject);
-            else 
-                DestroyImmediate(transform.GetChild(i).gameObject);
+                Destroy(transform.GetChild(0).gameObject);
+            else
+                DestroyImmediate(transform.GetChild(0).gameObject);
         }
+        
         ParseJsonToScriptableObject();
         grid = new Grid3D(transform, levelData);
+        Debug.Log("New cells created");
     }
 
     // Update is called once per frame

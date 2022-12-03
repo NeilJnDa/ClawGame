@@ -8,7 +8,9 @@ public enum UnitType
 {
     Empty = 0,
     Ground = 1,
-    Player = 2
+    Player = 2,
+    Hole = 3,
+    Claw = 4,
 }
 
 public class Cell
