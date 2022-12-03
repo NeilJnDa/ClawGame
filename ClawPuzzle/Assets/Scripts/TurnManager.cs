@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using Sirenix.OdinInspector;
+using System;
 
 public class TurnManager : MonoBehaviour
 {
@@ -34,7 +34,10 @@ public class TurnManager : MonoBehaviour
     #endregion
 
     //Event
-    public Event NextTurn;
+    public event Action NextTurnEvent;
+    public event Action UndoOneTurnEvent;
+    public event Action ResetAllEvent;
+
 
     //Statistics
     [ReadOnly]
@@ -44,16 +47,18 @@ public class TurnManager : MonoBehaviour
     [ShowInInspector]
     private int CurrentTurnUnitNumber = 0;
 
-
-    // Start is called before the first frame update
-    void Start()
+    public void Subscribe()
     {
-        
+        CurrentTurnUnitNumber++;
     }
-
-    // Update is called once per frame
-    void Update()
+    public void Unsubscribe()
     {
-        
+        CurrentTurnUnitNumber--;
+        if (CurrentTurnUnitNumber < 0)
+        {
+            CurrentTurnUnitNumber = 0;
+
+            Debug.LogError("Current Turn Unit Number < 0!");
+        }
     }
 }
