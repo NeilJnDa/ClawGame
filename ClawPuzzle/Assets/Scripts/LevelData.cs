@@ -47,4 +47,4 @@ public class LevelData : ScriptableObject
         SetUnit(pos.x, pos.y, pos.z, unitType);
     }
 
-}
+} 
