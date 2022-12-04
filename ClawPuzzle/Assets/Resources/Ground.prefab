@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8569520784657172406}
   - component: {fileID: 8729535301207456465}
   - component: {fileID: 7218825220278217870}
-  - component: {fileID: 1829862745764454887}
+  - component: {fileID: 2492059576228163066}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Untagged
@@ -98,7 +98,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1829862745764454887
+--- !u!114 &2492059576228163066
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -107,7 +107,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 2801007075720167101}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce1ea49cdbf449443ad11ecd0178d265, type: 3}
+  m_Script: {fileID: 11500000, guid: 3bddc1738cec29e4da741675b432b756, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitType: 1

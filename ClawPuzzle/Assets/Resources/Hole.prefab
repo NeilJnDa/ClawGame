@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1481318608872493589}
   - component: {fileID: 8569520784657172406}
-  - component: {fileID: 1829862745764454887}
+  - component: {fileID: 323296026048611951}
   m_Layer: 0
   m_Name: Hole
   m_TagString: Untagged
@@ -42,7 +42,7 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2801007075720167101}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1829862745764454887
+--- !u!114 &323296026048611951
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -51,10 +51,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 2801007075720167101}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce1ea49cdbf449443ad11ecd0178d265, type: 3}
+  m_Script: {fileID: 11500000, guid: e021706bc8c6db841adae96a595d73f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  unitType: 3
 --- !u!1 &9088612002133454668
 GameObject:
   m_ObjectHideFlags: 0

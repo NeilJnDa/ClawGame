@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GridUnit : MonoBehaviour
+public abstract class GridUnit : MonoBehaviour
 {
-    public UnitType unitType;
+    public virtual UnitType unitType { get { return UnitType.Empty; } }
+    public Cell cell;
 }

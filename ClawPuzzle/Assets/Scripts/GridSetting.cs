@@ -4,6 +4,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 
 [CreateAssetMenu(fileName = "Grid Setting", menuName = "ScriptableObjects/Grid Setting", order = 1)]
+[System.Serializable]
 public class GridSetting : ScriptableObject
 {
     [BoxGroup("Grid")]

@@ -44,19 +44,21 @@ public class Level : MonoBehaviour
         {
             foreach (var unit in units)
             {
+                Debug.Log("saving " + unit.name);
                 Vector3 distance = unit.transform.position - (this.transform.position + levelData.gridSetting.offset);
                 Vector3Int posWorldSpace = Vector3Int.RoundToInt(distance / levelData.gridSetting.size);
                 //Pos in Grid Space
                 Vector3Int pos = new Vector3Int(posWorldSpace.x, posWorldSpace.z, posWorldSpace.y);
                 levelData.SetUnit(pos, unit.unitType);
             }
+            Debug.Log("LevelData Serialized to " + levelData.name);
         }
         catch
         {
             Debug.LogError(levelData.name + ": Serialize to ScriptableObject Failed");
         }
 
-        Debug.Log("LevelData Serialized to " + levelData.name);
+       
 
         try
         {

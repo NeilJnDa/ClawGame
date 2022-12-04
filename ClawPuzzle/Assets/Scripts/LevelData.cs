@@ -40,6 +40,10 @@ public class LevelData : ScriptableObject
     }
     public void SetUnit(Vector3Int pos, UnitType unitType)
     {
+        if(pos.x >= gridSetting.length || pos.y >= gridSetting.width || pos.z >= gridSetting.height)
+        {
+            Debug.LogError(unitType +  ": Unit Index out of boundary. Check if the grid is to small or the unit is too far.");
+        }
         SetUnit(pos.x, pos.y, pos.z, unitType);
     }
 

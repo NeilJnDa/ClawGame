@@ -15,7 +15,12 @@ public abstract class TurnUnit : MonoBehaviour
         TurnManager.Instance.UndoOneTurnEvent += UndoOneTurn;
         TurnManager.Instance.ResetAllEvent += ResetAll;
     }
-
+    void OnDestroy()
+    {
+        TurnManager.Instance.NextTurnEvent -= GoNextTurn;
+        TurnManager.Instance.UndoOneTurnEvent -= UndoOneTurn;
+        TurnManager.Instance.ResetAllEvent -= ResetAll;
+    }
     protected virtual void GoNextTurn()
     {
 
