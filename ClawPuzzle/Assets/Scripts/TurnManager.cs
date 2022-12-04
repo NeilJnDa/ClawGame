@@ -6,6 +6,7 @@ using System;
 
 public class TurnManager : MonoBehaviour
 {
+  
     #region Singleton
     public static TurnManager Instance
     {

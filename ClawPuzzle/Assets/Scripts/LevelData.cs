@@ -12,6 +12,23 @@ public struct Unit
     public int k;
     public UnitType unitType;
 }
+[Serializable]
+public struct GridSetting
+{
+    [BoxGroup("Grid")]
+    public int length;
+    [BoxGroup("Grid")]
+    public int width;
+    [BoxGroup("Grid")]
+    public int height;
+    [BoxGroup("Grid")]
+    [Tooltip("Distance from center of the gridbase to center of the first cell")]
+    public Vector3 offset;
+    [BoxGroup("Cell")]
+    public float size;
+    [BoxGroup("Cell")]
+    public float spacing;
+}
 [CreateAssetMenu(fileName = "Level Data", menuName = "ScriptableObjects/Level Data", order = 2)]
 [Serializable]
 public class LevelData : ScriptableObject
@@ -19,7 +36,7 @@ public class LevelData : ScriptableObject
     [TextArea]
     public string description;
     [InfoBox("@\"Init Cell Matrix Length: \" + (initCellMatrix != null ? initCellMatrix.Length : 0)")]
-    public GridSetting gridSetting;
+    public GridSetting gridSetting = new GridSetting { length = 8, width = 6, height = 5, offset = new Vector3(0.5f, 0.5f, 0.5f), size = 1, spacing = 0 };
     public Unit[] initCellMatrix;
 
     public Unit GetUnit(int i, int j, int k)

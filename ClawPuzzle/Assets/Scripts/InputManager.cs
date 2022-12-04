@@ -16,21 +16,24 @@ public class InputManager : MonoBehaviour, IDefaultActions
     }
     #region Enable Input or move
     //All input
-    [field: SerializeField, ReadOnly]
-    public bool InputEnabled { get; set; } = true;
+    [field: SerializeField]
+    public bool InputEnabled { get; private set; } = true;
+    [InfoBox("Use Buttons to toggle", InfoMessageType.Warning)]
     [Button("Toggle Input Enabled"), HideInEditorMode]
     private void ToggleInputEnabled()
     {
         EnableInput(!InputEnabled);
     }
+
     //Only up, down, left, right, raise, drop
-    [field: SerializeField, ReadOnly]
+    [field: SerializeField]
     public bool MoveEnabled { get; private set; } = true;
     [Button("Toggle Move Enabled"), HideInEditorMode]
     private void ToggleMoveEnablde()
     {
         EnableMove(!MoveEnabled);
     }
+
     public void EnableInput(bool enable)
     {
         if (enable)

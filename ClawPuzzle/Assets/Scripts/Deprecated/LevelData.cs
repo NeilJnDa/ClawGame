@@ -51,29 +51,27 @@ namespace Deprecated
         }
         private void CreateMatrix()
         {
-            if (gridSetting != null)
+            if (revertedMatrix == null)
+                //create new
+                revertedMatrix = new UnitType[gridSetting.length, gridSetting.width];
+            else
             {
-                if (revertedMatrix == null)
-                    //create new
-                    revertedMatrix = new UnitType[gridSetting.length, gridSetting.width];
-                else
+                //copy and resize
+                var newMatrix = new UnitType[gridSetting.length, gridSetting.width];
+                for (int i = 0; i < revertedMatrix.GetLength(0); ++i)
                 {
-                    //copy and resize
-                    var newMatrix = new UnitType[gridSetting.length, gridSetting.width];
-                    for (int i = 0; i < revertedMatrix.GetLength(0); ++i)
+                    for (int j = 0; j < revertedMatrix.GetLength(1); ++j)
                     {
-                        for (int j = 0; j < revertedMatrix.GetLength(1); ++j)
+                        if (i < gridSetting.length && j < gridSetting.width)
                         {
-                            if (i < gridSetting.length && j < gridSetting.width)
-                            {
-                                newMatrix[i, j] = revertedMatrix[i, j];
-                            }
+                            newMatrix[i, j] = revertedMatrix[i, j];
                         }
                     }
-                    //C# have auto GC
-                    revertedMatrix = newMatrix;
                 }
+                //C# have auto GC
+                revertedMatrix = newMatrix;
             }
+           
         }
         private static UnitType DrawEnumElement(Rect rect, UnitType cellType)
         {

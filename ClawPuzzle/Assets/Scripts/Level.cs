@@ -8,7 +8,7 @@ public class Level : MonoBehaviour
 {
     private Grid3D grid;
     public LevelData levelData;
-    
+
     #region Serialization
     [BoxGroup("Serialization")]
     [InfoBox("Both ScriptableObject and Json file will be modified")]
@@ -20,19 +20,14 @@ public class Level : MonoBehaviour
             Debug.LogError("Level data is null! You should create a Level Data Scriptable Object and assign it here");
             return;
         }
-        if (levelData.gridSetting == null)
-        {
-            Debug.LogError("Grid setting is null! Update failed!");
-            return;
-        }
         Debug.Log("Saving Level Data to Scriptable File");
         var units = transform.GetComponentsInChildren<GridUnit>();
         levelData.initCellMatrix = new Unit[levelData.gridSetting.length * levelData.gridSetting.width * levelData.gridSetting.height];
-        for(int i = 0; i < levelData.gridSetting.length; ++i)
+        for (int i = 0; i < levelData.gridSetting.length; ++i)
         {
-            for(int j = 0; j < levelData.gridSetting.width; ++j)
+            for (int j = 0; j < levelData.gridSetting.width; ++j)
             {
-                for(int k = 0; k < levelData.gridSetting.height; ++k)
+                for (int k = 0; k < levelData.gridSetting.height; ++k)
                 {
                     //Default
                     levelData.SetUnit(i, j, k, UnitType.Empty);
@@ -44,7 +39,7 @@ public class Level : MonoBehaviour
         {
             foreach (var unit in units)
             {
-                Debug.Log("saving " + unit.name);
+                //Debug.Log("saving " + unit.name);
                 Vector3 distance = unit.transform.position - (this.transform.position + levelData.gridSetting.offset);
                 Vector3Int posWorldSpace = Vector3Int.RoundToInt(distance / levelData.gridSetting.size);
                 //Pos in Grid Space
@@ -53,12 +48,12 @@ public class Level : MonoBehaviour
             }
             Debug.Log("LevelData Serialized to " + levelData.name);
         }
-        catch
+        catch (Exception e)
         {
-            Debug.LogError(levelData.name + ": Serialize to ScriptableObject Failed");
+            Debug.LogError(levelData.name + ": Serialize to ScriptableObject Failed. Error: " + e);
         }
 
-       
+
 
         try
         {
@@ -75,7 +70,7 @@ public class Level : MonoBehaviour
     [Button("Update Scene from Level Data")]
     private void UpdateSceneFromLevelData()
     {
-        if(levelData.initCellMatrix == null)
+        if (levelData.initCellMatrix == null)
         {
             Debug.LogError("Init Cell Matrix is null! Updating Scene failed!");
             return;
@@ -106,16 +101,25 @@ public class Level : MonoBehaviour
 
     private void Initialize()
     {
-        Debug.Log("Delete " + transform.childCount + " children of " +  transform.name );
+        Debug.Log("Delete " + transform.childCount + " children of " + transform.name);
 
-        while(transform.childCount > 0)
-        {
-            if (Application.isPlaying)
-                Destroy(transform.GetChild(0).gameObject);
-            else
-                DestroyImmediate(transform.GetChild(0).gameObject);
-        }
         
+        if (Application.isPlaying)
+        {
+            foreach (Transform child in transform)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+        else
+        {
+            while (transform.childCount > 0)
+            {
+                DestroyImmediate(transform.GetChild(0).gameObject);
+            }
+        }
+
+
         ParseJsonToScriptableObject();
         grid = new Grid3D(transform, levelData);
         Debug.Log("New cells created");
