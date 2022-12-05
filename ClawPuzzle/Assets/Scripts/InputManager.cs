@@ -3,17 +3,43 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Sirenix.OdinInspector;
+using System;
 using static Controls;
 
 public class InputManager : MonoBehaviour, IDefaultActions
 {
-    private Controls controls;
+    #region Singleton
+    public static InputManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = GameObject.FindObjectOfType<InputManager>();
+            }
+            return _instance;
+        }
+    }
+    private static InputManager _instance;
     private void Awake()
     {
+        if (_instance == null)
+        {
+            _instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
+        {
+            Destroy(this.gameObject);
+        }
         controls = new Controls();
         controls.Default.SetCallbacks(this);
         EnableInput(InputEnabled);
     }
+
+    #endregion
+    private Controls controls;
+
     #region Enable Input or move
     //All input
     [field: SerializeField]
@@ -55,41 +81,61 @@ public class InputManager : MonoBehaviour, IDefaultActions
 
 
     #region Interface
+    public event Action<Direction> moveEvent;
+    public event Action undoEvent;
+    public event Action resetEvent;
+
     public void OnDown(InputAction.CallbackContext context)
     {
-        if(MoveEnabled)
+        if (InputEnabled && MoveEnabled && context.performed)
+        {
             Debug.Log("Down");
+            moveEvent.Invoke(Direction.Down);
+        }
     }
 
     public void OnDrop(InputAction.CallbackContext context)
     {
-        if (MoveEnabled)
+        if (InputEnabled && InputEnabled && MoveEnabled && context.performed)
+        {
             Debug.Log("Drop");
+            moveEvent.Invoke(Direction.Below);
+        }
     }
 
     public void OnLeft(InputAction.CallbackContext context)
     {
-        if (MoveEnabled)
+        if (InputEnabled && MoveEnabled && context.performed)
+        {
             Debug.Log("Left");
+            moveEvent.Invoke(Direction.Left);
+        }
     }
 
     public void OnRaise(InputAction.CallbackContext context)
     {
-        if (MoveEnabled)
+        if (InputEnabled && MoveEnabled && context.performed)
+        {
             Debug.Log("Raise");
+            moveEvent.Invoke(Direction.Above);
+        }
     }
-
-
 
     public void OnRight(InputAction.CallbackContext context)
     {
-        if (MoveEnabled)
+        if (InputEnabled && MoveEnabled && context.performed)
+        {
             Debug.Log("Right");
+            moveEvent.Invoke(Direction.Right);
+        }
     }
     public void OnUp(InputAction.CallbackContext context)
     {
-        if (MoveEnabled)
+        if (InputEnabled && MoveEnabled && context.performed)
+        {
             Debug.Log("Up");
+            moveEvent.Invoke(Direction.Up);
+        }
     }
     public void OnUndo(InputAction.CallbackContext context)
     {
