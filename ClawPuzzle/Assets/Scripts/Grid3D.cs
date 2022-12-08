@@ -21,6 +21,8 @@ public class Grid3D
     public float spacing { get; private set; }
     public Cell [,,] cellMatrix { get; private set; }
 
+    public List<Cell[,,]> historyCellMatrix = new List<Cell[,,]>();
+
     public Grid3D(Transform parentTransform, LevelData levelData)
     {
         this.parentTransform = parentTransform;
@@ -93,4 +95,14 @@ public class Grid3D
         return cellMatrix[pos.x, pos.y, pos.z];
     }
 
+    #region History , undo, reset
+    public void RecordGrid()
+    {
+        historyCellMatrix.Add(cellMatrix);
+    }
+    public void UndoOneStep()
+    {
+
+    }
+    #endregion
 }

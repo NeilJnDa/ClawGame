@@ -16,6 +16,9 @@ public class Claw : GridUnit
     }
     public void OnMove(Direction direction)
     {
-        this.MoveTo(direction);
+        if (this.MoveTo(direction))
+        {
+            TurnManager.Instance.NextStep();
+        }
     }
 }

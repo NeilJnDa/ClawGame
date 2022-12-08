@@ -34,32 +34,56 @@ public class TurnManager : MonoBehaviour
     }
     #endregion
 
+
+    #region Turn
+    public enum Turn
+    {
+        PlayerTurn,
+        EnvTurn
+    }
+    [ReadOnly]
+    public Turn currentTurn = Turn.PlayerTurn;
+    [SerializeField]
+    private float playerTurnDuration = 1f;
+    [SerializeField]
+    private float envTurnDuration = 1f;
+
+    #endregion
+
+    //Step: composed of two turns(player and env), one player action = one step
+    #region
     //Event
-    public event Action NextTurnEvent;
-    public event Action UndoOneTurnEvent;
+    public event Action UndoOneStepEvent;
     public event Action ResetAllEvent;
+    public event Action OnEnvTurnEvent;
 
-
-    //Statistics
     [ReadOnly]
-    [ShowInInspector]
-    private int TotalTurnPassed = 0;
-    [ReadOnly]
-    [ShowInInspector]
-    private int CurrentTurnUnitNumber = 0;
-
-    public void Subscribe()
+    public int currentStep = 0;
+    private IEnumerator NextStepInst = null;
+    public void NextStep()
     {
-        CurrentTurnUnitNumber++;
+        NextStepInst = NextStepCoroutine() as IEnumerator;
+        StartCoroutine(NextStepInst);
     }
-    public void Unsubscribe()
-    {
-        CurrentTurnUnitNumber--;
-        if (CurrentTurnUnitNumber < 0)
-        {
-            CurrentTurnUnitNumber = 0;
 
-            Debug.LogError("Current Turn Unit Number < 0!");
-        }
+    IEnumerator NextStepCoroutine()
+    {
+        //First finish Player Turn (anim/audio)
+        InputManager.Instance.EnableMove(false);
+        yield return new WaitForSeconds(playerTurnDuration);
+
+        //Then Env Turn
+        currentTurn = Turn.EnvTurn;
+        //Tell every env units to execute
+
+        yield return new WaitForSeconds(envTurnDuration);
+        OnEnvTurnEvent?.Invoke();
+        currentStep++;
+        currentTurn = Turn.PlayerTurn;
+        InputManager.Instance.EnableMove(true);
+
     }
+
+    #endregion
+
 }

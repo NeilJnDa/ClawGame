@@ -11,6 +11,7 @@ public enum UnitType
     Player = 2,
     Hole = 3,
     Claw = 4,
+    Conveyor = 5
 }
 [System.Serializable]
 public class Cell

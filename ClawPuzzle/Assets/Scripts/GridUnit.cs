@@ -18,24 +18,25 @@ public abstract class GridUnit : MonoBehaviour
     public Cell cell;
 
 
-    protected virtual void MoveTo(Direction direction)
+    protected virtual bool MoveTo(Direction direction)
     {
         var targetCell = cell.grid.GetClosestCell(this.cell, direction);
         if(targetCell == null)
         {
             Debug.LogWarning(cell + " move " + direction + "failed, cannot get targetCell");
-            return;
+            return false;
         }
         if(Rules.Instance.CheckEnterCell(this.cell, targetCell)){
             cell.Leave();
             targetCell.Occupy(this);
             MoveToAnim(targetCell);
             Debug.Log(cell + " move " + direction + " succeeded");
-            return;
+            return true;
         }
         else
         {
             Debug.LogWarning(cell + " move " + direction + " failed, Rules not allowed since target is " + targetCell.currentGridUnit);
+            return false;
         }
     }
     protected virtual void MoveToAnim(Cell targetCell)
