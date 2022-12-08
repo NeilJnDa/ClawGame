@@ -123,7 +123,7 @@ public class Level : MonoBehaviour
 
         ParseJsonToScriptableObject();
         grid = new Grid3D(transform, levelData);
-        Debug.Log("New cells created");
+        Debug.Log("New cells created"); 
     }
 
     // Update is called once per frame
