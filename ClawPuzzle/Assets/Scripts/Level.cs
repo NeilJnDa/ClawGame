@@ -22,7 +22,7 @@ public class Level : MonoBehaviour
         }
         Debug.Log("Saving Level Data to Scriptable File");
         var units = transform.GetComponentsInChildren<GridUnit>();
-        levelData.initCellMatrix = new Unit[levelData.gridSetting.length * levelData.gridSetting.width * levelData.gridSetting.height];
+        levelData.initCellMatrix = new UnitInfo[levelData.gridSetting.length * levelData.gridSetting.width * levelData.gridSetting.height];
         for (int i = 0; i < levelData.gridSetting.length; ++i)
         {
             for (int j = 0; j < levelData.gridSetting.width; ++j)

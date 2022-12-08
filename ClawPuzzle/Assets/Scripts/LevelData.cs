@@ -5,7 +5,7 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 
 [Serializable]
-public struct Unit
+public struct UnitInfo
 {
     public int i;
     public int j;
@@ -37,13 +37,13 @@ public class LevelData : ScriptableObject
     public string description;
     [InfoBox("@\"Init Cell Matrix Length: \" + (initCellMatrix != null ? initCellMatrix.Length : 0)")]
     public GridSetting gridSetting = new GridSetting { length = 8, width = 6, height = 5, offset = new Vector3(0.5f, 0.5f, 0.5f), size = 1, spacing = 0 };
-    public Unit[] initCellMatrix;
+    public UnitInfo[] initCellMatrix;
 
-    public Unit GetUnit(int i, int j, int k)
+    public UnitInfo GetUnit(int i, int j, int k)
     {
         return initCellMatrix[i + j * gridSetting.length + k * gridSetting.length * gridSetting.width];
     }
-    public Unit GetUnit(Vector3Int pos)
+    public UnitInfo GetUnit(Vector3Int pos)
     {
         return GetUnit(pos.x, pos.y, pos.z);
     }

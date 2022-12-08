@@ -21,6 +21,7 @@ public class Grid3D
     public float spacing { get; private set; }
     public Cell [,,] cellMatrix { get; private set; }
 
+    //TODO: 
     public List<Cell[,,]> historyCellMatrix = new List<Cell[,,]>();
 
     public Grid3D(Transform parentTransform, LevelData levelData)
