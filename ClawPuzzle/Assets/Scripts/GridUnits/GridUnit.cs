@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using Sirenix.OdinInspector;
 
 public enum Direction
 {
@@ -15,6 +16,8 @@ public enum Direction
 public abstract class GridUnit : MonoBehaviour
 {
     public virtual UnitType unitType { get { return UnitType.Empty; } }
+    [ShowInInspector]
+    public Dictionary<string, string> setting = new Dictionary<string, string>();
     public Cell cell;
 
 

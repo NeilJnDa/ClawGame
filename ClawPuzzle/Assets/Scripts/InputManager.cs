@@ -6,10 +6,7 @@ using Sirenix.OdinInspector;
 using System;
 using static Controls;
 
-public struct Command
-{
 
-}
 public class InputManager : MonoBehaviour, IDefaultActions
 {
     #region Singleton

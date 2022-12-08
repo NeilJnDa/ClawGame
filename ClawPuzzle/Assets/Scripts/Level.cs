@@ -30,7 +30,7 @@ public class Level : MonoBehaviour
                 for (int k = 0; k < levelData.gridSetting.height; ++k)
                 {
                     //Default
-                    levelData.SetUnit(i, j, k, UnitType.Empty);
+                    levelData.SetUnit(i, j, k, UnitType.Empty, null);
                 }
             }
         }
@@ -44,9 +44,10 @@ public class Level : MonoBehaviour
                 Vector3Int posWorldSpace = Vector3Int.RoundToInt(distance / levelData.gridSetting.size);
                 //Pos in Grid Space
                 Vector3Int pos = new Vector3Int(posWorldSpace.x, posWorldSpace.z, posWorldSpace.y);
-                levelData.SetUnit(pos, unit.unitType);
+                levelData.SetUnit(pos, unit.unitType, unit.setting);
             }
             Debug.Log("LevelData Serialized to " + levelData.name);
+            Debug.Log(levelData.initCellMatrix[0].setting["Test Setting"]);
         }
         catch (Exception e)
         {

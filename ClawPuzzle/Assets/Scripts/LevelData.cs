@@ -11,6 +11,19 @@ public struct UnitInfo
     public int j;
     public int k;
     public UnitType unitType;
+    [DictionaryDrawerSettings]
+    [ShowInInspector]
+    public Dictionary<string, string> setting;
+
+    public UnitInfo(int i, int j, int k, UnitType unitType, Dictionary<string, string> setting)
+    {
+        this.i = i;
+        this.j = j;
+        this.k = k;
+        this.unitType = unitType;
+        this.setting = new Dictionary<string, string>();
+        this.setting.Add("Test Setting", "1");
+    }
 }
 [Serializable]
 public struct GridSetting
@@ -47,21 +60,18 @@ public class LevelData : ScriptableObject
     {
         return GetUnit(pos.x, pos.y, pos.z);
     }
-    public void SetUnit(int i, int j, int k, UnitType unitType)
+    public void SetUnit(int i, int j, int k, UnitType unitType, Dictionary<string, string> setting)
     {
         var index = i + j * gridSetting.length + k * gridSetting.length * gridSetting.width;
-        initCellMatrix[index].i = i;
-        initCellMatrix[index].j = j;
-        initCellMatrix[index].k = k;
-        initCellMatrix[index].unitType = unitType;
+        initCellMatrix[index] = new UnitInfo(i, j, k, unitType, setting);
     }
-    public void SetUnit(Vector3Int pos, UnitType unitType)
+    public void SetUnit(Vector3Int pos, UnitType unitType, Dictionary<string, string> setting)
     {
         if(pos.x >= gridSetting.length || pos.y >= gridSetting.width || pos.z >= gridSetting.height)
         {
             Debug.LogError(unitType +  ": Unit Index out of boundary. Check if the grid is to small or the unit is too far.");
         }
-        SetUnit(pos.x, pos.y, pos.z, unitType);
+        SetUnit(pos.x, pos.y, pos.z, unitType, setting);
     }
 
 } 
