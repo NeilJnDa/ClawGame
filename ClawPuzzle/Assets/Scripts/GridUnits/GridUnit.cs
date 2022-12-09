@@ -4,20 +4,11 @@ using UnityEngine;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 
-public enum Direction
-{
-    Up,
-    Down,
-    Left,
-    Right,
-    Above,
-    Below
-}
+
 public abstract class GridUnit : MonoBehaviour
 {
     public virtual UnitType unitType { get { return UnitType.Empty; } }
-    [ShowInInspector]
-    public Dictionary<string, string> setting = new Dictionary<string, string>();
+    public Pair[] setting = new Pair[5];
     public Cell cell;
 
 

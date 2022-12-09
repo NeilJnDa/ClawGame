@@ -11,18 +11,23 @@ public struct UnitInfo
     public int j;
     public int k;
     public UnitType unitType;
-    [DictionaryDrawerSettings]
-    [ShowInInspector]
-    public Dictionary<string, string> setting;
+    public Pair[] setting;
 
-    public UnitInfo(int i, int j, int k, UnitType unitType, Dictionary<string, string> setting)
+    public UnitInfo(int i, int j, int k, UnitType unitType, Pair[] setting)
     {
         this.i = i;
         this.j = j;
         this.k = k;
         this.unitType = unitType;
-        this.setting = new Dictionary<string, string>();
-        this.setting.Add("Test Setting", "1");
+        if (setting == null)
+            this.setting = new Pair[5];
+        else
+        {
+            this.setting = new Pair[5];
+            setting.CopyTo(this.setting, 0);
+        }
+
+        this.setting[0] = new Pair("Test Key", "Test Value");
     }
 }
 [Serializable]
@@ -42,16 +47,19 @@ public struct GridSetting
     [BoxGroup("Cell")]
     public float spacing;
 }
-[CreateAssetMenu(fileName = "Level Data", menuName = "ScriptableObjects/Level Data", order = 2)]
 [Serializable]
-public class LevelData : ScriptableObject
+public class LevelData
 {
-    [TextArea]
-    public string description;
-    [InfoBox("@\"Init Cell Matrix Length: \" + (initCellMatrix != null ? initCellMatrix.Length : 0)")]
-    public GridSetting gridSetting = new GridSetting { length = 8, width = 6, height = 5, offset = new Vector3(0.5f, 0.5f, 0.5f), size = 1, spacing = 0 };
+    public string levelName;
+    public GridSetting gridSetting;
     public UnitInfo[] initCellMatrix;
 
+    public LevelData(string levelName, GridSetting gridSetting)
+    {
+        this.levelName = levelName;
+        this.gridSetting = gridSetting;
+        this.initCellMatrix = new UnitInfo[gridSetting.length * gridSetting.width * gridSetting.height];
+    }
     public UnitInfo GetUnit(int i, int j, int k)
     {
         return initCellMatrix[i + j * gridSetting.length + k * gridSetting.length * gridSetting.width];
@@ -60,12 +68,12 @@ public class LevelData : ScriptableObject
     {
         return GetUnit(pos.x, pos.y, pos.z);
     }
-    public void SetUnit(int i, int j, int k, UnitType unitType, Dictionary<string, string> setting)
+    public void SetUnit(int i, int j, int k, UnitType unitType, Pair[] setting)
     {
         var index = i + j * gridSetting.length + k * gridSetting.length * gridSetting.width;
         initCellMatrix[index] = new UnitInfo(i, j, k, unitType, setting);
     }
-    public void SetUnit(Vector3Int pos, UnitType unitType, Dictionary<string, string> setting)
+    public void SetUnit(Vector3Int pos, UnitType unitType, Pair[] setting)
     {
         if(pos.x >= gridSetting.length || pos.y >= gridSetting.width || pos.z >= gridSetting.height)
         {

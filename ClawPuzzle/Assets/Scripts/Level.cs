@@ -6,23 +6,27 @@ using Sirenix.OdinInspector;
 
 public class Level : MonoBehaviour
 {
+    //[InfoBox("@\"Init Cell Matrix Length: \" + (levelData != null && levelData.initCellMatrix != null ? levelData.initCellMatrix.Length : 0)")]
+    public string levelName;
     private Grid3D grid;
-    public LevelData levelData;
+    private LevelData levelData;
+    [ReadOnly]
+    public TextAsset levelDataJson;
+
+    //Default value of gridSetting
+    public GridSetting gridSetting = new GridSetting { length = 8, width = 6, height = 5, offset = new Vector3(0.5f, 0.5f, 0.5f), size = 1, spacing = 0 };
 
     #region Serialization
     [BoxGroup("Serialization")]
-    [InfoBox("Both ScriptableObject and Json file will be modified")]
-    [Button("Save Scene to Level Data")]
-    private void SaveScenetoLevelData()
+    [InfoBox("The json file will be modified instantly")]
+    [Button("Save Scene to Json")]
+    private void SaveScenetoJson()
     {
-        if (levelData == null)
-        {
-            Debug.LogError("Level data is null! You should create a Level Data Scriptable Object and assign it here");
-            return;
-        }
-        Debug.Log("Saving Level Data to Scriptable File");
+        //Create a new levelData every time. Unity GC will deal with the old one
+        levelData = new LevelData(levelName, gridSetting);
+        
+        Debug.Log("Saving Level Data to Json");
         var units = transform.GetComponentsInChildren<GridUnit>();
-        levelData.initCellMatrix = new UnitInfo[levelData.gridSetting.length * levelData.gridSetting.width * levelData.gridSetting.height];
         for (int i = 0; i < levelData.gridSetting.length; ++i)
         {
             for (int j = 0; j < levelData.gridSetting.width; ++j)
@@ -46,51 +50,48 @@ public class Level : MonoBehaviour
                 Vector3Int pos = new Vector3Int(posWorldSpace.x, posWorldSpace.z, posWorldSpace.y);
                 levelData.SetUnit(pos, unit.unitType, unit.setting);
             }
-            Debug.Log("LevelData Serialized to " + levelData.name);
-            Debug.Log(levelData.initCellMatrix[0].setting["Test Setting"]);
+            Debug.Log("Level Data Created");
         }
         catch (Exception e)
         {
-            Debug.LogError(levelData.name + ": Serialize to ScriptableObject Failed. Error: " + e);
+            Debug.LogError("Initialize Level Data Failed. Error: " + e);
         }
-
 
 
         try
         {
-            JsonHelper.SaveToFile("/LevelData", levelData);
+            JsonHelper.SaveToFile("/LevelData", levelName, levelData);
         }
         catch
         {
-            Debug.LogError(levelData.name + ": Save to Json Failed");
-
-        }
-        Debug.Log(levelData.name + ": Saved to /LevelData as Json");
+            Debug.LogError(levelName + ": Save to Json Failed");
+        } 
+        Debug.Log(levelName + ": level data saved to /LevelData as Json");
     }
     [BoxGroup("Serialization")]
-    [Button("Update Scene from Level Data")]
-    private void UpdateSceneFromLevelData()
+    [Button("Update Scene from Json")]
+    private void UpdateSceneFromJson()
     {
-        if (levelData.initCellMatrix == null)
-        {
-            Debug.LogError("Init Cell Matrix is null! Updating Scene failed!");
-            return;
-        }
-        Debug.Log("Load level from " + levelData.name);
-
+        Debug.Log("Load level from " + levelName);
         Initialize();
     }
-    private void ParseJsonToScriptableObject()
+    private void ParseJsonToLevelData()
     {
         try
         {
-            JsonHelper.LoadFromFile("/LevelData", levelData.name, levelData);
-
+            JsonHelper.LoadFromFile("/LevelData", levelName, levelData);
         }
         catch
         {
             Debug.LogError("Parse Json failed");
         }
+    }
+    [BoxGroup("Serialization")]
+    [Button("Select Json File")]
+    private void SelectJsonFile()
+    {
+        string fullPath = "Assets/LevelData/" + levelName + ".json";
+        UnityEditor.Selection.activeObject = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>(fullPath);
     }
     #endregion
 
@@ -121,7 +122,7 @@ public class Level : MonoBehaviour
         }
 
 
-        ParseJsonToScriptableObject();
+        ParseJsonToLevelData();
         grid = new Grid3D(transform, levelData);
         Debug.Log("New cells created"); 
     }

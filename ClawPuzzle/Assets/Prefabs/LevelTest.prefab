@@ -45,7 +45,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45f9939aa670e0c4388316ceef0b69de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelData: {fileID: 11400000, guid: 98efaa887c0bc9a45b09ce984fabe1c2, type: 2}
+  levelName: TestLevel
+  levelDataJson: {fileID: 0}
+  gridSetting:
+    length: 8
+    width: 6
+    height: 5
+    offset: {x: 0.5, y: 0.5, z: 0.5}
+    size: 1
+    spacing: 0
 --- !u!156049354 &1253354115
 Grid:
   m_ObjectHideFlags: 0
