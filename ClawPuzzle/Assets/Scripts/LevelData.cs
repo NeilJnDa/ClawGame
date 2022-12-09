@@ -26,11 +26,9 @@ public struct UnitInfo
             this.setting = new Pair[5];
             setting.CopyTo(this.setting, 0);
         }
-
         this.setting[0] = new Pair("Test Key", "Test Value");
     }
 }
-[Serializable]
 public struct GridSetting
 {
     [BoxGroup("Grid")]
@@ -59,6 +57,7 @@ public class LevelData
         this.levelName = levelName;
         this.gridSetting = gridSetting;
         this.initCellMatrix = new UnitInfo[gridSetting.length * gridSetting.width * gridSetting.height];
+
     }
     public UnitInfo GetUnit(int i, int j, int k)
     {

@@ -4,6 +4,16 @@ using UnityEngine;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 
+[System.Serializable]
+public enum UnitType
+{
+    Empty = 0,
+    Ground = 1,
+    Player = 2,
+    Hole = 3,
+    Claw = 4,
+    Conveyor = 5
+}
 
 public abstract class GridUnit : MonoBehaviour
 {
