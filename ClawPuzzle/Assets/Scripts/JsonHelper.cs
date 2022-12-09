@@ -33,13 +33,14 @@ public static class JsonHelper
     /// <param name="path"></param>
     /// <param name="name"></param>
     /// <param name="obj"></param>
-    public static void LoadFromFile(string path, string name, object obj)
+    public static T LoadFromFile<T>(string path, string name)
     {
         var content = File.ReadAllText(Application.dataPath + path + "/" + name + ".json");
 
         //Unity JsonUtility
-        JsonUtility.FromJsonOverwrite(content, obj);
-
+        //JsonUtility.FromJsonOverwrite(content, obj);
+        T obj = JsonUtility.FromJson<T>(content);
+        return obj;
 
         //Unity In app purchasing minijson
         //obj = Json.Deserialize(content) as Object;

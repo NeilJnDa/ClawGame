@@ -10,8 +10,6 @@ public abstract class GridUnit : MonoBehaviour
     public virtual UnitType unitType { get { return UnitType.Empty; } }
     public Pair[] setting = new Pair[5];
     public Cell cell;
-
-
     protected virtual bool MoveTo(Direction direction)
     {
         var targetCell = cell.grid.GetClosestCell(this.cell, direction);
@@ -35,7 +33,8 @@ public abstract class GridUnit : MonoBehaviour
     }
     protected virtual void MoveToAnim(Cell targetCell)
     {
-        this.transform.DOMove(targetCell.CellToWorld(targetCell), 1f);
+        this.transform.DOMove(targetCell.CellToWorld(targetCell), 
+            unitType == UnitType.Claw? TurnManager.Instance.playerTurnDuration : TurnManager.Instance.envTurnDuration);
     }
     protected Vector3 DirectionToWorld(Direction direction) {
         switch (direction)

@@ -10,8 +10,6 @@ public class Level : MonoBehaviour
     public string levelName;
     private Grid3D grid;
     private LevelData levelData;
-    [ReadOnly]
-    public TextAsset levelDataJson;
 
     //Default value of gridSetting
     public GridSetting gridSetting = new GridSetting { length = 8, width = 6, height = 5, offset = new Vector3(0.5f, 0.5f, 0.5f), size = 1, spacing = 0 };
@@ -79,11 +77,11 @@ public class Level : MonoBehaviour
     {
         try
         {
-            JsonHelper.LoadFromFile("/LevelData", levelName, levelData);
+            levelData = JsonHelper.LoadFromFile<LevelData>("/LevelData", levelName);
         }
-        catch
+        catch(Exception e)
         {
-            Debug.LogError("Parse Json failed");
+            Debug.LogError("Parse Json failed: " + e);
         }
     }
     [BoxGroup("Serialization")]

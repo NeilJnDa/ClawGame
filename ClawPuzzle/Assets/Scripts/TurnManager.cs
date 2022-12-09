@@ -43,10 +43,10 @@ public class TurnManager : MonoBehaviour
     }
     [ReadOnly]
     public Turn currentTurn = Turn.PlayerTurn;
-    [SerializeField]
-    private float playerTurnDuration = 1f;
-    [SerializeField]
-    private float envTurnDuration = 1f;
+    [field: SerializeField]
+    public float playerTurnDuration { get; private set; } = 0.5f;
+    [field: SerializeField]
+    public float envTurnDuration { get; private set; } = 0.5f;
 
     #endregion
 
@@ -75,9 +75,11 @@ public class TurnManager : MonoBehaviour
         //Then Env Turn
         currentTurn = Turn.EnvTurn;
         //Tell every env units to execute
+        OnEnvTurnEvent?.Invoke();
+
 
         yield return new WaitForSeconds(envTurnDuration);
-        OnEnvTurnEvent?.Invoke();
+
         currentStep++;
         currentTurn = Turn.PlayerTurn;
         InputManager.Instance.EnableMove(true);

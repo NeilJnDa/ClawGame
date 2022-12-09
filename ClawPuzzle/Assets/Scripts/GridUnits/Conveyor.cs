@@ -13,7 +13,6 @@ public class Conveyor : GridUnit
     private void OnDestroy()
     {
         TurnManager.Instance.OnEnvTurnEvent -= OnEnvTurn;
-
     }
 
     private void OnEnvTurn()
