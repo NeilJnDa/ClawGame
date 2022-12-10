@@ -4,14 +4,14 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 
 [System.Serializable]
-public class Grid3D 
+public class Grid3D
 {
     public Transform parentTransform { get; private set; }
 
     //Length: axis_x
     //Width: axis_z
     //height: axis_y
-    public int length  {get; private set; }
+    public int length { get; private set; }
     public int width { get; private set; }
     public int height { get; private set; }
 
@@ -19,39 +19,50 @@ public class Grid3D
 
     public float size { get; private set; }
     public float spacing { get; private set; }
-    public Cell [,,] cellMatrix { get; private set; }
+    public Cell[,,] cellMatrix { get; private set; }
 
     //TODO: 
     public List<Cell[,,]> historyCellMatrix = new List<Cell[,,]>();
 
     public Grid3D(Transform parentTransform, LevelData levelData)
     {
+        if (levelData.initCellMatrix.Length == 0)
+        {
+            Debug.LogError("No LevelData, check if parsing is completed or if the json has content.");
+        }
+        levelData.gridSetting.Log();
+
         this.parentTransform = parentTransform;
         GridSetting gridSetting = levelData.gridSetting;
         this.length = gridSetting.length;
         this.width = gridSetting.width;
         this.height = gridSetting.height;
-        this.offset = gridSetting.offset; 
+        this.offset = gridSetting.offset;
         this.size = gridSetting.size;
         this.spacing = gridSetting.spacing;
 
         cellMatrix = new Cell[length, width, height];
-
-        for(int i = 0; i < length; ++i)
+        for (int k = 0; k < height; ++k)
         {
-            for (int j = 0; j < width; ++j)
-            {  
-                for(int k = 0; k < height; ++k)
+            for (int i = 0; i < length; ++i)
+            {
+                for (int j = 0; j < width; ++j)
                 {
-                    cellMatrix[i, j, k] = new Cell(i, j, k, this, levelData.GetUnit(i,j,k).unitType);
-                    cellMatrix[i, j, k].Initialize();
+                    var cell = GameObject.Instantiate(Resources.Load("Cell", typeof(Cell)), this.parentTransform) as Cell;
+                    if (cell == null) Debug.LogError("No Cell Created");
+                    cell.transform.position = parentTransform.position + offset +
+                        new Vector3(i * (size + spacing), k * (size + spacing), j * (size + spacing));
+                    cell.gameObject.name = "Cell " + i + " " + j + " " + k;
+                    cellMatrix[i, j, k] = cell;
+                    cellMatrix[i, j, k].Initialize(i, j, k, this, levelData.GetCell(i, j, k));
                 }
             }
         }
+
     }
     public Cell GetClosestCell(Cell cell, Direction direction)
     {
-        Vector3Int nextCellPos = new Vector3Int(cell.pos.x, cell.pos.y, cell.pos.z);
+        Vector3Int nextCellPos = new Vector3Int(cell.i, cell.j, cell.k);
         switch (direction)
         {
             case Direction.Up:

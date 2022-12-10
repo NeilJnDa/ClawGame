@@ -15,20 +15,35 @@ public enum UnitType
     Conveyor = 5
 }
 
+/// <summary>
+/// The actual object in the cell
+/// </summary>
 public abstract class GridUnit : MonoBehaviour
 {
+
     public virtual UnitType unitType { get { return UnitType.Empty; } }
+
     public Pair[] setting = new Pair[5];
+
     public Cell cell;
+
+    public void Initialize(CellInfo unitInfo)
+    {
+        //Creation and placing is done by its cell
+        //Here we deal with the solid surface
+        unitInfo.setting?.CopyTo(this.setting, 0);
+
+    }
     protected virtual bool MoveTo(Direction direction)
     {
         var targetCell = cell.grid.GetClosestCell(this.cell, direction);
-        if(targetCell == null)
+        if (targetCell == null)
         {
             Debug.LogWarning(cell + " move " + direction + "failed, cannot get targetCell");
             return false;
         }
-        if(Rules.Instance.CheckEnterCell(this.cell, targetCell)){
+        if (Rules.Instance.CheckEnterCell(this.cell, targetCell, direction))
+        {
             cell.Leave();
             targetCell.Occupy(this);
             MoveToAnim(targetCell);
@@ -43,26 +58,8 @@ public abstract class GridUnit : MonoBehaviour
     }
     protected virtual void MoveToAnim(Cell targetCell)
     {
-        this.transform.DOMove(targetCell.CellToWorld(targetCell), 
-            unitType == UnitType.Claw? TurnManager.Instance.playerTurnDuration : TurnManager.Instance.envTurnDuration);
-    }
-    protected Vector3 DirectionToWorld(Direction direction) {
-        switch (direction)
-        {
-            case Direction.Up:
-                return Vector3.forward * (cell.grid.size + cell.grid.spacing);
-            case Direction.Down:
-                return Vector3.back *(cell.grid.size + cell.grid.spacing);
-            case Direction.Left:
-                return Vector3.left * (cell.grid.size + cell.grid.spacing);
-            case Direction.Right:
-                return Vector3.right * (cell.grid.size + cell.grid.spacing);
-            case Direction.Above:
-                return Vector3.up * (cell.grid.size + cell.grid.spacing);
-            case Direction.Below:
-                return Vector3.down * (cell.grid.size + cell.grid.spacing);
-            default:
-                return Vector3.zero;
-        }
+        this.transform.DOMove(targetCell.CellToWorld(targetCell),
+            unitType == UnitType.Claw ? TurnManager.Instance.playerTurnDuration : TurnManager.Instance.envTurnDuration);
     }
 }
+    

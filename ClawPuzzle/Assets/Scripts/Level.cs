@@ -24,37 +24,63 @@ public class Level : MonoBehaviour
         levelData = new LevelData(levelName, gridSetting);
         
         Debug.Log("Saving Level Data to Json");
-        var units = transform.GetComponentsInChildren<GridUnit>();
-        for (int i = 0; i < levelData.gridSetting.length; ++i)
-        {
-            for (int j = 0; j < levelData.gridSetting.width; ++j)
-            {
-                for (int k = 0; k < levelData.gridSetting.height; ++k)
-                {
-                    //Default
-                    levelData.SetUnit(i, j, k, UnitType.Empty, null);
-                }
-            }
-        }
-        Debug.Log("Found " + units.Length + " units");
         try
         {
+
+            var cells = transform.GetComponentsInChildren<Cell>();
+
+            foreach (var cell in cells)
+            {
+                levelData.SetCellSpace(cell.i, cell.j, cell.k, cell.solidSurface);
+            }
+
+            var units = transform.GetComponentsInChildren<GridUnit>();
             foreach (var unit in units)
             {
                 //Debug.Log("saving " + unit.name);
                 Vector3 distance = unit.transform.position - (this.transform.position + levelData.gridSetting.offset);
                 Vector3Int posWorldSpace = Vector3Int.RoundToInt(distance / levelData.gridSetting.size);
                 //Pos in Grid Space
+                //Calculate the pos again, in case it dose not have a proper hierarchy. (Correct child of correct cell)
                 Vector3Int pos = new Vector3Int(posWorldSpace.x, posWorldSpace.z, posWorldSpace.y);
-                levelData.SetUnit(pos, unit.unitType, unit.setting);
+                levelData.SetCellUnit(pos.x, pos.y, pos.z, unit.unitType, unit.setting);
             }
-            Debug.Log("Level Data Created");
         }
         catch (Exception e)
         {
             Debug.LogError("Initialize Level Data Failed. Error: " + e);
         }
 
+        //var units = transform.GetComponentsInChildren<GridUnit>();
+        //for (int i = 0; i < levelData.gridSetting.length; ++i)
+        //{
+        //    for (int j = 0; j < levelData.gridSetting.width; ++j)
+        //    {
+        //        for (int k = 0; k < levelData.gridSetting.height; ++k)
+        //        {
+        //            //Default
+        //            levelData.SetCell(i, j, k, UnitType.Empty, null, null);
+        //        }
+        //    }
+        //}
+        //Debug.Log("Found " + units.Length + " units");
+        //try
+        //{
+        //    foreach (var unit in units)
+        //    {
+        //        //Debug.Log("saving " + unit.name);
+        //        Vector3 distance = unit.transform.position - (this.transform.position + levelData.gridSetting.offset);
+        //        Vector3Int posWorldSpace = Vector3Int.RoundToInt(distance / levelData.gridSetting.size);
+        //        //Pos in Grid Space
+        //        Vector3Int pos = new Vector3Int(posWorldSpace.x, posWorldSpace.z, posWorldSpace.y);
+        //        levelData.SetUnit(pos, unit.unitType, unit.solidSurface, unit.setting);
+        //    }
+        //    Debug.Log("Level Data Created");
+        //}
+        //catch (Exception e)
+        //{
+        //    Debug.LogError("Initialize Level Data Failed. Error: " + e);
+        //}
 
         try
         {
@@ -89,7 +115,9 @@ public class Level : MonoBehaviour
     private void SelectJsonFile()
     {
         string fullPath = "Assets/LevelData/" + levelName + ".json";
+    #if UNITY_EDITOR
         UnityEditor.Selection.activeObject = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>(fullPath);
+    #endif 
     }
     #endregion
 

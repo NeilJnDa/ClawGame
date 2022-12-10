@@ -3,36 +3,78 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 
+/// <summary>
+/// The virtual one-size space in the grid
+/// </summary>
 [System.Serializable]
-public class Cell
+public class Cell : MonoBehaviour
 {
-    //pos.x: [0, length-1]
-    //pos.y: [0, width-1]
-    //pos.z: [0, height-1]
-    public Vector3Int pos { get; private set; }
+    //i: [0, length-1]
+    //j: [0, width-1]
+    //k: [0, height-1]
+
+    [ReadOnly][ShowInInspector]
+    public int i { get; private set; }
+    [ReadOnly][ShowInInspector]
+    public int j { get; private set; }
+    [ReadOnly][ShowInInspector]
+    public int k { get; private set; }
+
     public Grid3D grid { get; private set; }
-    public UnitType initUnitType { get; private set; }
     public GridUnit currentGridUnit { get; private set; }
 
-    public Cell(int i, int j, int k, Grid3D grid, UnitType unitType)
-    {
-        this.grid = grid;
-        this.initUnitType = unitType;
-        pos = new Vector3Int(i, j, k);
-    }
-    public void Initialize()
+    //For each direction, if it will block moving in
+    [HorizontalGroup("Solid Surface", 0.5f, LabelWidth = 20)]
+    [BoxGroup("Solid Surface/Direction")]
+    [ReadOnly]
+    [ShowInInspector]
+    [System.NonSerialized]
+    private Direction[] dirReference = new Direction[6] { Direction.Up, Direction.Down, Direction.Left, Direction.Right, Direction.Above, Direction.Below };
+    [BoxGroup("Solid Surface/Has a glass")]
+    public bool[] solidSurface = new bool[6];
+
+    public void Initialize(int i, int j, int k, Grid3D grid, CellInfo unitInfo)
     {
         //Length pos_x : axis_x
         //Width pos_y : axis_z
         //height pos_z : axis_y
+        this.i = i;
+        this.j = j;
+        this.k = k;
+        this.grid = grid;
 
-        if (initUnitType == UnitType.Empty) return;
-        currentGridUnit = GameObject.Instantiate(Resources.Load(initUnitType.ToString(), typeof(GridUnit))) as GridUnit;
+        currentGridUnit = GameObject.Instantiate(Resources.Load(unitInfo.unitType.ToString(), typeof(GridUnit))) as GridUnit;
+        
         currentGridUnit.cell = this;
-        currentGridUnit.transform.position =
-            grid.parentTransform.position + grid.offset + 
-            new Vector3(pos.x * (grid.size + grid.spacing), pos.z * (grid.size + grid.spacing), pos.y * (grid.size + grid.spacing));
-        currentGridUnit.transform.parent = grid.parentTransform;
+        currentGridUnit.transform.position = this.transform.position;
+        #if UNITY_EDITOR
+                UnityEditor.SceneVisibilityManager.instance.DisablePicking(this.gameObject, false);
+        #endif
+        currentGridUnit.transform.parent = this.transform;
+        currentGridUnit.Initialize(unitInfo);
+
+        //Glass
+        unitInfo.solidSurface?.CopyTo(this.solidSurface, 0);
+        for (int index = 0; index < solidSurface.Length; ++index)
+        {
+            if (solidSurface[index])
+            {
+                var glass = GameObject.Instantiate(Resources.Load("Glass")) as GameObject;
+                glass.transform.parent = this.transform;
+
+                //The Glass prefab is initially placed facing Z axis
+                if (dirReference[index] == Direction.Left || dirReference[index] == Direction.Right)
+                {
+                    glass.transform.rotation = Quaternion.Euler(0, 90f, 0);
+                }
+                if (dirReference[index] == Direction.Above || dirReference[index] == Direction.Below)
+                {
+                    glass.transform.rotation = Quaternion.Euler(90f, 0, 0);
+                }
+                Vector3 offset = DirectionToWorld(dirReference[index]) / 2f;
+                glass.transform.position = transform.position + offset;
+            }
+        }
     }
 
     public void Occupy(GridUnit newUnit)
@@ -50,7 +92,47 @@ public class Cell
         //Width pos_y : axis_z
         //height pos_z : axis_y
         return cell.grid.parentTransform.position + cell.grid.offset +
-            new Vector3(cell.pos.x, cell.pos.z, cell.pos.y) * (cell.grid.spacing + cell.grid.size);
+            new Vector3(cell.i, cell.j, cell.k) * (cell.grid.spacing + cell.grid.size);
     }
-    
+    protected Vector3 DirectionToWorld(Direction direction)
+    {
+        switch (direction)
+        {
+            case Direction.Up:
+                return Vector3.forward * (grid.size + grid.spacing);
+            case Direction.Down:
+                return Vector3.back * (grid.size + grid.spacing);
+            case Direction.Left:
+                return Vector3.left * (grid.size + grid.spacing);
+            case Direction.Right:
+                return Vector3.right * (grid.size + grid.spacing);
+            case Direction.Above:
+                return Vector3.up * (grid.size + grid.spacing);
+            case Direction.Below:
+                return Vector3.down * (grid.size + grid.spacing);
+            default:
+                return Vector3.zero;
+        }
+    }
+    protected Vector3 DirectionToWorldNoSpacing(Direction direction)
+    {
+        switch (direction)
+        {
+            case Direction.Up:
+                return Vector3.forward * grid.size;
+            case Direction.Down:
+                return Vector3.back * grid.size;
+            case Direction.Left:
+                return Vector3.left * grid.size;
+            case Direction.Right:
+                return Vector3.right * grid.size;
+            case Direction.Above:
+                return Vector3.up * grid.size;
+            case Direction.Below:
+                return Vector3.down * grid.size;
+            default:
+                return Vector3.zero;
+        }
+    }
 }
+

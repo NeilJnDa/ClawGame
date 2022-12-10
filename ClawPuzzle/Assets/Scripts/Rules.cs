@@ -31,25 +31,16 @@ public class Rules : MonoBehaviour
     }
     #endregion
     // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     /// <summary>
     /// TODO: More Rules
     /// </summary>
     /// <param name="from"></param>
     /// <param name="to"></param>
     /// <returns></returns>
-    public bool CheckEnterCell(Cell from, Cell to)
+    public bool CheckEnterCell(Cell from, Cell to, Direction direction)
     {
-        if (to.currentGridUnit == null)
+        if (to.currentGridUnit == null || to.currentGridUnit.unitType == UnitType.Empty)
             return true;
         else return false;
     }

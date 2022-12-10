@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1481318608872493589}
   - component: {fileID: 7218825220278217870}
-  - component: {fileID: 8130127708053088267}
+  - component: {fileID: 6247726715987414197}
   m_Layer: 0
-  m_Name: Empty
+  m_Name: Cell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,7 +46,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8130127708053088267
+--- !u!114 &6247726715987414197
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -55,18 +55,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 2801007075720167101}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ebc1063e59716e428895608ebc4842d, type: 3}
+  m_Script: {fileID: 11500000, guid: 562063458e3e50a428d00249d2ed3a57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  setting:
-  - key: 
-    value: 
-  - key: 
-    value: 
-  - key: 
-    value: 
-  - key: 
-    value: 
-  - key: 
-    value: 
-  solidSurface: 000000000000
