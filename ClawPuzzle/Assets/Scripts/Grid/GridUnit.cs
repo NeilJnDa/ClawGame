@@ -52,7 +52,6 @@ public abstract class GridUnit : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning(cell + " move " + direction + " failed, Rules not allowed since target is " + targetCell.currentGridUnit);
             return false;
         }
     }

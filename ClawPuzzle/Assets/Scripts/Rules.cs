@@ -40,8 +40,23 @@ public class Rules : MonoBehaviour
     /// <returns></returns>
     public bool CheckEnterCell(Cell from, Cell to, Direction direction)
     {
-        if (to.currentGridUnit == null || to.currentGridUnit.unitType == UnitType.Empty)
-            return true;
-        else return false;
+        Debug.Log("Check " + from.currentGridUnit.name + " to " + to.name);
+        if (to.currentGridUnit != null && to.currentGridUnit.unitType != UnitType.Empty)
+        {
+            Debug.LogWarning(from.currentGridUnit + " move " + direction + " failed, Rules not allowed since target is " + to.currentGridUnit.name);
+            return false;
+        }
+        if (from.solidSurface[((int)direction)])
+        {
+            Debug.LogWarning(from.currentGridUnit + " move " + direction + " failed, this cell has a solid surface");
+            return false;
+        }
+        if (to.solidSurface[((int)DirectionUtility.RevertDirection(direction))])
+        {
+            Debug.LogWarning(from.currentGridUnit + " move " + direction + " failed, target cell has a solid surface");
+            return false;
+        }
+
+        return true;
     }
 }

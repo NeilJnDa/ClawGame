@@ -20,8 +20,8 @@ public class Cell : MonoBehaviour
     [ReadOnly][ShowInInspector]
     public int k { get; private set; }
 
-    public Grid3D grid { get; private set; }
-    public GridUnit currentGridUnit { get; private set; }
+    public Grid3D grid { get; private set; } = null;
+    public GridUnit currentGridUnit { get; private set; } = null;
 
     //For each direction, if it will block moving in
     [HorizontalGroup("Solid Surface", 0.5f, LabelWidth = 20)]
@@ -43,15 +43,19 @@ public class Cell : MonoBehaviour
         this.k = k;
         this.grid = grid;
 
-        currentGridUnit = GameObject.Instantiate(Resources.Load(unitInfo.unitType.ToString(), typeof(GridUnit))) as GridUnit;
-        
-        currentGridUnit.cell = this;
-        currentGridUnit.transform.position = this.transform.position;
-        #if UNITY_EDITOR
-                UnityEditor.SceneVisibilityManager.instance.DisablePicking(this.gameObject, false);
-        #endif
-        currentGridUnit.transform.parent = this.transform;
-        currentGridUnit.Initialize(unitInfo);
+        if(unitInfo.unitType != UnitType.Empty)
+        {
+            currentGridUnit = GameObject.Instantiate(Resources.Load(unitInfo.unitType.ToString(), typeof(GridUnit))) as GridUnit;
+
+            currentGridUnit.cell = this;
+            currentGridUnit.transform.position = this.transform.position;
+#if UNITY_EDITOR
+            UnityEditor.SceneVisibilityManager.instance.DisablePicking(this.gameObject, false);
+#endif  
+            currentGridUnit.transform.parent = this.transform;
+            currentGridUnit.Initialize(unitInfo);
+        }
+
 
         //Glass
         unitInfo.solidSurface?.CopyTo(this.solidSurface, 0);
@@ -88,11 +92,11 @@ public class Cell : MonoBehaviour
     }
     public Vector3 CellToWorld(Cell cell)
     {
-        //Length pos_x : axis_x
-        //Width pos_y : axis_z
-        //height pos_z : axis_y
+        //Length i : axis_x
+        //Width j : axis_z
+        //height k : axis_y
         return cell.grid.parentTransform.position + cell.grid.offset +
-            new Vector3(cell.i, cell.j, cell.k) * (cell.grid.spacing + cell.grid.size);
+            new Vector3(cell.i, cell.k, cell.j) * (cell.grid.spacing + cell.grid.size);
     }
     protected Vector3 DirectionToWorld(Direction direction)
     {
