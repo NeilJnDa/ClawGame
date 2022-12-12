@@ -140,11 +140,17 @@ public class InputManager : MonoBehaviour, IDefaultActions
     }
     public void OnUndo(InputAction.CallbackContext context)
     {
-        throw new System.NotImplementedException();
+        if(InputEnabled && context.performed)
+        {
+            TurnManager.Instance.UndoOneStep();
+        }
     }
     public void OnReset(InputAction.CallbackContext context)
     {
-        throw new System.NotImplementedException();
+        if (InputEnabled && context.performed)
+        {
+            TurnManager.Instance.ResetAll();
+        }
     }
     #endregion
 

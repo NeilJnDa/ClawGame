@@ -18,7 +18,7 @@ public enum UnitType
 /// <summary>
 /// The actual object in the cell
 /// </summary>
-public abstract class GridUnit : MonoBehaviour
+public abstract class GridUnit : MonoBehaviour, ITurnUnit
 {
 
     public virtual UnitType unitType { get { return UnitType.Empty; } }
@@ -60,5 +60,38 @@ public abstract class GridUnit : MonoBehaviour
         this.transform.DOMove(targetCell.CellToWorld(targetCell),
             unitType == UnitType.Claw ? TurnManager.Instance.playerTurnDuration : TurnManager.Instance.envTurnDuration);
     }
+
+    #region ITurnUnit
+    [ShowInInspector][ReadOnly]
+    Stack<Cell> cellHistory = new Stack<Cell>();
+    [ShowInInspector][ReadOnly]
+    Stack<Pair[]> settingHistory = new Stack<Pair[]>();
+    public void UndoOneStep()
+    {
+        cell = cellHistory.Pop();
+        settingHistory.Pop().CopyTo(setting, 0);
+    }
+
+    public void ResetAll()
+    {
+        while (cellHistory.Count > 1)
+        {
+            cellHistory.Pop();
+            settingHistory.Pop();
+        }
+        cell = cellHistory.Pop();
+        settingHistory.Pop().CopyTo(setting, 0);
+
+    }
+
+    public void NextStep()
+    {
+        Cell cellRef = cell;
+        cellHistory.Push(cellRef);
+
+        Pair[] settingTemp = new Pair[5];
+        setting.CopyTo(settingTemp, 0);
+        settingHistory.Push(settingTemp);
+    }
+    #endregion
 }
-    

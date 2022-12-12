@@ -7,7 +7,7 @@ using Sirenix.OdinInspector;
 /// The virtual one-size space in the grid
 /// </summary>
 [System.Serializable]
-public class Cell : MonoBehaviour
+public class Cell : MonoBehaviour, ITurnUnit
 {
     //i: [0, length-1]
     //j: [0, width-1]
@@ -90,6 +90,8 @@ public class Cell : MonoBehaviour
     {
         currentGridUnit = null;
     }
+
+    #region HelperFunctions
     public Vector3 CellToWorld(Cell cell)
     {
         //Length i : axis_x
@@ -138,5 +140,34 @@ public class Cell : MonoBehaviour
                 return Vector3.zero;
         }
     }
+
+    #endregion
+
+    #region ICommandReceiver
+    [ShowInInspector]
+    [ReadOnly]
+    public Stack<GridUnit> gridUnitsHistory = new Stack<GridUnit>();
+
+    public void UndoOneStep()
+    {
+        currentGridUnit = gridUnitsHistory.Pop();
+    }
+
+    public void ResetAll()
+    {
+        while (gridUnitsHistory.Count > 1)
+        {
+            gridUnitsHistory.Pop();
+        }
+        currentGridUnit = gridUnitsHistory.Pop();
+    }
+
+    public void NextStep()
+    {
+        GridUnit currentRef = currentGridUnit;
+        gridUnitsHistory.Push(currentRef);
+    }
+
+    #endregion
 }
 

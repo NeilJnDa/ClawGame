@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Sirenix.OdinInspector;
 
 public class Claw : GridUnit
 {
@@ -21,4 +22,6 @@ public class Claw : GridUnit
             TurnManager.Instance.NextStep();
         }
     }
+
+
 }

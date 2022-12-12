@@ -21,9 +21,6 @@ public class Grid3D
     public float spacing { get; private set; }
     public Cell[,,] cellMatrix { get; private set; }
 
-    //TODO: 
-    public List<Cell[,,]> historyCellMatrix = new List<Cell[,,]>();
-
     public Grid3D(Transform parentTransform, LevelData levelData)
     {
         if (levelData.initCellMatrix.Length == 0)
@@ -92,6 +89,10 @@ public class Grid3D
         }
         return GetCell(nextCellPos);
     }
+    public Cell GetCell(Vector3Int pos)
+    {
+        return cellMatrix[pos.x, pos.y, pos.z];
+    }
     public bool CheckPosValid(Vector3 pos)
     {
         if (pos.x < 0 || pos.x >= length)
@@ -102,19 +103,6 @@ public class Grid3D
             return false;
         return true;
     }
-    public Cell GetCell(Vector3Int pos)
-    {
-        return cellMatrix[pos.x, pos.y, pos.z];
-    }
 
-    #region History , undo, reset
-    public void RecordGrid()
-    {
-        historyCellMatrix.Add(cellMatrix);
-    }
-    public void UndoOneStep()
-    {
 
-    }
-    #endregion
 }
