@@ -32,6 +32,8 @@ public class Claw : GridUnit
         InputManager.Instance.clawActionEvent += OnClawAction;
         TurnManager.Instance.PlayerTurnEvent += OnPlayerTurn;
         TurnManager.Instance.EnvTurnEvent += OnEnvTurn;
+        TurnManager.Instance.CheckInteractionEvent += OnCheckClaw;
+
     }
     private void OnDestroy()
     {
@@ -39,6 +41,8 @@ public class Claw : GridUnit
         InputManager.Instance.clawActionEvent -= OnClawAction;
         TurnManager.Instance.PlayerTurnEvent -= OnPlayerTurn;
         TurnManager.Instance.EnvTurnEvent -= OnEnvTurn;
+        TurnManager.Instance.CheckInteractionEvent -= OnCheckClaw;
+
     }
 
     private void OnPlayerTurn()
@@ -62,7 +66,15 @@ public class Claw : GridUnit
             }
         }
     }
-
+    private void OnCheckClaw()
+    {
+        //Both when ReadyDrop and ReadyRaise it can claw something
+        if (clawState == ClawState.ReadyDrop || clawState == ClawState.ReadyRaise)
+        {
+            //It has already entered the cell (after the player turn) where there is something to catch 
+            
+        }
+    }
     private void OnMove(Direction direction)
     {
         if (this.CheckMoveToNext(direction))
@@ -75,8 +87,9 @@ public class Claw : GridUnit
     {
         if(clawState == ClawState.ReadyDrop)
         {
-            if (CheckMoveClawToEnd(Direction.Below) != null)
+            if (CheckMoveClawToEnd(Direction.Below))
             {
+                clawState = ClawState.ReadyRaise;
                 TurnManager.Instance.NextStep();
             }
             else
@@ -86,7 +99,15 @@ public class Claw : GridUnit
         }
         else if(clawState == ClawState.ReadyRaise)
         {
-
+            if (CheckMoveClawToEnd(Direction.Above))
+            {
+                clawState = ClawState.ReadyDrop;
+                TurnManager.Instance.NextStep();
+            }
+            else
+            {
+                //TODO: can not move animation
+            }
         }
         else if(clawState == ClawState.Raising)
         {
@@ -98,7 +119,7 @@ public class Claw : GridUnit
     /// </summary>
     /// <param name="direction"></param>
     /// <returns></returns>
-    public Cell CheckMoveClawToEnd(Direction direction)
+    public bool CheckMoveClawToEnd(Direction direction)
     {
         targetCell = null;
         Cell currentCell = this.cell;
@@ -107,11 +128,7 @@ public class Claw : GridUnit
         while (true)
         {
             targetCell = cell.grid.GetClosestCell(currentCell, direction);
-            if (targetCell == null)
-            {
-                break;
-            }
-            else if(Rules.Instance.CheckClawEnterCell(currentCell, targetCell, direction))
+            if(targetCell != null && Rules.Instance.CheckClawEnterCell(currentCell, targetCell, direction))
             {
                 currentCell = targetCell;
             }
@@ -121,7 +138,8 @@ public class Claw : GridUnit
                 break;
             }
         }
-        return targetCell;
+        if (targetCell != null && targetCell != this.cell) return true;
+        return false;
     }
     
 

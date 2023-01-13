@@ -55,6 +55,7 @@ public class TurnManager : MonoBehaviour
     //Event
     public event Action PlayerTurnEvent;
     public event Action EnvTurnEvent;
+    public event Action CheckInteractionEvent;
 
     [ReadOnly]
     public int currentStep = 0;
@@ -84,12 +85,16 @@ public class TurnManager : MonoBehaviour
         //First finish Player Turn (anim/audio)
         PlayerTurnEvent?.Invoke();
         yield return new WaitForSeconds(playerTurnDuration);
+        //After claw actions, check interactions
+        CheckInteractionEvent?.Invoke();
 
         //Then Env Turn
         currentTurn = Turn.EnvTurn;
         //Tell every env units to execute
         EnvTurnEvent?.Invoke();
         yield return new WaitForSeconds(envTurnDuration);
+        //After env actions, check interactions
+        CheckInteractionEvent?.Invoke();
 
         //Accept command
         currentTurn = Turn.PlayerTurn;
