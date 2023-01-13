@@ -83,6 +83,7 @@ public class InputManager : MonoBehaviour, IDefaultActions
 
     #region Interface
     public event Action<Direction> moveEvent;
+    public event Action clawActionEvent;
     public event Action undoEvent;
     public event Action resetEvent;
 
@@ -95,15 +96,33 @@ public class InputManager : MonoBehaviour, IDefaultActions
         }
     }
 
-    public void OnDrop(InputAction.CallbackContext context)
+
+    #region Deprecated. Now claw action is binding to one key.
+    //public void OnDrop(InputAction.CallbackContext context)
+    //{
+    //    if (InputEnabled && InputEnabled && MoveEnabled && context.performed)
+    //    {
+    //        Debug.Log("Drop");
+    //        moveEvent.Invoke(Direction.Below);
+    //    }
+    //}
+    //public void OnRaise(InputAction.CallbackContext context)
+    //{
+    //    if (InputEnabled && MoveEnabled && context.performed)
+    //    {
+    //        Debug.Log("Raise");
+    //        moveEvent.Invoke(Direction.Above);
+    //    }
+    //}
+    #endregion
+    public void OnClaw(InputAction.CallbackContext context)
     {
         if (InputEnabled && InputEnabled && MoveEnabled && context.performed)
         {
-            Debug.Log("Drop");
-            moveEvent.Invoke(Direction.Below);
+            Debug.Log("ClawAction");
+            clawActionEvent.Invoke();
         }
     }
-
     public void OnLeft(InputAction.CallbackContext context)
     {
         if (InputEnabled && MoveEnabled && context.performed)
@@ -113,14 +132,7 @@ public class InputManager : MonoBehaviour, IDefaultActions
         }
     }
 
-    public void OnRaise(InputAction.CallbackContext context)
-    {
-        if (InputEnabled && MoveEnabled && context.performed)
-        {
-            Debug.Log("Raise");
-            moveEvent.Invoke(Direction.Above);
-        }
-    }
+
 
     public void OnRight(InputAction.CallbackContext context)
     {
@@ -152,6 +164,7 @@ public class InputManager : MonoBehaviour, IDefaultActions
             TurnManager.Instance.ResetAll();
         }
     }
+
     #endregion
 
 }

@@ -21,7 +21,10 @@ public enum UnitType
 public abstract class GridUnit : MonoBehaviour, ITurnUnit
 {
 
+    //Must be overrided
     public virtual UnitType unitType { get { return UnitType.Empty; } }
+    public virtual bool catchable { get { return false; } }
+
 
     public Pair[] setting = new Pair[5];
 
@@ -32,33 +35,28 @@ public abstract class GridUnit : MonoBehaviour, ITurnUnit
         //Creation and placing is done by its cell
         //Here we deal with the solid surface
         unitInfo.setting?.CopyTo(this.setting, 0);
-
     }
-    protected virtual bool MoveTo(Direction direction)
+    /// <summary>
+    /// Check if can move to an adjacent cell
+    /// </summary>
+    /// <param name="direction"></param>
+    /// <returns></returns>
+    protected virtual bool CheckMoveToNext(Direction direction)
     {
         var targetCell = cell.grid.GetClosestCell(this.cell, direction);
         if (targetCell == null)
-        {
+        {  
             Debug.LogWarning(cell + " move " + direction + "failed, cannot get targetCell");
             return false;
         }
-        if (Rules.Instance.CheckEnterCell(this.cell, targetCell, direction))
-        {
-            cell.Leave();
-            targetCell.Occupy(this);
-            MoveToAnim(targetCell);
-            Debug.Log(cell + " move " + direction + " succeeded");
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return Rules.Instance.CheckEnterCell(this.cell, targetCell, direction);
     }
-    protected virtual void MoveToAnim(Cell targetCell)
+    protected virtual void MoveToCell(Cell targetCell, float duration)
     {
-        this.transform.DOMove(targetCell.CellToWorld(targetCell),
-            unitType == UnitType.Claw ? TurnManager.Instance.playerTurnDuration : TurnManager.Instance.envTurnDuration);
+        this.cell.Leave();
+        targetCell.Occupy(this);
+        Debug.Log(this.name + " move to " + targetCell.name + " succeeded");
+        this.transform.DOMove(targetCell.CellToWorld(targetCell), duration);
     }
 
     #region ITurnUnit

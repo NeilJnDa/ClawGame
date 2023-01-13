@@ -104,5 +104,8 @@ public class Grid3D
         return true;
     }
 
-
+    public float AbsoluteDistance(Cell from, Cell to)
+    {
+        return Mathf.Abs(Vector3.Distance(new Vector3(from.i, from.j, from.k), new Vector3(to.i, to.j,to.k)));
+    }
 }

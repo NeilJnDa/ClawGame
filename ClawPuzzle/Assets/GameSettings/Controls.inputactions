@@ -1,5 +1,5 @@
 {
-    "name": "InputControls",
+    "name": "Controls",
     "maps": [
         {
             "name": "Default",
@@ -42,16 +42,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Raise",
-                    "type": "Button",
-                    "id": "bea0e03a-3049-4733-a9f0-86dfa27be5df",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Drop",
+                    "name": "Claw",
                     "type": "Button",
                     "id": "91580d87-b49b-4d58-89db-b6d0a5aeaf0d",
                     "expectedControlType": "Button",
@@ -169,23 +160,12 @@
                 },
                 {
                     "name": "",
-                    "id": "2bb9cd70-80c4-42c7-ae60-54c9b47a5f8c",
-                    "path": "<Keyboard>/c",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Raise",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "ab2e146a-5a47-492c-bcfe-838bbf0567c9",
                     "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Drop",
+                    "action": "Claw",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

@@ -64,16 +64,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Raise"",
-                    ""type"": ""Button"",
-                    ""id"": ""bea0e03a-3049-4733-a9f0-86dfa27be5df"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Drop"",
+                    ""name"": ""Claw"",
                     ""type"": ""Button"",
                     ""id"": ""91580d87-b49b-4d58-89db-b6d0a5aeaf0d"",
                     ""expectedControlType"": ""Button"",
@@ -191,23 +182,12 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""2bb9cd70-80c4-42c7-ae60-54c9b47a5f8c"",
-                    ""path"": ""<Keyboard>/c"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Raise"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""ab2e146a-5a47-492c-bcfe-838bbf0567c9"",
                     ""path"": ""<Keyboard>/space"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Drop"",
+                    ""action"": ""Claw"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -244,8 +224,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_Default_Down = m_Default.FindAction("Down", throwIfNotFound: true);
         m_Default_Left = m_Default.FindAction("Left", throwIfNotFound: true);
         m_Default_Right = m_Default.FindAction("Right", throwIfNotFound: true);
-        m_Default_Raise = m_Default.FindAction("Raise", throwIfNotFound: true);
-        m_Default_Drop = m_Default.FindAction("Drop", throwIfNotFound: true);
+        m_Default_Claw = m_Default.FindAction("Claw", throwIfNotFound: true);
         m_Default_Undo = m_Default.FindAction("Undo", throwIfNotFound: true);
         m_Default_Reset = m_Default.FindAction("Reset", throwIfNotFound: true);
     }
@@ -311,8 +290,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Default_Down;
     private readonly InputAction m_Default_Left;
     private readonly InputAction m_Default_Right;
-    private readonly InputAction m_Default_Raise;
-    private readonly InputAction m_Default_Drop;
+    private readonly InputAction m_Default_Claw;
     private readonly InputAction m_Default_Undo;
     private readonly InputAction m_Default_Reset;
     public struct DefaultActions
@@ -323,8 +301,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         public InputAction @Down => m_Wrapper.m_Default_Down;
         public InputAction @Left => m_Wrapper.m_Default_Left;
         public InputAction @Right => m_Wrapper.m_Default_Right;
-        public InputAction @Raise => m_Wrapper.m_Default_Raise;
-        public InputAction @Drop => m_Wrapper.m_Default_Drop;
+        public InputAction @Claw => m_Wrapper.m_Default_Claw;
         public InputAction @Undo => m_Wrapper.m_Default_Undo;
         public InputAction @Reset => m_Wrapper.m_Default_Reset;
         public InputActionMap Get() { return m_Wrapper.m_Default; }
@@ -348,12 +325,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Right.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnRight;
                 @Right.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnRight;
                 @Right.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnRight;
-                @Raise.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnRaise;
-                @Raise.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnRaise;
-                @Raise.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnRaise;
-                @Drop.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDrop;
-                @Drop.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDrop;
-                @Drop.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnDrop;
+                @Claw.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnClaw;
+                @Claw.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnClaw;
+                @Claw.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnClaw;
                 @Undo.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnUndo;
                 @Undo.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnUndo;
                 @Undo.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnUndo;
@@ -376,12 +350,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Right.started += instance.OnRight;
                 @Right.performed += instance.OnRight;
                 @Right.canceled += instance.OnRight;
-                @Raise.started += instance.OnRaise;
-                @Raise.performed += instance.OnRaise;
-                @Raise.canceled += instance.OnRaise;
-                @Drop.started += instance.OnDrop;
-                @Drop.performed += instance.OnDrop;
-                @Drop.canceled += instance.OnDrop;
+                @Claw.started += instance.OnClaw;
+                @Claw.performed += instance.OnClaw;
+                @Claw.canceled += instance.OnClaw;
                 @Undo.started += instance.OnUndo;
                 @Undo.performed += instance.OnUndo;
                 @Undo.canceled += instance.OnUndo;
@@ -398,8 +369,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         void OnDown(InputAction.CallbackContext context);
         void OnLeft(InputAction.CallbackContext context);
         void OnRight(InputAction.CallbackContext context);
-        void OnRaise(InputAction.CallbackContext context);
-        void OnDrop(InputAction.CallbackContext context);
+        void OnClaw(InputAction.CallbackContext context);
         void OnUndo(InputAction.CallbackContext context);
         void OnReset(InputAction.CallbackContext context);
     }

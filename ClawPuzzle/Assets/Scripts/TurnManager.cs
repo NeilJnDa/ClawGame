@@ -53,11 +53,15 @@ public class TurnManager : MonoBehaviour
     //Step: composed of two turns(player and env), one player action = one step
     #region
     //Event
-    public event Action OnEnvTurnEvent;
+    public event Action PlayerTurnEvent;
+    public event Action EnvTurnEvent;
 
     [ReadOnly]
     public int currentStep = 0;
     private IEnumerator NextStepInst = null;
+    /// <summary>
+    /// Called When a plausible commanded is executed and consume a step
+    /// </summary>
     public void NextStep()
     {
         NextStepInst = NextStepCoroutine() as IEnumerator;
@@ -66,28 +70,32 @@ public class TurnManager : MonoBehaviour
 
     IEnumerator NextStepCoroutine()
     {
-        //Tell every unit to save their current state
+        //Disable more command
+        InputManager.Instance.EnableMove(false);
+
+        //Tell every unit to save their current state to the state history
         var units = InterfaceFinder.GetAllByInterface<ITurnUnit>();
-        foreach(var unit in units)
+        foreach (var unit in units)
         {
             unit.NextStep();
         }
-
         currentStep++;
 
         //First finish Player Turn (anim/audio)
-        InputManager.Instance.EnableMove(false);
+        PlayerTurnEvent?.Invoke();
         yield return new WaitForSeconds(playerTurnDuration);
 
         //Then Env Turn
         currentTurn = Turn.EnvTurn;
         //Tell every env units to execute
-        OnEnvTurnEvent?.Invoke();
-
-
+        EnvTurnEvent?.Invoke();
         yield return new WaitForSeconds(envTurnDuration);
+
+        //Accept command
         currentTurn = Turn.PlayerTurn;
         InputManager.Instance.EnableMove(true);
+
+
     }
     private void StopNextTurnCoroutine()
     {

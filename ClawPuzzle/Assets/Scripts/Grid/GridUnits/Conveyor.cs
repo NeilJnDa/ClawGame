@@ -5,14 +5,15 @@ using UnityEngine;
 public class Conveyor : GridUnit
 {
     public override UnitType unitType { get { return UnitType.Conveyor; } }
+    public override bool catchable { get { return false; } }
 
     private void Start()
     {
-        TurnManager.Instance.OnEnvTurnEvent += OnEnvTurn;
+        TurnManager.Instance.EnvTurnEvent += OnEnvTurn;
     }
     private void OnDestroy()
     {
-        TurnManager.Instance.OnEnvTurnEvent -= OnEnvTurn;
+        TurnManager.Instance.EnvTurnEvent -= OnEnvTurn;
     }
 
     private void OnEnvTurn()
