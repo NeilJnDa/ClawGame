@@ -57,37 +57,6 @@ public class Level : MonoBehaviour
         }
 
 
-        //var units = transform.GetComponentsInChildren<GridUnit>();
-        //for (int i = 0; i < levelData.gridSetting.length; ++i)
-        //{
-        //    for (int j = 0; j < levelData.gridSetting.width; ++j)
-        //    {
-        //        for (int k = 0; k < levelData.gridSetting.height; ++k)
-        //        {
-        //            //Default
-        //            levelData.SetCell(i, j, k, UnitType.Empty, null, null);
-        //        }
-        //    }
-        //}
-        //Debug.Log("Found " + units.Length + " units");
-        //try
-        //{
-        //    foreach (var unit in units)
-        //    {
-        //        //Debug.Log("saving " + unit.name);
-        //        Vector3 distance = unit.transform.position - (this.transform.position + levelData.gridSetting.offset);
-        //        Vector3Int posWorldSpace = Vector3Int.RoundToInt(distance / levelData.gridSetting.size);
-        //        //Pos in Grid Space
-        //        Vector3Int pos = new Vector3Int(posWorldSpace.x, posWorldSpace.z, posWorldSpace.y);
-        //        levelData.SetUnit(pos, unit.unitType, unit.solidSurface, unit.setting);
-        //    }
-        //    Debug.Log("Level Data Created");
-        //}
-        //catch (Exception e)
-        //{
-        //    Debug.LogError("Initialize Level Data Failed. Error: " + e);
-        //}
-
         try
         {
             JsonHelper.SaveToFile("/LevelData", levelName, levelData);
@@ -110,6 +79,9 @@ public class Level : MonoBehaviour
         try
         {
             levelData = JsonHelper.LoadFromFile<LevelData>("/LevelData", levelName);
+            Debug.Log(levelData.cellInfos.Count);
+            Debug.Log(levelData.gridUnitInfos.Count);
+
 
         }
         catch (Exception e)

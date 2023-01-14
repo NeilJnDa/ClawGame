@@ -51,8 +51,25 @@ public class Grid3D
                         new Vector3(i * (size + spacing), k * (size + spacing), j * (size + spacing));
                     cell.gameObject.name = "Cell " + i + " " + j + " " + k;
                     cellMatrix[i, j, k] = cell;
-                    //cellMatrix[i, j, k].Initialize(i, j, k, this, levelData.GetCell(i, j, k));
+                    cellMatrix[i, j, k].Initialize(i, j, k, this, levelData.GetCellSolidSurface(i, j, k));
                 }
+            }
+        }
+        Debug.Log(levelData.gridUnitInfos.Count);
+        foreach(var gridUnitInfo in levelData.gridUnitInfos)
+        {
+            if (gridUnitInfo.unitType != UnitType.Empty)
+            {
+                gridUnitInfo.Log();
+                var unit = GameObject.Instantiate(Resources.Load(gridUnitInfo.unitType.ToString(), typeof(GridUnit))) as GridUnit;
+                unit.cell = cellMatrix[gridUnitInfo.i, gridUnitInfo.j, gridUnitInfo.k];
+                if(gridUnitInfo.setting != null)
+                    unit.setting = new List<Pair>(gridUnitInfo.setting);
+                else unit.setting = new List<Pair>();
+
+                unit.transform.position = unit.cell.transform.position;
+                unit.transform.parent = unit.cell.transform;
+                unit.cell.gridUnits.Add(unit);
             }
         }
 

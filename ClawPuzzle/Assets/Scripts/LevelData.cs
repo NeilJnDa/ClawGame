@@ -88,7 +88,7 @@ public class LevelData
 {
     public string levelName;
     public GridSetting gridSetting;
-    public List<GridUnitInfo> GridUnitInfos = new List<GridUnitInfo>();
+    public List<GridUnitInfo> gridUnitInfos = new List<GridUnitInfo>();
     public List<CellInfo> cellInfos = new List<CellInfo>();
 
     public LevelData(string levelName, GridSetting gridSetting)
@@ -121,6 +121,6 @@ public class LevelData
         {
             Debug.LogError(unitType + ": Unit Index out of boundary. Check if the grid is to small or the unit is too far.");
         }
-        GridUnitInfos.Add(new GridUnitInfo(i, j, k, unitType, setting));
+        gridUnitInfos.Add(new GridUnitInfo(i, j, k, unitType, setting));
     }
 } 

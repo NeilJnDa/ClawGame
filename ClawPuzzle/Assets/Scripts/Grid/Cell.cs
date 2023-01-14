@@ -34,7 +34,7 @@ public class Cell : MonoBehaviour, ITurnUnit
     [BoxGroup("Solid Surface/Has a glass")]
     public bool[] solidSurface = new bool[6];
 
-    public void Initialize(int i, int j, int k, Grid3D grid, CellInfo unitInfo)
+    public void Initialize(int i, int j, int k, Grid3D grid, bool[] GetCellSolidSurface)
     {
         //Length pos_x : axis_x
         //Width pos_y : axis_z
@@ -43,23 +43,13 @@ public class Cell : MonoBehaviour, ITurnUnit
         this.j = j;
         this.k = k;
         this.grid = grid;
-
-//        if(unitInfo.unitType != UnitType.Empty)
-//        {
-//            currentGridUnit = GameObject.Instantiate(Resources.Load(unitInfo.unitType.ToString(), typeof(GridUnit))) as GridUnit;
-
-//            currentGridUnit.cell = this;
-//            currentGridUnit.transform.position = this.transform.position;
-//#if UNITY_EDITOR
-//            UnityEditor.SceneVisibilityManager.instance.DisablePicking(this.gameObject, false);
-//#endif  
-//            currentGridUnit.transform.parent = this.transform;
-//            currentGridUnit.Initialize(unitInfo);
-//        }
+#if UNITY_EDITOR
+        UnityEditor.SceneVisibilityManager.instance.DisablePicking(this.gameObject, false);
+#endif
 
 
         //Glass
-        unitInfo.solidSurface?.CopyTo(this.solidSurface, 0);
+        GetCellSolidSurface?.CopyTo(this.solidSurface, 0);
         for (int index = 0; index < solidSurface.Length; ++index)
         {
             if (solidSurface[index])
