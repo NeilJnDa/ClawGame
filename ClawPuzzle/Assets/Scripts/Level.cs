@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using System.Linq;
 
 public class Level : MonoBehaviour
 {
@@ -22,15 +23,19 @@ public class Level : MonoBehaviour
     {
         //Create a new levelData every time. Unity GC will deal with the old one
         levelData = new LevelData(levelName, gridSetting);
-        
+
         Debug.Log("Saving Level Data to Json");
         try
         {
 
             var cells = transform.GetComponentsInChildren<Cell>();
 
+            bool[] defaultSolidSurfaceSetting = new bool[6] { false, false, false, false, false, false, };
             foreach (var cell in cells)
             {
+                if (cell.solidSurface.All(x => !x)) continue;
+
+                //Not Default setting, then save this to levelData
                 levelData.SetCellSpace(cell.i, cell.j, cell.k, cell.solidSurface);
             }
 
@@ -43,13 +48,14 @@ public class Level : MonoBehaviour
                 //Pos in Grid Space
                 //Calculate the pos again, in case it dose not have a proper hierarchy. (Correct child of correct cell)
                 Vector3Int pos = new Vector3Int(posWorldSpace.x, posWorldSpace.z, posWorldSpace.y);
-                levelData.SetCellUnit(pos.x, pos.y, pos.z, unit.unitType, unit.setting);
+                levelData.SetGridUnit(pos.x, pos.y, pos.z, unit.unitType, unit.setting);
             }
         }
         catch (Exception e)
         {
             Debug.LogError("Initialize Level Data Failed. Error: " + e);
         }
+
 
         //var units = transform.GetComponentsInChildren<GridUnit>();
         //for (int i = 0; i < levelData.gridSetting.length; ++i)
@@ -104,8 +110,9 @@ public class Level : MonoBehaviour
         try
         {
             levelData = JsonHelper.LoadFromFile<LevelData>("/LevelData", levelName);
+
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Debug.LogError("Parse Json failed: " + e);
         }

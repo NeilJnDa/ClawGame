@@ -26,15 +26,16 @@ public abstract class GridUnit : MonoBehaviour, ITurnUnit
     public virtual bool catchable { get { return false; } }
 
 
-    public Pair[] setting = new Pair[5];
+    public List<Pair> setting;
 
     public Cell cell;
 
-    public void Initialize(CellInfo unitInfo)
+    public void Initialize(GridUnitInfo gridUnitInfo)
     {
         //Creation and placing is done by its cell
         //Here we deal with the solid surface
-        unitInfo.setting?.CopyTo(this.setting, 0);
+        if (gridUnitInfo.setting != null) setting = gridUnitInfo.setting;
+        else setting = new List<Pair>();
     }
     /// <summary>
     /// Check if can move to an adjacent cell
@@ -62,12 +63,13 @@ public abstract class GridUnit : MonoBehaviour, ITurnUnit
     #region ITurnUnit
     [ShowInInspector][ReadOnly]
     Stack<Cell> cellHistory = new Stack<Cell>();
-    [ShowInInspector][ReadOnly]
-    Stack<Pair[]> settingHistory = new Stack<Pair[]>();
+    [ShowInInspector]
+    [ReadOnly]
+    Stack<List<Pair>> settingHistory = new Stack<List<Pair>>();
     public void UndoOneStep()
     {
         cell = cellHistory.Pop();
-        settingHistory.Pop().CopyTo(setting, 0);
+        setting = settingHistory.Pop();
     }
 
     public void ResetAll()
@@ -78,7 +80,7 @@ public abstract class GridUnit : MonoBehaviour, ITurnUnit
             settingHistory.Pop();
         }
         cell = cellHistory.Pop();
-        settingHistory.Pop().CopyTo(setting, 0);
+        setting = settingHistory.Pop();
 
     }
 
@@ -87,8 +89,7 @@ public abstract class GridUnit : MonoBehaviour, ITurnUnit
         Cell cellRef = cell;
         cellHistory.Push(cellRef);
 
-        Pair[] settingTemp = new Pair[5];
-        setting.CopyTo(settingTemp, 0);
+        List<Pair> settingTemp = new List<Pair>(setting);
         settingHistory.Push(settingTemp);
     }
     #endregion

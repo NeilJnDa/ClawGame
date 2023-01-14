@@ -22,6 +22,7 @@ public class Cell : MonoBehaviour, ITurnUnit
 
     public Grid3D grid { get; private set; } = null;
     public GridUnit currentGridUnit { get; private set; } = null;
+    public List<GridUnit> gridUnits = new List<GridUnit>();
 
     //For each direction, if it will block moving in
     [HorizontalGroup("Solid Surface", 0.5f, LabelWidth = 20)]
@@ -43,18 +44,18 @@ public class Cell : MonoBehaviour, ITurnUnit
         this.k = k;
         this.grid = grid;
 
-        if(unitInfo.unitType != UnitType.Empty)
-        {
-            currentGridUnit = GameObject.Instantiate(Resources.Load(unitInfo.unitType.ToString(), typeof(GridUnit))) as GridUnit;
+//        if(unitInfo.unitType != UnitType.Empty)
+//        {
+//            currentGridUnit = GameObject.Instantiate(Resources.Load(unitInfo.unitType.ToString(), typeof(GridUnit))) as GridUnit;
 
-            currentGridUnit.cell = this;
-            currentGridUnit.transform.position = this.transform.position;
-#if UNITY_EDITOR
-            UnityEditor.SceneVisibilityManager.instance.DisablePicking(this.gameObject, false);
-#endif  
-            currentGridUnit.transform.parent = this.transform;
-            currentGridUnit.Initialize(unitInfo);
-        }
+//            currentGridUnit.cell = this;
+//            currentGridUnit.transform.position = this.transform.position;
+//#if UNITY_EDITOR
+//            UnityEditor.SceneVisibilityManager.instance.DisablePicking(this.gameObject, false);
+//#endif  
+//            currentGridUnit.transform.parent = this.transform;
+//            currentGridUnit.Initialize(unitInfo);
+//        }
 
 
         //Glass

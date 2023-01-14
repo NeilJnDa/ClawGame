@@ -23,10 +23,10 @@ public class Grid3D
 
     public Grid3D(Transform parentTransform, LevelData levelData)
     {
-        if (levelData.initCellMatrix.Length == 0)
-        {
-            Debug.LogError("No LevelData, check if parsing is completed or if the json has content.");
-        }
+        //if (levelData.initCellMatrix.Length == 0)
+        //{
+        //    Debug.LogError("No LevelData, check if parsing is completed or if the json has content.");
+        //}
         levelData.gridSetting.Log();
 
         this.parentTransform = parentTransform;
@@ -51,7 +51,7 @@ public class Grid3D
                         new Vector3(i * (size + spacing), k * (size + spacing), j * (size + spacing));
                     cell.gameObject.name = "Cell " + i + " " + j + " " + k;
                     cellMatrix[i, j, k] = cell;
-                    cellMatrix[i, j, k].Initialize(i, j, k, this, levelData.GetCell(i, j, k));
+                    //cellMatrix[i, j, k].Initialize(i, j, k, this, levelData.GetCell(i, j, k));
                 }
             }
         }

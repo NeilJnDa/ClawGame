@@ -5,6 +5,32 @@ using UnityEngine;
 using Sirenix.OdinInspector;
 
 [Serializable]
+public struct GridUnitInfo
+{
+    public int i;
+    public int j;
+    public int k;
+
+    public UnitType unitType;
+    public List<Pair> setting;
+
+    public GridUnitInfo(int i, int j, int k, UnitType unitType, List<Pair> setting)
+    {
+        this.i = i;
+        this.j = j;
+        this.k = k;
+        this.unitType = unitType;
+        if (setting != null)
+            this.setting = setting;
+        else this.setting = new List<Pair>();
+    }
+
+    public void Log()
+    {
+        Debug.Log("[GridUnitInfo] " + i + " " + j + " " + k + ", " + unitType + "; " + setting);
+    }
+}
+[Serializable]
 public struct CellInfo
 {
     public int i;
@@ -12,21 +38,13 @@ public struct CellInfo
     public int k;
     public bool[] solidSurface;
 
-    //TODO: Assmue only one object
-    public UnitType unitType;
-    public Pair[] setting;
-    public CellInfo(int i, int j, int k, UnitType unitType, bool[] solidSurface, Pair[] setting)
+    public CellInfo(int i, int j, int k, bool[] solidSurface)
     {
         this.i = i;
         this.j = j;
         this.k = k;
-        this.unitType = unitType;
         this.solidSurface = new bool[6] { false, false, false, false, false, false, };
-        this.setting = new Pair[5];
-        if (setting != null)
-        {
-            setting.CopyTo(this.setting, 0);
-        }
+
         if(solidSurface != null)
         {
             solidSurface.CopyTo(this.solidSurface, 0);
@@ -34,7 +52,7 @@ public struct CellInfo
     }
     public void Log()
     {
-        Debug.Log("[UnitInfo] " + i + " " + j + " " + k + ", " + unitType + ", " + setting + ", " + solidSurface);
+        Debug.Log("[CellInfo] " + i + " " + j + " " + k + ", " + solidSurface);
     }
 }
 [Serializable]
@@ -70,28 +88,24 @@ public class LevelData
 {
     public string levelName;
     public GridSetting gridSetting;
-    public CellInfo[] initCellMatrix;
+    public List<GridUnitInfo> GridUnitInfos = new List<GridUnitInfo>();
+    public List<CellInfo> cellInfos = new List<CellInfo>();
 
     public LevelData(string levelName, GridSetting gridSetting)
     {
         this.levelName = levelName;
         this.gridSetting = gridSetting;
-        this.initCellMatrix = new CellInfo[gridSetting.length * gridSetting.width * gridSetting.height];
-        for (int i = 0; i < gridSetting.length; ++i)
+    }
+    public bool[] GetCellSolidSurface(int i, int j, int k)
+    {
+        foreach(var cellInfo in cellInfos)
         {
-            for (int j = 0; j < gridSetting.width; j++)
+            if(cellInfo.i == i && cellInfo.j == j && cellInfo.k == k)
             {
-                for (int k = 0; k < gridSetting.height; k++)
-                {
-                    var index = i + j * gridSetting.length + k * gridSetting.length * gridSetting.width;
-                    initCellMatrix[index] = new CellInfo(i, j, k, UnitType.Empty, null, null);
-                }
+                return cellInfo.solidSurface;
             }
         }
-    }
-    public CellInfo GetCell(int i, int j, int k)
-    {
-        return initCellMatrix[i + j * gridSetting.length + k * gridSetting.length * gridSetting.width];
+        return null;
     }
     public void SetCellSpace(int i, int j, int k, bool[] solidSurface)
     {
@@ -99,17 +113,14 @@ public class LevelData
         {
             Debug.LogError("Unit Index out of boundary. Check if the grid is to small or the unit is too far.");
         }
-        var index = i + j * gridSetting.length + k * gridSetting.length * gridSetting.width;
-        solidSurface.CopyTo(initCellMatrix[index].solidSurface, 0);
+        cellInfos.Add(new CellInfo(i, j, k, solidSurface));
     }
-    public void SetCellUnit(int i, int j, int k, UnitType unitType, Pair[] setting)
+    public void SetGridUnit(int i, int j, int k, UnitType unitType, List<Pair> setting)
     {
         if (i >= gridSetting.length || j >= gridSetting.width || k >= gridSetting.height)
         {
             Debug.LogError(unitType + ": Unit Index out of boundary. Check if the grid is to small or the unit is too far.");
         }
-        var index = i + j * gridSetting.length + k * gridSetting.length * gridSetting.width;
-        initCellMatrix[index].unitType = unitType;
-        setting.CopyTo(initCellMatrix[index].setting, 0);
+        GridUnitInfos.Add(new GridUnitInfo(i, j, k, unitType, setting));
     }
 } 
