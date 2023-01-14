@@ -21,7 +21,6 @@ public class Cell : MonoBehaviour, ITurnUnit
     public int k { get; private set; }
 
     public Grid3D grid { get; private set; } = null;
-    public GridUnit currentGridUnit { get; private set; } = null;
     public List<GridUnit> gridUnits = new List<GridUnit>();
 
     //For each direction, if it will block moving in
@@ -72,14 +71,14 @@ public class Cell : MonoBehaviour, ITurnUnit
         }
     }
 
-    public void Occupy(GridUnit newUnit)
+    public void Enter(GridUnit newUnit)
     {
-        currentGridUnit = newUnit;
+        gridUnits.Add(newUnit);
         newUnit.cell = this;
     }
-    public void Leave()
+    public void Leave(GridUnit unit)
     {
-        currentGridUnit = null;
+        gridUnits.Remove(unit);
     }
 
     #region HelperFunctions
@@ -137,11 +136,11 @@ public class Cell : MonoBehaviour, ITurnUnit
     #region ICommandReceiver
     [ShowInInspector]
     [ReadOnly]
-    public Stack<GridUnit> gridUnitsHistory = new Stack<GridUnit>();
+    public Stack<List<GridUnit>> gridUnitsHistory = new Stack<List<GridUnit>>();
 
     public void UndoOneStep()
     {
-        currentGridUnit = gridUnitsHistory.Pop();
+        gridUnits = gridUnitsHistory.Pop();
     }
 
     public void ResetAll()
@@ -150,12 +149,12 @@ public class Cell : MonoBehaviour, ITurnUnit
         {
             gridUnitsHistory.Pop();
         }
-        currentGridUnit = gridUnitsHistory.Pop();
+        gridUnits = gridUnitsHistory.Pop();
     }
 
     public void NextStep()
     {
-        GridUnit currentRef = currentGridUnit;
+        List<GridUnit> currentRef = new List<GridUnit>(gridUnits);
         gridUnitsHistory.Push(currentRef);
     }
 

@@ -58,10 +58,11 @@ public class Grid3D
         Debug.Log(levelData.gridUnitInfos.Count);
         foreach(var gridUnitInfo in levelData.gridUnitInfos)
         {
-            if (gridUnitInfo.unitType != UnitType.Empty)
+            if ((UnitType) gridUnitInfo.unitType != UnitType.Empty)
             {
-                gridUnitInfo.Log();
-                var unit = GameObject.Instantiate(Resources.Load(gridUnitInfo.unitType.ToString(), typeof(GridUnit))) as GridUnit;
+                //gridUnitInfo.Log();
+                string name = ((UnitType)gridUnitInfo.unitType).ToString();
+                var unit = GameObject.Instantiate(Resources.Load(name, typeof(GridUnit))) as GridUnit;
                 unit.cell = cellMatrix[gridUnitInfo.i, gridUnitInfo.j, gridUnitInfo.k];
                 if(gridUnitInfo.setting != null)
                     unit.setting = new List<Pair>(gridUnitInfo.setting);

@@ -79,10 +79,6 @@ public class Level : MonoBehaviour
         try
         {
             levelData = JsonHelper.LoadFromFile<LevelData>("/LevelData", levelName);
-            Debug.Log(levelData.cellInfos.Count);
-            Debug.Log(levelData.gridUnitInfos.Count);
-
-
         }
         catch (Exception e)
         {

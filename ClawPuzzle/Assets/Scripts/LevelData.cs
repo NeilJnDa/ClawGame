@@ -11,10 +11,10 @@ public struct GridUnitInfo
     public int j;
     public int k;
 
-    public UnitType unitType;
+    public int unitType;
     public List<Pair> setting;
 
-    public GridUnitInfo(int i, int j, int k, UnitType unitType, List<Pair> setting)
+    public GridUnitInfo(int i, int j, int k, int unitType, List<Pair> setting)
     {
         this.i = i;
         this.j = j;
@@ -27,7 +27,7 @@ public struct GridUnitInfo
 
     public void Log()
     {
-        Debug.Log("[GridUnitInfo] " + i + " " + j + " " + k + ", " + unitType + "; " + setting);
+        Debug.Log("[GridUnitInfo] " + i + " " + j + " " + k + ", Type:  " + (UnitType)unitType);
     }
 }
 [Serializable]
@@ -121,6 +121,6 @@ public class LevelData
         {
             Debug.LogError(unitType + ": Unit Index out of boundary. Check if the grid is to small or the unit is too far.");
         }
-        gridUnitInfos.Add(new GridUnitInfo(i, j, k, unitType, setting));
+        gridUnitInfos.Add(new GridUnitInfo(i, j, k, (int)unitType, setting));
     }
 } 

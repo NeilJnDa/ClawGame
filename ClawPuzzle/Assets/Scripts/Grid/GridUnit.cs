@@ -50,12 +50,12 @@ public abstract class GridUnit : MonoBehaviour, ITurnUnit
             Debug.LogWarning(cell + " move " + direction + "failed, cannot get targetCell");
             return false;
         }
-        return Rules.Instance.CheckEnterCell(this.cell, targetCell, direction);
+        return Rules.Instance.CheckEnterCell(this, this.cell, targetCell, direction);
     }
     protected virtual void MoveToCell(Cell targetCell, float duration)
     {
-        this.cell.Leave();
-        targetCell.Occupy(this);
+        this.cell.Leave(this);
+        targetCell.Enter(this);
         Debug.Log(this.name + " move to " + targetCell.name + " succeeded");
         this.transform.DOMove(targetCell.CellToWorld(targetCell), duration);
     }

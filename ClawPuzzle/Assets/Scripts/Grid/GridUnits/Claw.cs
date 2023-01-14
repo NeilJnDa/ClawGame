@@ -128,7 +128,7 @@ public class Claw : GridUnit
         while (true)
         {
             targetCell = cell.grid.GetClosestCell(currentCell, direction);
-            if(targetCell != null && Rules.Instance.CheckClawEnterCell(currentCell, targetCell, direction))
+            if(targetCell != null && Rules.Instance.CheckEnterCell(this, currentCell, targetCell, direction))
             {
                 currentCell = targetCell;
             }
