@@ -52,11 +52,13 @@ public class TurnManager : MonoBehaviour
 
     //Step: composed of two turns(player and env), one player action = one step
     #region
-    //Event
+    //Undo methods of each object are called from here
+    //Events are called during a NextStepCoroutine() to broadcast
+    public event Action StartStepProcessEvent;
     public event Action PlayerTurnEvent;
     public event Action EnvTurnEvent;
     public event Action CheckInteractionEvent;
-
+    public event Action EndStepProcessEvent;
     [ReadOnly]
     public int currentStep = 0;
     private IEnumerator NextStepInst = null;
@@ -71,19 +73,19 @@ public class TurnManager : MonoBehaviour
 
     IEnumerator NextStepCoroutine()
     {
+        StartStepProcessEvent?.Invoke();
+
         //Disable more command
         InputManager.Instance.EnableMove(false);
 
         //Tell every unit to save their current state to the state history
-        var units = InterfaceFinder.GetAllByInterface<ITurnUnit>();
-        foreach (var unit in units)
-        {
-            unit.NextStep();
-        }
+        var units = InterfaceFinder.GetAllByInterface<ITurnUndo>();
+        units.ForEach(x => x.NextStep());
         currentStep++;
 
-        //First finish Player Turn (anim/audio)
+        //Player Turn (anim/audio)
         PlayerTurnEvent?.Invoke();
+     
         yield return new WaitForSeconds(playerTurnDuration);
         //After claw actions, check interactions
         CheckInteractionEvent?.Invoke();
@@ -99,6 +101,8 @@ public class TurnManager : MonoBehaviour
         //Accept command
         currentTurn = Turn.PlayerTurn;
         InputManager.Instance.EnableMove(true);
+
+        EndStepProcessEvent?.Invoke();
 
 
     }
@@ -127,7 +131,7 @@ public class TurnManager : MonoBehaviour
         currentStep--;
 
         //Tell every unit to save their current state
-        var units = InterfaceFinder.GetAllByInterface<ITurnUnit>();
+        var units = InterfaceFinder.GetAllByInterface<ITurnUndo>();
         foreach (var unit in units)
         {
             unit.UndoOneStep();
@@ -142,7 +146,7 @@ public class TurnManager : MonoBehaviour
         currentStep = 0;
      
         //Tell every unit to save their current state
-        var units = InterfaceFinder.GetAllByInterface<ITurnUnit>();
+        var units = InterfaceFinder.GetAllByInterface<ITurnUndo>();
         foreach (var unit in units)
         {
             unit.ResetAll();

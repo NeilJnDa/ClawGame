@@ -7,7 +7,7 @@ using Sirenix.OdinInspector;
 /// The virtual one-size space in the grid
 /// </summary>
 [System.Serializable]
-public class Cell : MonoBehaviour, ITurnUnit
+public class Cell : MonoBehaviour, ITurnUndo
 {
     //i: [0, length-1]
     //j: [0, width-1]

@@ -55,7 +55,6 @@ public class Grid3D
                 }
             }
         }
-        Debug.Log(levelData.gridUnitInfos.Count);
         foreach(var gridUnitInfo in levelData.gridUnitInfos)
         {
             if ((UnitType) gridUnitInfo.unitType != UnitType.Empty)
