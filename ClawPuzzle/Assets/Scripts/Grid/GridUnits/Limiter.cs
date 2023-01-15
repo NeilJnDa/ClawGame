@@ -2,11 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Conveyor : GridUnit
+public class Limiter : GridUnit
 {
-    public override UnitType unitType { get { return UnitType.Conveyor; } }
-    public override bool catchable { get { return false; } }
-    public override bool pushable { get { return false; } }
     private void Start()
     {
         TurnManager.Instance.EnvTurnEvent += OnEnvTurn;

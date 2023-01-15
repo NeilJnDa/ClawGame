@@ -15,6 +15,8 @@ public class Claw : GridUnit
     public ClawState clawState = ClawState.ReadyMove;
     public override UnitType unitType { get { return UnitType.Claw; } }
     public override bool catchable { get { return false; } }
+    public override bool pushable { get { return false; } }
+
 
     [field:SerializeField]
     public List<GridUnit> HoldingUnits { get; private set; } = null;

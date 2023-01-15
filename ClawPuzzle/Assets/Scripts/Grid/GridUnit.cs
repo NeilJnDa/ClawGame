@@ -12,7 +12,9 @@ public enum UnitType
     Player = 2,
     Hole = 3,
     Claw = 4,
-    Conveyor = 5
+    Conveyor = 5,
+    LimiterGround = 6,
+    LimiterBox = 7
 }
 
 /// <summary>
@@ -23,6 +25,8 @@ public abstract class GridUnit : MonoBehaviour, ITurnUndo
     //Must be overrided
     public virtual UnitType unitType { get { return UnitType.Empty; } }
     public virtual bool catchable { get { return false; } }
+    public virtual bool pushable { get { return false; } }
+
 
     //Grid Setting
     public List<Pair> setting;
@@ -52,6 +56,21 @@ public abstract class GridUnit : MonoBehaviour, ITurnUndo
         var targetCell = cell.grid.GetClosestCell(this.cell, direction);
         if (targetCell == null)
         {  
+            Debug.LogWarning(cell + " move " + direction + "failed, cannot get targetCell");
+            return false;
+        }
+        if (Rules.Instance.CheckEnterCell(this, this.cell, targetCell, direction))
+        {
+            targetCellCache = targetCell;
+            return true;
+        };
+        return false;
+    }
+    public bool CheckMoveAndPushToNext(Direction direction)
+    {
+        var targetCell = cell.grid.GetClosestCell(this.cell, direction);
+        if (targetCell == null)
+        {
             Debug.LogWarning(cell + " move " + direction + "failed, cannot get targetCell");
             return false;
         }

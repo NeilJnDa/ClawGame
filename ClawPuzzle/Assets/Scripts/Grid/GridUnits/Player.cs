@@ -7,6 +7,7 @@ public class Player : GridUnit
 {
     public override UnitType unitType { get { return UnitType.Player; } }
     public override bool catchable { get { return true; } }
+    public override bool pushable { get { return true; } }
 
     private void Start()
     {
