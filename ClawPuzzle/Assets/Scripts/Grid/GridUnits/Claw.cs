@@ -30,7 +30,6 @@ public class Claw : GridUnit
     {
         InputManager.Instance.moveEvent += OnMove;
         InputManager.Instance.clawActionEvent += OnClawAction;
-
         TurnManager.Instance.PlayerTurnEvent += OnPlayerTurn;
         TurnManager.Instance.EnvTurnEvent += OnEnvTurn;
         TurnManager.Instance.CheckInteractionEvent += OnCheckInteraction;
@@ -40,7 +39,6 @@ public class Claw : GridUnit
     {
         InputManager.Instance.moveEvent -= OnMove;
         InputManager.Instance.clawActionEvent -= OnClawAction;
-
         TurnManager.Instance.PlayerTurnEvent -= OnPlayerTurn;
         TurnManager.Instance.EnvTurnEvent -= OnEnvTurn;
         TurnManager.Instance.CheckInteractionEvent -= OnCheckInteraction;
@@ -125,12 +123,11 @@ public class Claw : GridUnit
     {
         if (clawState == ClawState.RaisingStart && HoldingUnits.Count > 0)
             clawState = ClawState.Raising;
-        //TODO: If the claw is close to ground, it should go to ready raise?
         if (clawState == ClawState.Released) clawState = ClawState.ReadyMove;
     }
     private void OnMove(Direction direction)
     {
-        if (this.CheckMoveToNext(direction))
+        if (this.CheckMoveAndPushToNext(direction))
         {
             TurnManager.Instance.NextStep();
         }
@@ -146,7 +143,7 @@ public class Claw : GridUnit
                 TurnManager.Instance.NextStep();
             }
             //Otherwise, Check if it can move can catch something downwards
-            else if (CheckMoveToEnd(Direction.Below))
+            else if (CheckMoveToEnd(Direction.Below, true))
             {
                 TurnManager.Instance.NextStep();
             }
@@ -174,7 +171,5 @@ public class Claw : GridUnit
             TurnManager.Instance.NextStep();
         }
     }
-    
-    
     
 }

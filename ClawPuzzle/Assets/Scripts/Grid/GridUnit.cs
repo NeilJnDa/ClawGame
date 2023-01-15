@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using Sirenix.OdinInspector;
+using System.Linq;
 
 [System.Serializable]
 public enum UnitType
@@ -55,21 +56,6 @@ public abstract class GridUnit : MonoBehaviour, ITurnUndo
     {
         var targetCell = cell.grid.GetClosestCell(this.cell, direction);
         if (targetCell == null)
-        {  
-            Debug.LogWarning(cell + " move " + direction + "failed, cannot get targetCell");
-            return false;
-        }
-        if (Rules.Instance.CheckEnterCell(this, this.cell, targetCell, direction))
-        {
-            targetCellCache = targetCell;
-            return true;
-        };
-        return false;
-    }
-    public bool CheckMoveAndPushToNext(Direction direction)
-    {
-        var targetCell = cell.grid.GetClosestCell(this.cell, direction);
-        if (targetCell == null)
         {
             Debug.LogWarning(cell + " move " + direction + "failed, cannot get targetCell");
             return false;
@@ -82,11 +68,69 @@ public abstract class GridUnit : MonoBehaviour, ITurnUndo
         return false;
     }
     /// <summary>
+    /// Check if can push units in an adjacent cell, and move. No chaining push.
+    /// </summary>
+    /// <param name="direction"></param>
+    /// <returns></returns>
+    public bool CheckMoveAndPushToNext(Direction direction)
+    {
+        var targetCell = cell.grid.GetClosestCell(this.cell, direction);
+        var secondCell = targetCell.grid.GetClosestCell(targetCell, direction);
+        if (targetCell == null)
+        {
+            Debug.LogWarning(cell + " move " + direction + "failed, cannot get targetCell");
+            return false;
+        }
+        //If second is null, only check move into next (no push)
+        else if (secondCell == null)
+        {
+            if (Rules.Instance.CheckEnterCell(this, this.cell, targetCell, direction))
+            {
+                targetCellCache = targetCell;
+                return true;
+            };
+        }
+        //Next two cells are not null, try to push
+        else
+        {
+            //Check push
+            if (
+                //Check if all pushed units can enter the second cell
+                targetCell.gridUnits.All(x => x.pushable && Rules.Instance.CheckEnterCell(x, targetCell, secondCell, direction))
+                &&
+                //Check if this grid unit can enter the next one when pushable units have left. Set IgnorePushable to true
+                Rules.Instance.CheckEnterCell(this, this.cell, targetCell, direction, true)
+                )
+            {
+                //Push and set move cache
+                targetCellCache = targetCell;
+                targetCell.gridUnits.ForEach(x =>
+                    {
+                        if (x.pushable) x.targetCellCache = secondCell;
+                    }
+                );
+                return true;
+            }
+            //All pushed units can not enter the second cell, No push, only check, enter
+            else
+            {
+
+                if (Rules.Instance.CheckEnterCell(this, this.cell, targetCell, direction))
+                {
+                    targetCellCache = targetCell;
+                    return true;
+                };
+            }
+        }
+
+        return false;
+    }
+    /// <summary>
     /// Move this unit as far as possible in the desired direction. Return true and set targetCell if it can move at least one unit
     /// </summary>
     /// <param name="direction"></param>
     /// <returns></returns>
-    public bool CheckMoveToEnd(Direction direction)
+    public bool CheckMoveToEnd(Direction direction, bool isClawToCatch = false)
     {
         Cell targetCell = null;
         Cell currentCell = this.cell;
@@ -95,9 +139,14 @@ public abstract class GridUnit : MonoBehaviour, ITurnUndo
         while (true)
         {
             targetCell = cell.grid.GetClosestCell(currentCell, direction);
-            if (targetCell != null && Rules.Instance.CheckEnterCell(this, currentCell, targetCell, direction))
+            if (targetCell != null && Rules.Instance.CheckEnterCell(this, currentCell, targetCell, direction, false, isClawToCatch))
             {
+                //If this is a claw to catch, first time the next cell has a catachble object, end the iteraion
+                if (isClawToCatch && targetCell.gridUnits.Exists(x => x.catchable)) break;
+
+                //Continue the iteration
                 currentCell = targetCell;
+
             }
             else
             {
@@ -122,7 +171,8 @@ public abstract class GridUnit : MonoBehaviour, ITurnUndo
     #endregion
 
     #region ITurnUnit
-    [ShowInInspector][ReadOnly]
+    [ShowInInspector]
+    [ReadOnly]
     Stack<Cell> cellHistory = new Stack<Cell>();
     [ShowInInspector]
     [ReadOnly]

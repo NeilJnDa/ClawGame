@@ -11,7 +11,6 @@ public class Player : GridUnit
 
     private void Start()
     {
-
         TurnManager.Instance.PlayerTurnEvent += OnPlayerTurn;
         TurnManager.Instance.EnvTurnEvent += OnEnvTurn;
         TurnManager.Instance.CheckInteractionEvent += OnCheckInteraction;

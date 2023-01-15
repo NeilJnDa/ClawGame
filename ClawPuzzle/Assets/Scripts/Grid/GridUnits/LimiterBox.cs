@@ -9,7 +9,6 @@ public class LimiterBox : Limiter
     public override bool pushable { get { return true; } }
     private void Start()
     {
-
         TurnManager.Instance.PlayerTurnEvent += OnPlayerTurn;
         TurnManager.Instance.EnvTurnEvent += OnEnvTurn;
         TurnManager.Instance.CheckInteractionEvent += OnCheckInteraction;
@@ -33,6 +32,7 @@ public class LimiterBox : Limiter
 
     private void OnEnvTurn()
     {
+
     }
 
     private void OnPlayerTurn()

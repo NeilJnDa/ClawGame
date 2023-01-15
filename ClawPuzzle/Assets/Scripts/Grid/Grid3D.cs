@@ -76,6 +76,7 @@ public class Grid3D
     }
     public Cell GetClosestCell(Cell cell, Direction direction)
     {
+        if (cell == null) return null;
         Vector3Int nextCellPos = new Vector3Int(cell.i, cell.j, cell.k);
         switch (direction)
         {

@@ -15,6 +15,5 @@ public class Limiter : GridUnit
 
     private void OnEnvTurn()
     {
-        Debug.Log(this.name + "EnvTurn");
     }
 }
