@@ -5,15 +5,14 @@ using Sirenix.OdinInspector;
 
 public enum ClawState
 {
-    ReadyDrop,
-    ReadyRaise,
+    ReadyMove,
     RaisingStart,
     Raising,
     Released
 }
 public class Claw : GridUnit
 {
-    public ClawState clawState = ClawState.ReadyDrop;
+    public ClawState clawState = ClawState.ReadyMove;
     public override UnitType unitType { get { return UnitType.Claw; } }
     public override bool catchable { get { return false; } }
 
@@ -59,7 +58,7 @@ public class Claw : GridUnit
 
         float distance = cell.grid.AbsoluteDistance(this.cell, targetCellCache);
         float duration = TurnManager.Instance.playerTurnDuration;
-        if (clawState == ClawState.ReadyDrop || clawState == ClawState.ReadyRaise)
+        if (clawState == ClawState.ReadyMove)
             duration *= distance / emptySpeedMultiplier;
         if(clawState == ClawState.Raising)
             duration *= distance / holdingSpeedMultiplier;
@@ -95,26 +94,37 @@ public class Claw : GridUnit
     {
         //Claw checks if there are something to catch
         //Both when ReadyDrop and ReadyRaise, it can claw something
-
-        if (clawState == ClawState.ReadyDrop || clawState == ClawState.ReadyRaise)
+        if (clawState == ClawState.ReadyMove)
         {
             //It has already entered the cell (after the player turn) where there is something to catch
-            
-            var toCatchList = cell.gridUnits.FindAll(x => x.catchable == true);
-            foreach(var toCatch in toCatchList)
-            {
-                if (HoldingUnits.Contains(toCatch)) continue;
-                HoldingUnits.Add(toCatch);
-                Debug.Log(this.name + " catch " + toCatch.name);
-            }
-            if (HoldingUnits.Count > 0) clawState = ClawState.RaisingStart;
+            if(CheckAndCatchUnit()) 
+                clawState = ClawState.RaisingStart;
         }
+    }
+    /// <summary>
+    /// Return true if new units are caught
+    /// </summary>
+    /// <returns></returns>
+    private bool CheckAndCatchUnit()
+    {
+        var toCatchList = cell.gridUnits.FindAll(x => x.catchable == true);
+        bool newCatch = false;
+        foreach (var toCatch in toCatchList)
+        {
+            //Skip caught units 
+            if (HoldingUnits.Contains(toCatch)) continue;
+            HoldingUnits.Add(toCatch);
+            Debug.Log(this.name + " catch " + toCatch.name);
+            newCatch = true;
+        }
+        return newCatch;
     }
     private void OnEndStep()
     {
         if (clawState == ClawState.RaisingStart && HoldingUnits.Count > 0)
             clawState = ClawState.Raising;
-        if (clawState == ClawState.Released) clawState = ClawState.ReadyDrop;
+        //TODO: If the claw is close to ground, it should go to ready raise?
+        if (clawState == ClawState.Released) clawState = ClawState.ReadyMove;
     }
     private void OnMove(Direction direction)
     {
@@ -125,24 +135,22 @@ public class Claw : GridUnit
     }
     private void OnClawAction()
     {
-        if(clawState == ClawState.ReadyDrop)
+        if(clawState == ClawState.ReadyMove)
         {
-            if (CheckMoveToEnd(Direction.Below))
+            //Check if there is something to catch in this cell. 
+            if (CheckAndCatchUnit())
             {
-                clawState = ClawState.ReadyRaise;
+                clawState = ClawState.RaisingStart;
                 TurnManager.Instance.NextStep();
             }
-            else
+            //Otherwise, Check if it can move can catch something downwards
+            else if (CheckMoveToEnd(Direction.Below))
             {
-                //TODO: can not move animation
-            }
-        }
-        else if(clawState == ClawState.ReadyRaise)
-        {
-            if (CheckMoveToEnd(Direction.Above))
-            {
-                clawState = ClawState.ReadyDrop;
                 TurnManager.Instance.NextStep();
+            }
+            else if(CheckMoveToEnd(Direction.Above))
+            {
+                TurnManager.Instance.NextStep();           
             }
             else
             {

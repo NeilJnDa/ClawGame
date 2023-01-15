@@ -89,6 +89,15 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Skip"",
+                    ""type"": ""Button"",
+                    ""id"": ""2c2894ef-f19f-490d-b877-7fd41be487c9"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -212,6 +221,17 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""action"": ""Reset"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9aab4f6f-7bc0-4ec6-b77c-881ffeaa255f"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Skip"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -227,6 +247,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_Default_Claw = m_Default.FindAction("Claw", throwIfNotFound: true);
         m_Default_Undo = m_Default.FindAction("Undo", throwIfNotFound: true);
         m_Default_Reset = m_Default.FindAction("Reset", throwIfNotFound: true);
+        m_Default_Skip = m_Default.FindAction("Skip", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -293,6 +314,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Default_Claw;
     private readonly InputAction m_Default_Undo;
     private readonly InputAction m_Default_Reset;
+    private readonly InputAction m_Default_Skip;
     public struct DefaultActions
     {
         private @Controls m_Wrapper;
@@ -304,6 +326,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         public InputAction @Claw => m_Wrapper.m_Default_Claw;
         public InputAction @Undo => m_Wrapper.m_Default_Undo;
         public InputAction @Reset => m_Wrapper.m_Default_Reset;
+        public InputAction @Skip => m_Wrapper.m_Default_Skip;
         public InputActionMap Get() { return m_Wrapper.m_Default; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -334,6 +357,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Reset.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnReset;
                 @Reset.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnReset;
                 @Reset.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnReset;
+                @Skip.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnSkip;
+                @Skip.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnSkip;
+                @Skip.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnSkip;
             }
             m_Wrapper.m_DefaultActionsCallbackInterface = instance;
             if (instance != null)
@@ -359,6 +385,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Reset.started += instance.OnReset;
                 @Reset.performed += instance.OnReset;
                 @Reset.canceled += instance.OnReset;
+                @Skip.started += instance.OnSkip;
+                @Skip.performed += instance.OnSkip;
+                @Skip.canceled += instance.OnSkip;
             }
         }
     }
@@ -372,5 +401,6 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         void OnClaw(InputAction.CallbackContext context);
         void OnUndo(InputAction.CallbackContext context);
         void OnReset(InputAction.CallbackContext context);
+        void OnSkip(InputAction.CallbackContext context);
     }
 }

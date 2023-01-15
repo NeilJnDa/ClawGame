@@ -62,6 +62,14 @@ public class TurnManager : MonoBehaviour
     [ReadOnly]
     public int currentStep = 0;
     private IEnumerator NextStepInst = null;
+
+    /// <summary>
+    /// Skip One PlayerTurn
+    /// </summary>
+    public void Skip()
+    {
+        NextStep();
+    }
     /// <summary>
     /// Called When a plausible commanded is executed and consume a step
     /// </summary>

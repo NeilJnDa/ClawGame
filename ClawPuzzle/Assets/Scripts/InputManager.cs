@@ -117,10 +117,17 @@ public class InputManager : MonoBehaviour, IDefaultActions
     #endregion
     public void OnClaw(InputAction.CallbackContext context)
     {
-        if (InputEnabled && InputEnabled && MoveEnabled && context.performed)
+        if (InputEnabled && MoveEnabled && context.performed)
         {
             Debug.Log("ClawAction");
             clawActionEvent.Invoke();
+        }
+    }
+    public void OnSkip(InputAction.CallbackContext context)
+    {
+        if (InputEnabled && MoveEnabled && context.performed)
+        {
+            TurnManager.Instance.Skip();
         }
     }
     public void OnLeft(InputAction.CallbackContext context)
