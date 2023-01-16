@@ -34,6 +34,11 @@ public class Player : GridUnit
 
     private void OnEnvTurn()
     {
+        if (targetCellCache != null)
+        {
+            MoveToCell(targetCellCache, TurnManager.Instance.playerTurnDuration);
+            targetCellCache = null;
+        }
     }
 
     private void OnPlayerTurn()

@@ -58,6 +58,7 @@ public class TurnManager : MonoBehaviour
     public event Action PlayerTurnEvent;
     public event Action EnvTurnEvent;
     public event Action CheckInteractionEvent;
+    public event Action CheckClawEvent;
     public event Action EndStepProcessEvent;
     [ReadOnly]
     public int currentStep = 0;
@@ -95,7 +96,8 @@ public class TurnManager : MonoBehaviour
         PlayerTurnEvent?.Invoke();
      
         yield return new WaitForSeconds(playerTurnDuration);
-        //After claw actions, check interactions
+        CheckClawEvent?.Invoke();
+        //After claw actions, check interactions (Limiter)
         CheckInteractionEvent?.Invoke();
 
         //Then Env Turn
@@ -106,6 +108,7 @@ public class TurnManager : MonoBehaviour
         //After env actions, check interactions
         CheckInteractionEvent?.Invoke();
 
+        //TODO: 如果此时CheckInteraction造成有的unit要移动，额外回合？ （额外回合会不会造成更多的额外回合？
         //Accept command
         currentTurn = Turn.PlayerTurn;
         InputManager.Instance.EnableMove(true);

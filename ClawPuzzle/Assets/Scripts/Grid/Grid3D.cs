@@ -102,7 +102,7 @@ public class Grid3D
         if (!CheckPosValid(nextCellPos))
         {
             //Not Valid Cell Pos
-            Debug.LogWarning(nextCellPos + " nextCellPos not valid");
+            //Debug.LogWarning(nextCellPos + " nextCellPos not valid");
             return null;
         }
         return GetCell(nextCellPos);
@@ -110,6 +110,17 @@ public class Grid3D
     public Cell GetCell(Vector3Int pos)
     {
         return cellMatrix[pos.x, pos.y, pos.z];
+    }
+    public List<Cell> GetCellsFrom(Cell cell, Direction direcion)
+    {
+        var list = new List<Cell>();
+        Cell current = cell;
+        while(current != null)
+        {
+            list.Add(current);
+            current = GetClosestCell(current, direcion);
+        }
+        return list;
     }
     public bool CheckPosValid(Vector3 pos)
     {

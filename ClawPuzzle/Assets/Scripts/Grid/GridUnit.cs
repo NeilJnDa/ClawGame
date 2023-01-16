@@ -161,12 +161,28 @@ public abstract class GridUnit : MonoBehaviour, ITurnUndo
         }
         return false;
     }
+    /// <summary>
+    /// Can be overrided for different animation
+    /// </summary>
+    /// <param name="targetCell"></param>
+    /// <param name="duration"></param>
     public virtual void MoveToCell(Cell targetCell, float duration)
     {
         this.cell.Leave(this);
         targetCell.Enter(this);
         Debug.Log(this.name + " move to " + targetCell.name + " succeeded");
         this.transform.DOMove(targetCell.CellToWorld(targetCell), duration);
+    }
+    #endregion
+
+    #region Limiter
+    public virtual void OnLimitation()
+    {
+
+    }
+    public virtual void OnEndLimitation()
+    {
+
     }
     #endregion
 

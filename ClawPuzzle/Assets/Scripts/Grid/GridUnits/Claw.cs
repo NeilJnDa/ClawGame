@@ -32,7 +32,7 @@ public class Claw : GridUnit
         InputManager.Instance.clawActionEvent += OnClawAction;
         TurnManager.Instance.PlayerTurnEvent += OnPlayerTurn;
         TurnManager.Instance.EnvTurnEvent += OnEnvTurn;
-        TurnManager.Instance.CheckInteractionEvent += OnCheckInteraction;
+        TurnManager.Instance.CheckClawEvent += OnCheckClaw;
         TurnManager.Instance.EndStepProcessEvent += OnEndStep;
     }
     private void OnDestroy()
@@ -41,7 +41,7 @@ public class Claw : GridUnit
         InputManager.Instance.clawActionEvent -= OnClawAction;
         TurnManager.Instance.PlayerTurnEvent -= OnPlayerTurn;
         TurnManager.Instance.EnvTurnEvent -= OnEnvTurn;
-        TurnManager.Instance.CheckInteractionEvent -= OnCheckInteraction;
+        TurnManager.Instance.CheckClawEvent -= OnCheckClaw;
         TurnManager.Instance.EndStepProcessEvent -= OnEndStep;
 
 
@@ -90,7 +90,7 @@ public class Claw : GridUnit
         //Clear Cache
         targetCellCache = null;
     }
-    private void OnCheckInteraction()
+    private void OnCheckClaw()
     {
         //Claw checks if there are something to catch
         //Both when ReadyDrop and ReadyRaise, it can claw something
@@ -158,18 +158,40 @@ public class Claw : GridUnit
         }
         else if(clawState == ClawState.Raising)
         {
-            //Release claw
-            clawState = ClawState.Released;
-            foreach(var unit in HoldingUnits)
-            {
-                if (unit.CheckMoveToEnd(Direction.Below))
-                {
-                    //Cache will be set. The unit will move when player turn
-                }
-            }
-            HoldingUnits.Clear();
+            Release();
             TurnManager.Instance.NextStep();
         }
+    }
+    public override void OnLimitation()
+    {
+        Debug.Log(this.name + " on Limitation");
+        base.OnLimitation();
+        if (clawState == ClawState.Raising || clawState == ClawState.RaisingStart)
+        {
+            Release();
+        }
+        else if (clawState != ClawState.Released)
+        {
+            //TODO: Release unavailable anim
+        }
+    }
+    public override void OnEndLimitation()
+    {
+        base.OnEndLimitation();
+    }
+    public void Release()
+    {
+        //Release claw
+        clawState = ClawState.Released;
+        foreach (var unit in HoldingUnits)
+        {
+            if (unit.CheckMoveToEnd(Direction.Below))
+            {
+                //Cache will be set. The unit will move when player turn
+            }
+        }
+        HoldingUnits.Clear();
+        Debug.Log(this.name + " Release Claw");
     }
     
 }
