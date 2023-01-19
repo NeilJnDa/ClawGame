@@ -10,7 +10,7 @@ public enum ClawState
     Raising,
     Released
 }
-public class Claw : GridUnit
+public class Claw : GridUnit, ITurnUndo
 {
     public ClawState clawState = ClawState.ReadyMove;
     public override UnitType unitType { get { return UnitType.Claw; } }
@@ -193,5 +193,76 @@ public class Claw : GridUnit
         HoldingUnits.Clear();
         Debug.Log(this.name + " Release Claw");
     }
-    
+
+
+    #region ITurnUndo
+    [ShowInInspector]
+    [ReadOnly]
+    Stack<Cell> cellHistory = new Stack<Cell>();
+    [ShowInInspector]
+    [ReadOnly]
+    Stack<List<Pair>> settingHistory = new Stack<List<Pair>>();
+    [ShowInInspector]
+    [ReadOnly]
+    Stack<ClawState> clawStateHistory = new Stack<ClawState>();
+    [ShowInInspector]
+    [ReadOnly]
+    Stack<List<GridUnit>> holdingUnitsHistory = new Stack<List<GridUnit>>();
+    public void UndoOneStep()
+    {
+        cell.Leave(this);
+        cell = cellHistory.Pop();
+        cell.Enter(this);
+
+        setting = settingHistory.Pop();
+        clawState = clawStateHistory.Pop();
+        HoldingUnits = holdingUnitsHistory.Pop();
+
+        targetCellCache = null;
+        this.transform.position = cell.transform.position;
+    }
+
+    public void ResetAll()
+    {
+
+        Cell cellRef = cell;
+        cellHistory.Push(cellRef);
+        List<Pair> settingTemp = new List<Pair>(setting);
+        settingHistory.Push(settingTemp);
+        clawStateHistory.Push(clawState);
+        List<GridUnit> holdingUnitsTemp = new List<GridUnit>(HoldingUnits);
+        holdingUnitsHistory.Push(holdingUnitsTemp);
+
+        cell.Leave(this);
+        cell = initCell;
+        cell.Enter(this);
+        if (initGridUnitInfo.setting == null)
+        {
+            setting.Clear();
+        }
+        else
+        {
+            setting = new List<Pair>(initGridUnitInfo.setting);
+        }
+        clawState = ClawState.ReadyMove;
+        HoldingUnits.Clear();
+
+        this.transform.position = cell.transform.position;
+        targetCellCache = null;
+    }
+
+    public void SaveToHistory()
+    {
+        Cell cellRef = cell;
+        cellHistory.Push(cellRef);
+
+        List<Pair> settingTemp = new List<Pair>(setting);
+        settingHistory.Push(settingTemp);
+
+        clawStateHistory.Push(clawState);
+
+        List<GridUnit> holdingUnitsTemp = new List<GridUnit>(HoldingUnits);
+        holdingUnitsHistory.Push(holdingUnitsTemp);
+    }
+    #endregion
 }

@@ -21,7 +21,17 @@ public struct GridUnitInfo
         this.k = k;
         this.unitType = unitType;
         if (setting != null)
-            this.setting = setting;
+            this.setting = new List<Pair>(setting);
+        else this.setting = new List<Pair>();
+    }
+    public GridUnitInfo(GridUnitInfo unitInfo)
+    {
+        this.i = unitInfo.i;
+        this.j = unitInfo.j;
+        this.k = unitInfo.k;
+        this.unitType = unitInfo.unitType;
+        if (unitInfo.setting != null)
+            this.setting = new List<Pair>(unitInfo.setting);
         else this.setting = new List<Pair>();
     }
 

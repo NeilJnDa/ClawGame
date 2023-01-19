@@ -11,6 +11,6 @@ public interface ITurnUndo
 
     public void ResetAll();
 
-    public void NextStep();
+    public void SaveToHistory();
 
 }

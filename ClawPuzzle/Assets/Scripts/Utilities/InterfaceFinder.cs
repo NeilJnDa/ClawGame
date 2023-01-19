@@ -10,6 +10,7 @@ public static class InterfaceFinder
         GameObject[] rootGameObjects = SceneManager.GetActiveScene().GetRootGameObjects();
         foreach (var rootGameObject in rootGameObjects)
         {
+            if (!rootGameObject.activeInHierarchy) continue;
             T[] childrenInterfaces = rootGameObject.GetComponentsInChildren<T>();
             foreach (var childInterface in childrenInterfaces)
             {

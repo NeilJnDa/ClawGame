@@ -62,14 +62,7 @@ public class Grid3D
                 //gridUnitInfo.Log();
                 string name = ((UnitType)gridUnitInfo.unitType).ToString();
                 var unit = GameObject.Instantiate(Resources.Load(name, typeof(GridUnit))) as GridUnit;
-                unit.cell = cellMatrix[gridUnitInfo.i, gridUnitInfo.j, gridUnitInfo.k];
-                if(gridUnitInfo.setting != null)
-                    unit.setting = new List<Pair>(gridUnitInfo.setting);
-                else unit.setting = new List<Pair>();
-
-                unit.transform.position = unit.cell.transform.position;
-                unit.transform.parent = unit.cell.transform;
-                unit.cell.gridUnits.Add(unit);
+                unit.Initialize(gridUnitInfo, this);
             }
         }
 

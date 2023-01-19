@@ -21,15 +21,21 @@ public enum UnitType
 /// <summary>
 /// The actual object in the cell
 /// </summary>
-public abstract class GridUnit : MonoBehaviour, ITurnUndo
+public abstract class GridUnit : MonoBehaviour
 {
     //Must be overrided
     public virtual UnitType unitType { get { return UnitType.Empty; } }
     public virtual bool catchable { get { return false; } }
     public virtual bool pushable { get { return false; } }
 
+    //Initial setting cache
+    [ShowInInspector][ReadOnly]
+    protected GridUnitInfo initGridUnitInfo;
+    [ShowInInspector]
+    [ReadOnly]
+    protected Cell initCell;
 
-    //Grid Setting
+    //Current Grid Setting
     public List<Pair> setting;
     //Current Parent Cell
     public Cell cell;
@@ -37,12 +43,23 @@ public abstract class GridUnit : MonoBehaviour, ITurnUndo
     //A simple command cache. It will be set when player do something, and executed and cleared during player turn or env turn.
     public Cell targetCellCache = null;
 
-    public void Initialize(GridUnitInfo gridUnitInfo)
+    public void Initialize(GridUnitInfo gridUnitInfo, Grid3D grid)
     {
         //Creation and placing is done by its cell
         //Here we deal with the solid surface
-        if (gridUnitInfo.setting != null) setting = gridUnitInfo.setting;
+
+        initGridUnitInfo = new GridUnitInfo(gridUnitInfo);
+
+        cell = grid.cellMatrix[gridUnitInfo.i, gridUnitInfo.j, gridUnitInfo.k];
+        initCell = cell;
+
+        if (gridUnitInfo.setting != null)
+            setting = new List<Pair>(gridUnitInfo.setting);
         else setting = new List<Pair>();
+
+        transform.position = cell.transform.position;
+        transform.parent = cell.transform;
+        cell.Enter(this);
     }
 
     #region Move and Check
@@ -183,42 +200,6 @@ public abstract class GridUnit : MonoBehaviour, ITurnUndo
     public virtual void OnEndLimitation()
     {
 
-    }
-    #endregion
-
-    #region ITurnUnit
-    [ShowInInspector]
-    [ReadOnly]
-    Stack<Cell> cellHistory = new Stack<Cell>();
-    [ShowInInspector]
-    [ReadOnly]
-    Stack<List<Pair>> settingHistory = new Stack<List<Pair>>();
-    public void UndoOneStep()
-    {
-        //TODO: Clear targetcell if necessary
-        cell = cellHistory.Pop();
-        setting = settingHistory.Pop();
-    }
-
-    public void ResetAll()
-    {
-        while (cellHistory.Count > 1)
-        {
-            cellHistory.Pop();
-            settingHistory.Pop();
-        }
-        cell = cellHistory.Pop();
-        setting = settingHistory.Pop();
-
-    }
-
-    public void NextStep()
-    {
-        Cell cellRef = cell;
-        cellHistory.Push(cellRef);
-
-        List<Pair> settingTemp = new List<Pair>(setting);
-        settingHistory.Push(settingTemp);
     }
     #endregion
 }

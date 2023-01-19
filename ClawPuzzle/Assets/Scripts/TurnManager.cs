@@ -62,6 +62,11 @@ public class TurnManager : MonoBehaviour
     public event Action EndStepProcessEvent;
     [ReadOnly]
     public int currentStep = 0;
+    [ShowInInspector]
+    [ReadOnly]
+    public Stack<int> currentStepHistory = new Stack<int>();
+    [ReadOnly]
+    public int totalStep = 0;
     private IEnumerator NextStepInst = null;
 
     /// <summary>
@@ -89,8 +94,10 @@ public class TurnManager : MonoBehaviour
 
         //Tell every unit to save their current state to the state history
         var units = InterfaceFinder.GetAllByInterface<ITurnUndo>();
-        units.ForEach(x => x.NextStep());
+        units.ForEach(x => x.SaveToHistory());
+        currentStepHistory.Push(currentStep);
         currentStep++;
+        totalStep++;
 
         //Player Turn (anim/audio)
         PlayerTurnEvent?.Invoke();
@@ -138,8 +145,9 @@ public class TurnManager : MonoBehaviour
     public void UndoOneStep()
     {
         StopNextTurnCoroutine();
-        if (currentStep <= 0) return;
-        currentStep--;
+        if (totalStep <= 0) return;
+        currentStep = currentStepHistory.Pop();
+        totalStep--;
 
         //Tell every unit to save their current state
         var units = InterfaceFinder.GetAllByInterface<ITurnUndo>();
@@ -153,7 +161,8 @@ public class TurnManager : MonoBehaviour
     {
         StopNextTurnCoroutine();
         if (currentStep <= 0) return;
-
+        totalStep++;
+        currentStepHistory.Push(currentStep);
         currentStep = 0;
      
         //Tell every unit to save their current state
