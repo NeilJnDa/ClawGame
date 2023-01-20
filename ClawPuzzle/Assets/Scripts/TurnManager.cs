@@ -110,10 +110,11 @@ public class TurnManager : MonoBehaviour
         //Then Env Turn
         currentTurn = Turn.EnvTurn;
         //Tell every env units to execute
-        EnvTurnEvent?.Invoke();
-        yield return new WaitForSeconds(envTurnDuration);
+        //EnvTurnEvent?.Invoke();
+        //TODO: 在没有传送带之前，暂时禁用环境回合。
+        //yield return new WaitForSeconds(envTurnDuration);
         //After env actions, check interactions
-        CheckInteractionEvent?.Invoke();
+        //CheckInteractionEvent?.Invoke();
 
         //TODO: 如果此时CheckInteraction造成有的unit要移动，额外回合？ （额外回合会不会造成更多的额外回合？
         //Accept command

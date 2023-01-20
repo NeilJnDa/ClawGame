@@ -127,7 +127,7 @@ public class Claw : GridUnit, ITurnUndo
     }
     private void OnMove(Direction direction)
     {
-        if (this.CheckMoveAndPushToNext(direction))
+        if (this.CheckMoveAndPushWithHeight(this.cell, direction, 10))
         {
             TurnManager.Instance.NextStep();
         }

@@ -86,12 +86,14 @@ public abstract class GridUnit : MonoBehaviour
     }
     /// <summary>
     /// Check if can push units in an adjacent cell, and move. No chaining push.
+    /// The height is especially for long units or the claw. Such as a 1x1x2 has height of 2
     /// </summary>
     /// <param name="direction"></param>
+    /// <param name="height"></param>
     /// <returns></returns>
-    public bool CheckMoveAndPushToNext(Direction direction)
+    public bool CheckMoveAndPushToNext(Cell from, Direction direction)
     {
-        var targetCell = cell.grid.GetClosestCell(this.cell, direction);
+        var targetCell = from.grid.GetClosestCell(from, direction);
         var secondCell = targetCell.grid.GetClosestCell(targetCell, direction);
         if (targetCell == null)
         {
@@ -101,7 +103,7 @@ public abstract class GridUnit : MonoBehaviour
         //If second is null, only check move into next (no push)
         else if (secondCell == null)
         {
-            if (Rules.Instance.CheckEnterCell(this, this.cell, targetCell, direction))
+            if (Rules.Instance.CheckEnterCell(this, from, targetCell, direction))
             {
                 targetCellCache = targetCell;
                 return true;
@@ -116,7 +118,7 @@ public abstract class GridUnit : MonoBehaviour
                 targetCell.gridUnits.All(x => x.pushable && Rules.Instance.CheckEnterCell(x, targetCell, secondCell, direction))
                 &&
                 //Check if this grid unit can enter the next one when pushable units have left. Set IgnorePushable to true
-                Rules.Instance.CheckEnterCell(this, this.cell, targetCell, direction, true)
+                Rules.Instance.CheckEnterCell(this, from, targetCell, direction, true)
                 )
             {
                 //Push and set move cache
@@ -132,7 +134,7 @@ public abstract class GridUnit : MonoBehaviour
             else
             {
 
-                if (Rules.Instance.CheckEnterCell(this, this.cell, targetCell, direction))
+                if (Rules.Instance.CheckEnterCell(this, from, targetCell, direction))
                 {
                     targetCellCache = targetCell;
                     return true;
@@ -142,6 +144,21 @@ public abstract class GridUnit : MonoBehaviour
 
         return false;
     }
+    public bool CheckMoveAndPushWithHeight(Cell from, Direction direction, int height = 1)
+    {
+        var cellsAbove = this.cell.grid.GetCellsFrom(this.cell, Direction.Above);
+        for(int i = 0; i < height; ++i)
+        {
+            if (i >= cellsAbove.Count) continue;
+            if(!CheckMoveAndPushToNext(cellsAbove[i], direction))
+            {
+                return false;
+            }
+        }
+        //Every check is true, it can move and push with this height
+        return true;
+    }
+    
     /// <summary>
     /// Move this unit as far as possible in the desired direction. Return true and set targetCell if it can move at least one unit
     /// </summary>
