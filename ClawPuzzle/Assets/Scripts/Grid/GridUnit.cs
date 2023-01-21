@@ -15,7 +15,9 @@ public enum UnitType
     Claw = 4,
     Conveyor = 5,
     LimiterGround = 6,
-    LimiterBox = 7
+    LimiterBox = 7,
+    Box = 8,
+    LongBox = 9
 }
 
 /// <summary>
@@ -93,8 +95,8 @@ public abstract class GridUnit : MonoBehaviour
     /// <returns></returns>
     public bool CheckMoveAndPushToNext(Cell from, Direction direction)
     {
-        var targetCell = from.grid.GetClosestCell(from, direction);
-        var secondCell = targetCell.grid.GetClosestCell(targetCell, direction);
+        var targetCell = from?.grid.GetClosestCell(from, direction);
+        var secondCell = targetCell?.grid.GetClosestCell(targetCell, direction);
         if (targetCell == null)
         {
             Debug.LogWarning(cell + " move " + direction + "failed, cannot get targetCell");

@@ -29,7 +29,7 @@ public class Claw : GridUnit, ITurnUndo
     private void Start()
     {
         InputManager.Instance.moveEvent += OnMove;
-        InputManager.Instance.clawActionEvent += OnClawAction;
+        InputManager.Instance.clawActionEvent += OnClawActionInput;
         TurnManager.Instance.PlayerTurnEvent += OnPlayerTurn;
         TurnManager.Instance.EnvTurnEvent += OnEnvTurn;
         TurnManager.Instance.CheckClawEvent += OnCheckClaw;
@@ -38,7 +38,7 @@ public class Claw : GridUnit, ITurnUndo
     private void OnDestroy()
     {
         InputManager.Instance.moveEvent -= OnMove;
-        InputManager.Instance.clawActionEvent -= OnClawAction;
+        InputManager.Instance.clawActionEvent -= OnClawActionInput;
         TurnManager.Instance.PlayerTurnEvent -= OnPlayerTurn;
         TurnManager.Instance.EnvTurnEvent -= OnEnvTurn;
         TurnManager.Instance.CheckClawEvent -= OnCheckClaw;
@@ -132,7 +132,7 @@ public class Claw : GridUnit, ITurnUndo
             TurnManager.Instance.NextStep();
         }
     }
-    private void OnClawAction()
+    private void OnClawActionInput()
     {
         if(clawState == ClawState.ReadyMove)
         {
