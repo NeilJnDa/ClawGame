@@ -46,7 +46,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelName: TestLevel
-  levelDataJson: {fileID: 0}
   gridSetting:
     length: 8
     width: 6
