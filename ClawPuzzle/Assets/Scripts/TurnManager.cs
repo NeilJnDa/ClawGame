@@ -57,8 +57,10 @@ public class TurnManager : MonoBehaviour
     public event Action StartStepProcessEvent;
     public event Action PlayerTurnEvent;
     public event Action EnvTurnEvent;
+    public event Func<float> ClawOpenEvent;
+    public event Func<float> ClawCloseEvent;
+
     public event Action CheckInteractionEvent;
-    public event Action CheckClawEvent;
     public event Action EndStepProcessEvent;
     [ReadOnly]
     public int currentStep = 0;
@@ -99,22 +101,29 @@ public class TurnManager : MonoBehaviour
         currentStep++;
         totalStep++;
 
+        //Open the claw
+        var timeOpen = ClawOpenEvent?.Invoke();
+        yield return new WaitForSeconds((float)timeOpen);
+
         //Player Turn (anim/audio)
         PlayerTurnEvent?.Invoke();
-     
+
+        //Close the claw
+        var timeClose = ClawCloseEvent?.Invoke();
+        yield return new WaitForSeconds((float)timeClose);
+
         yield return new WaitForSeconds(playerTurnDuration);
-        CheckClawEvent?.Invoke();
         //After claw actions, check interactions (Limiter)
         CheckInteractionEvent?.Invoke();
 
         //Then Env Turn
         currentTurn = Turn.EnvTurn;
         //Tell every env units to execute
-        //EnvTurnEvent?.Invoke();
+        EnvTurnEvent?.Invoke();
         //TODO: 在没有传送带之前，暂时禁用环境回合。
-        //yield return new WaitForSeconds(envTurnDuration);
+        yield return new WaitForSeconds(envTurnDuration);
         //After env actions, check interactions
-        //CheckInteractionEvent?.Invoke();
+        CheckInteractionEvent?.Invoke();
 
         //TODO: 如果此时CheckInteraction造成有的unit要移动，额外回合？ （额外回合会不会造成更多的额外回合？
         //Accept command

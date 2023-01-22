@@ -84,6 +84,7 @@ public class InputManager : MonoBehaviour, IDefaultActions
     #region Interface
     public event Action<Direction> moveEvent;
     public event Action clawActionEvent;
+    public event Action liftEvent;
     public event Action undoEvent;
     public event Action resetEvent;
 
@@ -96,31 +97,20 @@ public class InputManager : MonoBehaviour, IDefaultActions
         }
     }
 
-
-    #region Deprecated. Now claw action is binding to one key.
-    //public void OnDrop(InputAction.CallbackContext context)
-    //{
-    //    if (InputEnabled && InputEnabled && MoveEnabled && context.performed)
-    //    {
-    //        Debug.Log("Drop");
-    //        moveEvent.Invoke(Direction.Below);
-    //    }
-    //}
-    //public void OnRaise(InputAction.CallbackContext context)
-    //{
-    //    if (InputEnabled && MoveEnabled && context.performed)
-    //    {
-    //        Debug.Log("Raise");
-    //        moveEvent.Invoke(Direction.Above);
-    //    }
-    //}
-    #endregion
     public void OnClaw(InputAction.CallbackContext context)
     {
         if (InputEnabled && MoveEnabled && context.performed)
         {
             Debug.Log("ClawAction");
             clawActionEvent.Invoke();
+        }
+    }
+    public void OnLift(InputAction.CallbackContext context)
+    {
+        if (InputEnabled && MoveEnabled && context.performed)
+        {
+            Debug.Log("Lift");
+            liftEvent.Invoke();
         }
     }
     public void OnSkip(InputAction.CallbackContext context)

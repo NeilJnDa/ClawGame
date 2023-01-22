@@ -73,6 +73,15 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Lift"",
+                    ""type"": ""Button"",
+                    ""id"": ""8e98c7ac-9761-476e-ae9f-5f7791ec1cb9"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Undo"",
                     ""type"": ""Button"",
                     ""id"": ""57a1bb1d-3a52-4003-8e31-7358fae79486"",
@@ -232,6 +241,28 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                     ""action"": ""Skip"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5d0e57a5-fcf8-4051-b314-2f9a3b809fd0"",
+                    ""path"": ""<Keyboard>/shift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Lift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c2159d9d-9c69-4887-9e71-8fd41a6040d2"",
+                    ""path"": ""<Keyboard>/c"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Lift"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -245,6 +276,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         m_Default_Left = m_Default.FindAction("Left", throwIfNotFound: true);
         m_Default_Right = m_Default.FindAction("Right", throwIfNotFound: true);
         m_Default_Claw = m_Default.FindAction("Claw", throwIfNotFound: true);
+        m_Default_Lift = m_Default.FindAction("Lift", throwIfNotFound: true);
         m_Default_Undo = m_Default.FindAction("Undo", throwIfNotFound: true);
         m_Default_Reset = m_Default.FindAction("Reset", throwIfNotFound: true);
         m_Default_Skip = m_Default.FindAction("Skip", throwIfNotFound: true);
@@ -312,6 +344,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
     private readonly InputAction m_Default_Left;
     private readonly InputAction m_Default_Right;
     private readonly InputAction m_Default_Claw;
+    private readonly InputAction m_Default_Lift;
     private readonly InputAction m_Default_Undo;
     private readonly InputAction m_Default_Reset;
     private readonly InputAction m_Default_Skip;
@@ -324,6 +357,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         public InputAction @Left => m_Wrapper.m_Default_Left;
         public InputAction @Right => m_Wrapper.m_Default_Right;
         public InputAction @Claw => m_Wrapper.m_Default_Claw;
+        public InputAction @Lift => m_Wrapper.m_Default_Lift;
         public InputAction @Undo => m_Wrapper.m_Default_Undo;
         public InputAction @Reset => m_Wrapper.m_Default_Reset;
         public InputAction @Skip => m_Wrapper.m_Default_Skip;
@@ -351,6 +385,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Claw.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnClaw;
                 @Claw.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnClaw;
                 @Claw.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnClaw;
+                @Lift.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnLift;
+                @Lift.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnLift;
+                @Lift.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnLift;
                 @Undo.started -= m_Wrapper.m_DefaultActionsCallbackInterface.OnUndo;
                 @Undo.performed -= m_Wrapper.m_DefaultActionsCallbackInterface.OnUndo;
                 @Undo.canceled -= m_Wrapper.m_DefaultActionsCallbackInterface.OnUndo;
@@ -379,6 +416,9 @@ public partial class @Controls : IInputActionCollection2, IDisposable
                 @Claw.started += instance.OnClaw;
                 @Claw.performed += instance.OnClaw;
                 @Claw.canceled += instance.OnClaw;
+                @Lift.started += instance.OnLift;
+                @Lift.performed += instance.OnLift;
+                @Lift.canceled += instance.OnLift;
                 @Undo.started += instance.OnUndo;
                 @Undo.performed += instance.OnUndo;
                 @Undo.canceled += instance.OnUndo;
@@ -399,6 +439,7 @@ public partial class @Controls : IInputActionCollection2, IDisposable
         void OnLeft(InputAction.CallbackContext context);
         void OnRight(InputAction.CallbackContext context);
         void OnClaw(InputAction.CallbackContext context);
+        void OnLift(InputAction.CallbackContext context);
         void OnUndo(InputAction.CallbackContext context);
         void OnReset(InputAction.CallbackContext context);
         void OnSkip(InputAction.CallbackContext context);

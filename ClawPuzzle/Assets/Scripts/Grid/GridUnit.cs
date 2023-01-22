@@ -71,7 +71,7 @@ public abstract class GridUnit : MonoBehaviour
     /// </summary>
     /// <param name="direction"></param>
     /// <returns></returns>
-    public bool CheckMoveToNext(Direction direction)
+    public bool CheckMoveToNext(Direction direction, bool ignorePushable = false)
     {
         var targetCell = cell.grid.GetClosestCell(this.cell, direction);
         if (targetCell == null)
@@ -79,7 +79,7 @@ public abstract class GridUnit : MonoBehaviour
             Debug.LogWarning(cell + " move " + direction + "failed, cannot get targetCell");
             return false;
         }
-        if (Rules.Instance.CheckEnterCell(this, this.cell, targetCell, direction))
+        if (Rules.Instance.CheckEnterCell(this, this.cell, targetCell, direction, ignorePushable))
         {
             targetCellCache = targetCell;
             return true;
@@ -214,11 +214,9 @@ public abstract class GridUnit : MonoBehaviour
     #region Limiter
     public virtual void OnLimitation()
     {
-
     }
     public virtual void OnEndLimitation()
     {
-
     }
     #endregion
 }

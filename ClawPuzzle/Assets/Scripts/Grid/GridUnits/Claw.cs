@@ -2,17 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using System;
 
 public enum ClawState
 {
-    ReadyMove,
-    RaisingStart,
-    Raising,
-    Released
+    Open,
+    Close
 }
 public class Claw : GridUnit, ITurnUndo
 {
-    public ClawState clawState = ClawState.ReadyMove;
+    [ReadOnly]
+    public ClawState clawState = ClawState.Close;
     public override UnitType unitType { get { return UnitType.Claw; } }
     public override bool catchable { get { return false; } }
     public override bool pushable { get { return false; } }
@@ -20,6 +20,12 @@ public class Claw : GridUnit, ITurnUndo
 
     [field:SerializeField]
     public List<GridUnit> HoldingUnits { get; private set; } = null;
+    /// <summary>
+    /// Return true if the claw is holding something, false when holdingUnits are empty
+    /// </summary>
+    public bool isHolding => HoldingUnits.Count > 0;
+    [field: SerializeField][ReadOnly]
+    public bool isDropping { get; private set; } = false; //Temp flag when player input is Space, trying to catch something.
 
     [Tooltip("When empty How many times speed of normal")]
     public float emptySpeedMultiplier = 4f;
@@ -28,25 +34,98 @@ public class Claw : GridUnit, ITurnUndo
 
     private void Start()
     {
-        InputManager.Instance.moveEvent += OnMove;
+        InputManager.Instance.moveEvent += OnMoveInput;
         InputManager.Instance.clawActionEvent += OnClawActionInput;
+        InputManager.Instance.liftEvent += OnLiftInput;
+
         TurnManager.Instance.PlayerTurnEvent += OnPlayerTurn;
         TurnManager.Instance.EnvTurnEvent += OnEnvTurn;
-        TurnManager.Instance.CheckClawEvent += OnCheckClaw;
         TurnManager.Instance.EndStepProcessEvent += OnEndStep;
+        TurnManager.Instance.ClawOpenEvent += OnClawDroppingOpen;
+        TurnManager.Instance.ClawCloseEvent += OnClawDroppingClose;
     }
+
+
     private void OnDestroy()
     {
-        InputManager.Instance.moveEvent -= OnMove;
+        InputManager.Instance.moveEvent -= OnMoveInput;
         InputManager.Instance.clawActionEvent -= OnClawActionInput;
+        InputManager.Instance.liftEvent -= OnLiftInput;
+
         TurnManager.Instance.PlayerTurnEvent -= OnPlayerTurn;
         TurnManager.Instance.EnvTurnEvent -= OnEnvTurn;
-        TurnManager.Instance.CheckClawEvent -= OnCheckClaw;
         TurnManager.Instance.EndStepProcessEvent -= OnEndStep;
-
+        TurnManager.Instance.ClawOpenEvent -= OnClawDroppingOpen;
+        TurnManager.Instance.ClawCloseEvent -= OnClawDroppingClose;
 
     }
+    #region Input Event Subscribers
+    private void OnMoveInput(Direction direction)
+    {
+        if (clawState == ClawState.Close)
+        {
+            if (this.CheckMoveAndPushWithHeight(this.cell, direction, 10))
+            {
+                TurnManager.Instance.NextStep();
+            }
+        }
+        else if (clawState == ClawState.Open)
+        {
+            if (this.CheckMoveToNext(direction, true))
+            {
+                TurnManager.Instance.NextStep();
+            }
+        }
+    }
+    private void OnLiftInput()
+    {
+        if (isHolding)
+        {
+            if (this.CheckMoveToNext(Direction.Above))
+            {
+                TurnManager.Instance.NextStep();
+            }
+        }
+        else
+        {
+            if (this.CheckMoveToEnd(Direction.Above))
+            {
+                TurnManager.Instance.NextStep();
+            }
+        }
 
+    }
+    private void OnClawActionInput()
+    {
+        if (isHolding)
+        {
+            Release();
+            TurnManager.Instance.NextStep();
+        }
+        else
+        {
+            //Check if there is something to catch in this cell. 
+            if (CheckAndCatchUnit())
+            {
+                isDropping = true;
+                TurnManager.Instance.NextStep();
+            }
+            //Otherwise, Check if it can move can catch something downwards
+            //Even thought it can not move, it will act if the claw needs to close
+            else if (CheckMoveToEnd(Direction.Below, true) || clawState == ClawState.Open)
+            {
+                isDropping = true;
+                TurnManager.Instance.NextStep();
+            }
+            else
+            {
+                //TODO: can not move animation
+            }
+        }
+    }
+
+    #endregion
+    #region Turn Event Subscribers
     private void OnPlayerTurn()
     {
         if(targetCellCache == null || targetCellCache == this.cell)
@@ -58,10 +137,11 @@ public class Claw : GridUnit, ITurnUndo
 
         float distance = cell.grid.AbsoluteDistance(this.cell, targetCellCache);
         float duration = TurnManager.Instance.playerTurnDuration;
-        if (clawState == ClawState.ReadyMove)
-            duration *= distance / emptySpeedMultiplier;
-        if(clawState == ClawState.Raising)
+        if (isHolding)
             duration *= distance / holdingSpeedMultiplier;
+        else
+            duration *= distance / emptySpeedMultiplier;
+
         duration = Mathf.Clamp(duration, 0, TurnManager.Instance.playerTurnDuration);
 
         //Move Claw
@@ -76,35 +156,102 @@ public class Claw : GridUnit, ITurnUndo
     }
     private void OnEnvTurn()
     {
-        if(clawState == ClawState.Raising)
+        if (targetCellCache != null)
         {
-            if (CheckMoveToNext(Direction.Above))
+            MoveToCell(targetCellCache, TurnManager.Instance.envTurnDuration);
+            foreach (var unit in HoldingUnits)
             {
-                MoveToCell(targetCellCache, TurnManager.Instance.envTurnDuration);
-                foreach (var unit in HoldingUnits)
-                {
-                    unit.MoveToCell(targetCellCache, TurnManager.Instance.envTurnDuration);
-                }
+                unit.MoveToCell(targetCellCache, TurnManager.Instance.envTurnDuration);
             }
         }
         //Clear Cache
         targetCellCache = null;
     }
-    private void OnCheckClaw()
+
+    private float OnClawDroppingClose()
     {
-        //Claw checks if there are something to catch
-        //Both when ReadyDrop and ReadyRaise, it can claw something
-        if (clawState == ClawState.ReadyMove)
+        if (isDropping)
         {
-            //It has already entered the cell (after the player turn) where there is something to catch
-            if(CheckAndCatchUnit()) 
-                clawState = ClawState.RaisingStart;
+            var limiter = CheckLimitation();
+            if (limiter != null)
+            {
+                //TODO: Failed to catch anim, limiter anim
+                clawState = ClawState.Open;
+                return 0.2f;
+            }
+            else
+            {
+                //TODO: Catch Animation
+                if (CheckAndCatchUnit())
+                {
+                    Debug.Log("Claw Caught units");
+                }
+                else
+                {
+                    Debug.Log("Claw Caught nothing but still close");
+                }
+                clawState = ClawState.Close;
+                return 0.2f;
+            }
         }
+        return 0;
+    }
+
+
+    private float OnClawDroppingOpen()
+    {
+        if (isDropping && clawState == ClawState.Close)
+        {
+            //Open Claw Animation
+            Release();
+            return 0.2f;
+        }
+        return 0;
     }
     /// <summary>
     /// Return true if new units are caught
     /// </summary>
     /// <returns></returns>
+
+    private void OnEndStep()
+    {
+        if (isDropping) isDropping = false;
+    }
+
+    public override void OnLimitation()
+    {
+        Debug.Log(this.name + " on Limitation");
+        base.OnLimitation();
+        if (isHolding)
+        {
+            Release();
+        }
+        else
+        {
+            //TODO: Release unavailable anim
+        }
+    }
+    public override void OnEndLimitation()
+    {
+        base.OnEndLimitation();
+    }
+    #endregion
+    #region Behaviours
+    public void Release()
+    {
+        //Release claw
+        clawState = ClawState.Open;
+        foreach (var unit in HoldingUnits)
+        {
+            if (unit.CheckMoveToEnd(Direction.Below))
+            {
+                //Cache will be set. The unit will move when player turn
+            }
+        }
+        HoldingUnits.Clear();
+        Debug.Log(this.name + " Release Claw");
+    }
+
     private bool CheckAndCatchUnit()
     {
         var toCatchList = cell.gridUnits.FindAll(x => x.catchable == true);
@@ -119,82 +266,23 @@ public class Claw : GridUnit, ITurnUndo
         }
         return newCatch;
     }
-    private void OnEndStep()
-    {
-        if (clawState == ClawState.RaisingStart && HoldingUnits.Count > 0)
-            clawState = ClawState.Raising;
-        if (clawState == ClawState.Released) clawState = ClawState.ReadyMove;
-    }
-    private void OnMove(Direction direction)
-    {
-        if (this.CheckMoveAndPushWithHeight(this.cell, direction, 10))
-        {
-            TurnManager.Instance.NextStep();
-        }
-    }
-    private void OnClawActionInput()
-    {
-        if(clawState == ClawState.ReadyMove)
-        {
-            //Check if there is something to catch in this cell. 
-            if (CheckAndCatchUnit())
-            {
-                clawState = ClawState.RaisingStart;
-                TurnManager.Instance.NextStep();
-            }
-            //Otherwise, Check if it can move can catch something downwards
-            else if (CheckMoveToEnd(Direction.Below, true))
-            {
-                TurnManager.Instance.NextStep();
-            }
-            else if(CheckMoveToEnd(Direction.Above))
-            {
-                TurnManager.Instance.NextStep();           
-            }
-            else
-            {
-                //TODO: can not move animation
-            }
-        }
-        else if(clawState == ClawState.Raising)
-        {
-            Release();
-            TurnManager.Instance.NextStep();
-        }
-    }
-    public override void OnLimitation()
-    {
-        Debug.Log(this.name + " on Limitation");
-        base.OnLimitation();
-        if (clawState == ClawState.Raising || clawState == ClawState.RaisingStart)
-        {
-            Release();
-        }
-        else if (clawState != ClawState.Released)
-        {
-            //TODO: Release unavailable anim
-        }
-    }
-    public override void OnEndLimitation()
-    {
-        base.OnEndLimitation();
-    }
-    public void Release()
-    {
-        //Release claw
-        clawState = ClawState.Released;
-        foreach (var unit in HoldingUnits)
-        {
-            if (unit.CheckMoveToEnd(Direction.Below))
-            {
-                //Cache will be set. The unit will move when player turn
-            }
-        }
-        HoldingUnits.Clear();
-        Debug.Log(this.name + " Release Claw");
-    }
 
-
+    private GridUnit CheckLimitation()
+    {
+        var cells = this.cell.grid.GetCellsFrom(this.cell, Direction.Below);
+        foreach(var cell in cells)
+        {
+            foreach(var unit in cell.gridUnits)
+            {
+                if(unit.unitType == UnitType.LimiterBox || unit.unitType == UnitType.LimiterGround)
+                {
+                    return unit;
+                }
+            }
+        }
+        return null;
+    }
+    #endregion
     #region ITurnUndo
     [ShowInInspector]
     [ReadOnly]
@@ -244,7 +332,7 @@ public class Claw : GridUnit, ITurnUndo
         {
             setting = new List<Pair>(initGridUnitInfo.setting);
         }
-        clawState = ClawState.ReadyMove;
+        clawState = ClawState.Close;
         HoldingUnits.Clear();
 
         this.transform.position = cell.transform.position;
@@ -265,4 +353,6 @@ public class Claw : GridUnit, ITurnUndo
         holdingUnitsHistory.Push(holdingUnitsTemp);
     }
     #endregion
+
+    
 }
