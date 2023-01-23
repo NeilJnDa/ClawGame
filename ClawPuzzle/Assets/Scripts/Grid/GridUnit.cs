@@ -17,7 +17,8 @@ public enum UnitType
     LimiterGround = 6,
     LimiterBox = 7,
     Box = 8,
-    LongBox = 9
+    LongBox = 9,
+    HoleBottom = 10,
 }
 
 /// <summary>
@@ -60,7 +61,7 @@ public abstract class GridUnit : MonoBehaviour
         else setting = new List<Pair>();
 
         transform.position = cell.transform.position;
-        transform.parent = cell.transform;
+        transform.parent = grid.parentTransform;
         cell.Enter(this);
     }
 
@@ -93,7 +94,7 @@ public abstract class GridUnit : MonoBehaviour
     /// <param name="direction"></param>
     /// <param name="height"></param>
     /// <returns></returns>
-    public bool CheckMoveAndPushToNext(Cell from, Direction direction)
+    public bool CheckMoveAndPushToNext(Cell from, Direction direction, bool writeCache = true)
     {
         var targetCell = from?.grid.GetClosestCell(from, direction);
         var secondCell = targetCell?.grid.GetClosestCell(targetCell, direction);
@@ -107,7 +108,7 @@ public abstract class GridUnit : MonoBehaviour
         {
             if (Rules.Instance.CheckEnterCell(this, from, targetCell, direction))
             {
-                targetCellCache = targetCell;
+                if(writeCache) targetCellCache = targetCell;
                 return true;
             };
         }
@@ -124,7 +125,7 @@ public abstract class GridUnit : MonoBehaviour
                 )
             {
                 //Push and set move cache
-                targetCellCache = targetCell;
+                if (writeCache) targetCellCache = targetCell;
                 targetCell.gridUnits.ForEach(x =>
                     {
                         if (x.pushable) x.targetCellCache = secondCell;
@@ -138,7 +139,7 @@ public abstract class GridUnit : MonoBehaviour
 
                 if (Rules.Instance.CheckEnterCell(this, from, targetCell, direction))
                 {
-                    targetCellCache = targetCell;
+                    if (writeCache) targetCellCache = targetCell;
                     return true;
                 };
             }
@@ -152,7 +153,7 @@ public abstract class GridUnit : MonoBehaviour
         for(int i = 0; i < height; ++i)
         {
             if (i >= cellsAbove.Count) continue;
-            if(!CheckMoveAndPushToNext(cellsAbove[i], direction))
+            if(!CheckMoveAndPushToNext(cellsAbove[i], direction, i > 0 ? false : true))
             {
                 return false;
             }

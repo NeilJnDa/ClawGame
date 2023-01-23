@@ -45,8 +45,6 @@ public class Cell : MonoBehaviour
 #if UNITY_EDITOR
         UnityEditor.SceneVisibilityManager.instance.DisablePicking(this.gameObject, false);
 #endif
-
-
         //Glass
         GetCellSolidSurface?.CopyTo(this.solidSurface, 0);
         for (int index = 0; index < solidSurface.Length; ++index)
@@ -70,7 +68,12 @@ public class Cell : MonoBehaviour
             }
         }
     }
-
+    public void UpdatePosition(Transform parentTransform, GridSetting gridSetting)
+    {
+        i = Mathf.RoundToInt((this.transform.position.x - parentTransform.position.x - gridSetting.offset.x) / (gridSetting.size + gridSetting.spacing));
+        j = Mathf.RoundToInt((this.transform.position.z - parentTransform.position.z - gridSetting.offset.z) / (gridSetting.size + gridSetting.spacing));
+        k = Mathf.RoundToInt((this.transform.position.y - parentTransform.position.y - gridSetting.offset.y) / (gridSetting.size + gridSetting.spacing));
+    }
     public void Enter(GridUnit newUnit)
     {
         gridUnits.Add(newUnit);

@@ -33,6 +33,7 @@ public class Level : MonoBehaviour
             bool[] defaultSolidSurfaceSetting = new bool[6] { false, false, false, false, false, false, };
             foreach (var cell in cells)
             {
+                cell.UpdatePosition(this.transform, gridSetting);
                 if (cell.solidSurface.All(x => !x)) continue;
 
                 //Not Default setting, then save this to levelData

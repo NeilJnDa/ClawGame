@@ -38,14 +38,18 @@ public class Grid3D
         this.size = gridSetting.size;
         this.spacing = gridSetting.spacing;
 
+        
         cellMatrix = new Cell[length, width, height];
+        var cellParent = new GameObject("Cells");
+        cellParent.transform.position = this.parentTransform.position;
+        cellParent.transform.parent = this.parentTransform;
         for (int k = 0; k < height; ++k)
         {
             for (int i = 0; i < length; ++i)
             {
                 for (int j = 0; j < width; ++j)
                 {
-                    var cell = GameObject.Instantiate(Resources.Load("Cell", typeof(Cell)), this.parentTransform) as Cell;
+                    var cell = GameObject.Instantiate(Resources.Load("Cell", typeof(Cell)), cellParent.transform) as Cell;
                     if (cell == null) Debug.LogError("No Cell Created");
                     cell.transform.position = parentTransform.position + offset +
                         new Vector3(i * (size + spacing), k * (size + spacing), j * (size + spacing));
