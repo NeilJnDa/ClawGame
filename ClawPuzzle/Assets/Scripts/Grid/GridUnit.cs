@@ -147,13 +147,18 @@ public abstract class GridUnit : MonoBehaviour
 
         return false;
     }
-    public bool CheckMoveAndPushWithHeight(Cell from, Direction direction, int height = 1)
+    public bool CheckPushWithHeightNoWriting(Cell from, Direction direction, int height = 1)
     {
-        var cellsAbove = this.cell.grid.GetCellsFrom(this.cell, Direction.Above);
+        if (from == null)
+        {
+            Debug.Log("Check Move And Push With Height Failed, Cell From is null");
+            return false;
+        }
+        var cellsAbove = this.cell.grid.GetCellsFrom(from, Direction.Above);
         for(int i = 0; i < height; ++i)
         {
-            if (i >= cellsAbove.Count) continue;
-            if(!CheckMoveAndPushToNext(cellsAbove[i], direction, i > 0 ? false : true))
+            if (i >= cellsAbove.Count) break;
+            if(!CheckMoveAndPushToNext(cellsAbove[i], direction, false))
             {
                 return false;
             }

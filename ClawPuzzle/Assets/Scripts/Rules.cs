@@ -64,7 +64,7 @@ public class Rules : MonoBehaviour
         {
             if(to.gridUnits.Exists(x=> x.pushable == false))
             {
-                Debug.LogWarning("Checking: " + gridUnit + " move " + direction + " failed, Rules not allowed since target has unPushable units");
+                Debug.LogWarning("Checking: " + gridUnit + " move from " + from.name + " to " + direction + " failed, Rules not allowed since target has unPushable units");
                 return false;
             }
         }
@@ -72,7 +72,7 @@ public class Rules : MonoBehaviour
         {
             if (to.gridUnits.Count != 0)
             {
-                Debug.LogWarning("Checking: " + gridUnit + " move " + direction + " failed, Rules not allowed since target has " + to.gridUnits.Count + " units");
+                Debug.LogWarning("Checking: " + gridUnit + " move from " + from.name + " to " + direction + " failed, Rules not allowed since target has " + to.gridUnits.Count + " units");
                 return false;
             }
         }
@@ -84,12 +84,12 @@ public class Rules : MonoBehaviour
         //Glass Obstacles
         if (from.solidSurface[((int)direction)])
         {
-            Debug.LogWarning("Checking: " + gridUnit + " move " + direction + " failed, this cell has a solid surface");
+            Debug.LogWarning("Checking: " + gridUnit + " move from " + from.name + " to " + direction + " failed, this cell has a solid surface");
             return false;
         }
         if (to.solidSurface[((int)DirectionUtility.RevertDirection(direction))])
         {
-            Debug.LogWarning("Checking: " + gridUnit + " move " + direction + " failed, target cell has a solid surface");
+            Debug.LogWarning("Checking: " + gridUnit + " move from " + from.name + " to " + direction + " failed, target cell has a solid surface");
             return false;
         }
         return true;
