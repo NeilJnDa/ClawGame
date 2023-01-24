@@ -52,7 +52,7 @@ public class Rules : MonoBehaviour
         //Claw Try To catch
         if (isClawToCatch)
         {
-            if (to.gridUnits.Exists(x => x.catchable == false))
+            if (to.gridUnits.Exists(x => x.pushable == false))
             {
                 Debug.LogWarning("Checking: " + gridUnit.name + " (Claw) move and catch from " + from.name + " " + direction + " failed, Rules not allowed since there is an a ground/conveyor/hole (Not catchable)");
                 return false;

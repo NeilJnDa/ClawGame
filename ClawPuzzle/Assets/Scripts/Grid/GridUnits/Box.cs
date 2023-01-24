@@ -7,11 +7,26 @@ using Sirenix.OdinInspector;
 public class Box : GridUnit, ITurnUndo
 {
     public override UnitType unitType { get { return UnitType.Box; } }
-    public override bool catchable { get { return true; } }
     public override bool pushable { get { return true; } }
 
+    private void Start()
+    {
+        TurnManager.Instance.GravityEvent += OnGravity;
+    }
+    private void OnDestroy()
+    {
+        TurnManager.Instance.GravityEvent -= OnGravity;
 
-
+    }
+    private float OnGravity()
+    {
+        if(CheckMoveAndPushToNext(this, this.cell, Direction.Below))
+        {
+            this.MoveToCell(cell.grid.GetClosestCell(this.cell, Direction.Below), TurnManager.Instance.gravityMoveEachDuration);
+            return TurnManager.Instance.gravityMoveEachDuration;
+        }
+        return 0;
+    }
     #region ITurnUndo
     [ShowInInspector]
     [ReadOnly]
@@ -26,7 +41,6 @@ public class Box : GridUnit, ITurnUndo
         cell.Enter(this);
         setting = settingHistory.Pop();
 
-        targetCellCache = null;
         this.transform.position = cell.transform.position;
     }
 
@@ -52,7 +66,6 @@ public class Box : GridUnit, ITurnUndo
         }
 
         this.transform.position = cell.transform.position;
-        targetCellCache = null;
     }
 
     public void SaveToHistory()

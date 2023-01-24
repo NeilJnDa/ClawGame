@@ -28,8 +28,9 @@ public abstract class GridUnit : MonoBehaviour
 {
     //Must be overrided
     public virtual UnitType unitType { get { return UnitType.Empty; } }
-    public virtual bool catchable { get { return false; } }
     public virtual bool pushable { get { return false; } }
+    [ReadOnly]
+    public bool isCaught = false;
 
     //Initial setting cache, saved for reset
     [ShowInInspector][ReadOnly]
@@ -43,8 +44,6 @@ public abstract class GridUnit : MonoBehaviour
     //Current Parent Cell
     public Cell cell;
 
-    //A simple command cache. It will be set when player do something, and executed and cleared during player turn or env turn.
-    public Cell targetCellCache = null;
 
     public void Initialize(GridUnitInfo gridUnitInfo, Grid3D grid)
     {
@@ -67,142 +66,61 @@ public abstract class GridUnit : MonoBehaviour
 
     #region Move and Check
     /// <summary>
-    /// Check if can move to an adjacent cell
-    /// If true, the targetCellCache will be set
+    /// Iteration of checking if a unit can move into a cell and push
     /// </summary>
+    /// <param name="gridUnit"></param>
+    /// <param name="from"></param>
     /// <param name="direction"></param>
     /// <returns></returns>
-    public bool CheckMoveToNext(Direction direction, bool ignorePushable = false)
+    public virtual bool CheckMoveAndPushToNext(GridUnit gridUnit, Cell from, Direction direction)
     {
-        var targetCell = cell.grid.GetClosestCell(this.cell, direction);
+        var targetCell = cell.grid.GetClosestCell(from, direction);
         if (targetCell == null)
         {
-            Debug.LogWarning(cell + " move " + direction + "failed, cannot get targetCell");
+            Debug.Log("Checking: " + gridUnit.name + " Move and Push " + direction + "failed, can not get target cell" );
             return false;
         }
-        if (Rules.Instance.CheckEnterCell(this, this.cell, targetCell, direction, ignorePushable))
-        {
-            targetCellCache = targetCell;
-            return true;
-        };
-        return false;
-    }
-    /// <summary>
-    /// Check if can push units in an adjacent cell, and move. No chaining push.
-    /// The height is especially for long units or the claw. Such as a 1x1x2 has height of 2
-    /// </summary>
-    /// <param name="direction"></param>
-    /// <param name="height"></param>
-    /// <returns></returns>
-    public bool CheckMoveAndPushToNext(Cell from, Direction direction, bool writeCache = true)
-    {
-        var targetCell = from?.grid.GetClosestCell(from, direction);
-        var secondCell = targetCell?.grid.GetClosestCell(targetCell, direction);
-        if (targetCell == null)
-        {
-            Debug.LogWarning(cell + " move " + direction + "failed, cannot get targetCell");
-            return false;
-        }
-        //If second is null, only check move into next (no push)
-        else if (secondCell == null)
-        {
-            if (Rules.Instance.CheckEnterCell(this, from, targetCell, direction))
-            {
-                if(writeCache) targetCellCache = targetCell;
-                return true;
-            };
-        }
-        //Next two cells are not null, try to push
-        else
-        {
-            //Check push
-            if (
-                //Check if all pushed units can enter the second cell
-                targetCell.gridUnits.All(x => x.pushable && Rules.Instance.CheckEnterCell(x, targetCell, secondCell, direction))
-                &&
-                //Check if this grid unit can enter the next one when pushable units have left. Set IgnorePushable to true
-                Rules.Instance.CheckEnterCell(this, from, targetCell, direction, true)
-                )
-            {
-                //Push and set move cache
-                if (writeCache) targetCellCache = targetCell;
-                targetCell.gridUnits.ForEach(x =>
-                    {
-                        if (x.pushable) x.targetCellCache = secondCell;
-                    }
-                );
-                return true;
+        Debug.Log("Checking: " + gridUnit.name + " Move and Push into" + targetCell.name);
+
+        bool success = true;
+        foreach (var unit in targetCell.gridUnits)
+        {       
+            if (unit.pushable == false) {
+                Debug.Log(gridUnit.name + " can not enter " + targetCell.name + " since " + unit.name + " is not pushable");
+                return false; 
             }
-            //All pushed units can not enter the second cell, No push, only check, enter
             else
             {
-
-                if (Rules.Instance.CheckEnterCell(this, from, targetCell, direction))
-                {
-                    if (writeCache) targetCellCache = targetCell;
-                    return true;
-                };
+                success = success && unit.CheckMoveAndPushToNext(unit, targetCell, direction);
+                if (success == false) return false;
             }
         }
-
-        return false;
+        return success;
     }
-    public bool CheckPushWithHeightNoWriting(Cell from, Direction direction, int height = 1)
+    public virtual bool CheckMoveNoPush(GridUnit gridUnit, Cell from, Direction direction)
     {
-        if (from == null)
+        var targetCell = cell.grid.GetClosestCell(from, direction);
+        if (targetCell == null)
         {
-            Debug.Log("Check Move And Push With Height Failed, Cell From is null");
+            Debug.Log("Checking: " + gridUnit.name + " Move and No Push " + direction + "failed, can not get target cell");
             return false;
         }
-        var cellsAbove = this.cell.grid.GetCellsFrom(from, Direction.Above);
-        for(int i = 0; i < height; ++i)
+        Debug.Log("Checking: " + gridUnit.name + " Move but No Push into" + targetCell.name);
+
+        bool success = true;
+        foreach (var unit in targetCell.gridUnits)
         {
-            if (i >= cellsAbove.Count) break;
-            if(!CheckMoveAndPushToNext(cellsAbove[i], direction, false))
+            if (unit.pushable == false)
             {
+                Debug.Log(gridUnit.name + " can not enter " + targetCell.name + " since " + unit.name + " is not pushable (Ground)");
                 return false;
             }
         }
-        //Every check is true, it can move and push with this height
-        return true;
+        return success;
     }
-    
-    /// <summary>
-    /// Move this unit as far as possible in the desired direction. Return true and set targetCell if it can move at least one unit
-    /// </summary>
-    /// <param name="direction"></param>
-    /// <returns></returns>
-    public bool CheckMoveToEnd(Direction direction, bool isClawToCatch = false)
-    {
-        Cell targetCell = null;
-        Cell currentCell = this.cell;
 
-        //Check cells of this direction one by one until find the last plausible one
-        while (true)
-        {
-            targetCell = cell.grid.GetClosestCell(currentCell, direction);
-            if (targetCell != null && Rules.Instance.CheckEnterCell(this, currentCell, targetCell, direction, false, isClawToCatch))
-            {
-                //If this is a claw to catch, first time the next cell has a catachble object, end the iteraion
-                if (isClawToCatch && targetCell.gridUnits.Exists(x => x.catchable)) break;
+   
 
-                //Continue the iteration
-                currentCell = targetCell;
-
-            }
-            else
-            {
-                targetCell = currentCell;
-                break;
-            }
-        }
-        if (targetCell != null && targetCell != this.cell)
-        {
-            targetCellCache = targetCell;
-            return true;
-        }
-        return false;
-    }
     /// <summary>
     /// Can be overrided for different animation
     /// </summary>

@@ -15,7 +15,6 @@ public class Claw : GridUnit, ITurnUndo
     [ReadOnly]
     public ClawState clawState;
     public override UnitType unitType { get { return UnitType.Claw; } }
-    public override bool catchable { get { return false; } }
     public override bool pushable { get { return false; } }
 
 
@@ -37,6 +36,9 @@ public class Claw : GridUnit, ITurnUndo
 
     //Local Cahce
     private Animator animator;
+
+    //A simple command cache. It will be set when player do something, and executed and cleared during player turn or env turn.
+    public Cell targetCellCache = null;
 
     private void Start()
     {
@@ -72,38 +74,56 @@ public class Claw : GridUnit, ITurnUndo
     private void OnMoveInput(Direction direction)
     {
         Cell upperCell = this.cell.grid.GetClosestCell(this.cell, Direction.Above);
+        List<Cell> stickCells = null;
+        if(upperCell != null)
+        {
+            stickCells = upperCell.grid.GetCellsFrom(upperCell, Direction.Above);
+        }
+        Cell targetCell = this.cell.grid.GetClosestCell(this.cell, direction);
+
+        
+        bool success = true;
         if (clawState == ClawState.Close || clawState == ClawState.Catch)
         {
             //The claw Will Push
-            if (this.CheckMoveAndPushToNext(this.cell, direction, true)&& 
-                (upperCell == null || this.CheckPushWithHeightNoWriting(upperCell, direction, 9)))
-            {
-                TurnManager.Instance.NextStep();
-            }
+            success = success && this.CheckMoveAndPushToNext(this, this.cell, direction);
         }
         else if (clawState == ClawState.Open)
         {
-            //Claw can enter, but the stick will push
-            if (this.CheckMoveToNext(direction, true) &&
-                 (upperCell == null || this.CheckPushWithHeightNoWriting(upperCell, direction, 9)))
+            //The claw Will not push
+            success = success && this.CheckMoveNoPush(this, this.cell, direction);
+        }
+
+        if (stickCells != null)
+        {
+            foreach (var stickCell in stickCells)
             {
-                TurnManager.Instance.NextStep();
+                success = success && this.CheckMoveAndPushToNext(this, stickCell, direction);
             }
+        }
+
+        if (success)
+        {
+            targetCellCache = targetCell;
+            TurnManager.Instance.NextStep();
         }
     }
     private void OnLiftInput()
     {
         if (isHolding)
         {
-            if (this.CheckMoveToNext(Direction.Above))
+            if (CheckMoveAndPushToNext(this, this.cell, Direction.Above))
             {
+                targetCellCache = this.cell.grid.GetClosestCell(this.cell, Direction.Above);
                 TurnManager.Instance.NextStep();
             }
         }
         else
         {
-            if (this.CheckMoveToEnd(Direction.Above))
+            Cell targetCell = CheckMoveToEnd(Direction.Above);
+            if(targetCell != null)
             {
+                targetCellCache = targetCell;
                 TurnManager.Instance.NextStep();
             }
         }
@@ -118,17 +138,11 @@ public class Claw : GridUnit, ITurnUndo
         }
         else if(clawState == ClawState.Open || clawState == ClawState.Close)
         {
-            if (CheckMoveToEnd(Direction.Below, true))
-            {
-                isDropping = true;
-                TurnManager.Instance.NextStep();
-            }
-            else
-            {
-                //即使夹子没有移动空间，也会过一个回合
-                isDropping = true;
-                TurnManager.Instance.NextStep();
-            }
+            Cell targetCell = CheckMoveToEnd(Direction.Below, true);
+            //即使夹子没有移动空间，也会过一个回合
+            targetCellCache = targetCell;
+            isDropping = true;
+            TurnManager.Instance.NextStep();
         }
     }
 
@@ -145,15 +159,16 @@ public class Claw : GridUnit, ITurnUndo
 
         //Calculate move duration
         float distance = cell.grid.AbsoluteDistance(this.cell, targetCellCache);
-        float duration = TurnManager.Instance.playerTurnDuration;
+        float duration = TurnManager.Instance.playerTurnMaxDuration;
         if (isHolding)
             duration *= distance / holdingSpeedMultiplier;
         else
             duration *= distance / emptySpeedMultiplier;
 
-        duration = Mathf.Clamp(duration, 0, TurnManager.Instance.playerTurnDuration);
+        duration = Mathf.Clamp(duration, 0, TurnManager.Instance.playerTurnMaxDuration);
 
         //Move Claw
+        //TODO: Move and Push
         MoveToCell(targetCellCache, duration);
         //Move all Holding Units as well, No Rule Checking
         foreach(var unit in HoldingUnits)
@@ -243,10 +258,7 @@ public class Claw : GridUnit, ITurnUndo
 
             foreach (var unit in HoldingUnits)
             {
-                if (unit.CheckMoveToEnd(Direction.Below))
-                {
-                    //Cache will be set. The unit will move when player turn
-                }
+                unit.isCaught = false;
             }
             HoldingUnits.Clear();
             Debug.Log(this.name + " Release Claw");
@@ -279,17 +291,53 @@ public class Claw : GridUnit, ITurnUndo
     }
     private bool CheckAndCatchUnit()
     {
-        var toCatchList = cell.gridUnits.FindAll(x => x.catchable == true);
+        var toCatchList = cell.gridUnits.FindAll(x => x.pushable == true);
         bool newCatch = false;
         foreach (var toCatch in toCatchList)
         {
             //Skip caught units 
             if (HoldingUnits.Contains(toCatch)) continue;
             HoldingUnits.Add(toCatch);
+            toCatch.isCaught = true;
             Debug.Log(this.name + " catch " + toCatch.name);
             newCatch = true;
         }
         return newCatch;
+    }
+    /// <summary>
+    /// Move this unit as far as possible in the desired direction. Return true and set targetCell if it can move at least one unit
+    /// </summary>
+    /// <param name="direction"></param>
+    /// <returns></returns>
+    public Cell CheckMoveToEnd(Direction direction, bool isClawToCatch = false)
+    {
+        Cell targetCell = null;
+        Cell currentCell = this.cell;
+
+        //Check cells of this direction one by one until find the last plausible one
+        while (true)
+        {
+            targetCell = cell.grid.GetClosestCell(currentCell, direction);
+            if (targetCell != null && Rules.Instance.CheckEnterCell(this, currentCell, targetCell, direction, false, isClawToCatch))
+            {
+                //If this is a claw to catch, first time the next cell has a catachble object, end the iteraion
+                if (isClawToCatch && targetCell.gridUnits.Exists(x => x.pushable)) break;
+
+                //Continue the iteration
+                currentCell = targetCell;
+
+            }
+            else
+            {
+                targetCell = currentCell;
+                break;
+            }
+        }
+        if (targetCell != null && targetCell != this.cell)
+        {
+            return targetCell;
+        }
+        return null;
     }
 
 

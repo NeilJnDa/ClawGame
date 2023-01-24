@@ -6,16 +6,24 @@ using Sirenix.OdinInspector;
 public class LimiterBox : GridUnit, ITurnUndo
 {
     public override UnitType unitType { get { return UnitType.LimiterBox; } }
-    public override bool catchable { get { return true; } }
     public override bool pushable { get { return true; } }
     private void Start()
     {
-       
-
+        TurnManager.Instance.GravityEvent += OnGravity;
     }
     private void OnDestroy()
     {
+        TurnManager.Instance.GravityEvent -= OnGravity;
 
+    }
+    private float OnGravity()
+    {
+        if (CheckMoveAndPushToNext(this, this.cell, Direction.Below))
+        {
+            this.MoveToCell(cell.grid.GetClosestCell(this.cell, Direction.Below), TurnManager.Instance.gravityMoveEachDuration);
+            return TurnManager.Instance.gravityMoveEachDuration;
+        }
+        return 0;
     }
 
 
@@ -32,8 +40,6 @@ public class LimiterBox : GridUnit, ITurnUndo
         cell = cellHistory.Pop();
         cell.Enter(this);
         setting = settingHistory.Pop();
-
-        targetCellCache = null;
         this.transform.position = cell.transform.position;
     }
 
@@ -60,7 +66,6 @@ public class LimiterBox : GridUnit, ITurnUndo
         }
 
         this.transform.position = cell.transform.position;
-        targetCellCache = null;
     }
 
     public void SaveToHistory()

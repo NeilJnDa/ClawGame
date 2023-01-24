@@ -5,7 +5,6 @@ using UnityEngine;
 public class Empty : GridUnit
 {
     public override UnitType unitType { get { return UnitType.Empty; } }
-    public override bool catchable { get { return false; } }
     public override bool pushable { get { return false; } }
 
     private void Awake()

@@ -5,7 +5,6 @@ using UnityEngine;
 public class Conveyor : GridUnit
 {
     public override UnitType unitType { get { return UnitType.Conveyor; } }
-    public override bool catchable { get { return false; } }
     public override bool pushable { get { return false; } }
     private void Start()
     {
