@@ -60,6 +60,7 @@ public class TurnManager : MonoBehaviour
     public event Func<float> ClawOpenEvent;
     public event Func<float> ClawCloseEvent;
     public event Func<float> CheckInteractionEvent;
+    public event Func<float> GravityEvent;
     public event Action EndStepProcessEvent;
 
     [ReadOnly]
