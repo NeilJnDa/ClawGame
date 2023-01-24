@@ -29,8 +29,9 @@ public class Player : GridUnit, ITurnUndo
     {
     }
 
-    private void OnCheckInteraction()
+    private float OnCheckInteraction()
     {
+        return 0;
     }
 
     private void OnEnvTurn()

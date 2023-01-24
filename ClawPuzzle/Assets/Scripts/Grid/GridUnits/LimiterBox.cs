@@ -13,16 +13,12 @@ public class LimiterBox : GridUnit, ITurnUndo
         
         TurnManager.Instance.PlayerTurnEvent += OnPlayerTurn;
         TurnManager.Instance.EnvTurnEvent += OnEnvTurn;
-        TurnManager.Instance.CheckInteractionEvent += OnCheckInteraction;
-
 
     }
     private void OnDestroy()
     {
         TurnManager.Instance.PlayerTurnEvent -= OnPlayerTurn;
         TurnManager.Instance.EnvTurnEvent -= OnEnvTurn;
-        TurnManager.Instance.CheckInteractionEvent -= OnCheckInteraction;
-
     }
 
 
@@ -40,20 +36,6 @@ public class LimiterBox : GridUnit, ITurnUndo
         {
             MoveToCell(targetCellCache, TurnManager.Instance.playerTurnDuration);
             targetCellCache = null;
-        }
-    }
-    private void OnCheckInteraction()
-    {
-        var upperCells = this.cell.grid.GetCellsFrom(this.cell, Direction.Above);
-        foreach (var cell in upperCells)
-        {
-            foreach (var unit in cell.gridUnits)
-            {
-                if (unit.unitType == UnitType.Claw)
-                {
-                    unit.OnLimitation();
-                }
-            }
         }
     }
 

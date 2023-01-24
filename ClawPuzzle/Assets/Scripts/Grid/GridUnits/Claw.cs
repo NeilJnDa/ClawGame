@@ -7,12 +7,13 @@ using System;
 public enum ClawState
 {
     Open,
-    Close
+    Close,
+    Catch
 }
 public class Claw : GridUnit, ITurnUndo
 {
     [ReadOnly]
-    public ClawState clawState = ClawState.Close;
+    public ClawState clawState;
     public override UnitType unitType { get { return UnitType.Claw; } }
     public override bool catchable { get { return false; } }
     public override bool pushable { get { return false; } }
@@ -31,6 +32,11 @@ public class Claw : GridUnit, ITurnUndo
     public float emptySpeedMultiplier = 4f;
     [Tooltip("When with an object, How many times speed of normal")]
     public float holdingSpeedMultiplier = 1f;
+    [Tooltip("When with an object, How many times speed of normal")]
+    public float animationDuration = 0.5f;
+
+    //Local Cahce
+    private Animator animator;
 
     private void Start()
     {
@@ -43,6 +49,10 @@ public class Claw : GridUnit, ITurnUndo
         TurnManager.Instance.EndStepProcessEvent += OnEndStep;
         TurnManager.Instance.ClawOpenEvent += OnClawDroppingOpen;
         TurnManager.Instance.ClawCloseEvent += OnClawDroppingClose;
+        TurnManager.Instance.CheckInteractionEvent += OnCheckInteraction;
+
+        animator = GetComponentInChildren<Animator>();
+        clawState = ClawState.Close;
     }
 
 
@@ -57,13 +67,14 @@ public class Claw : GridUnit, ITurnUndo
         TurnManager.Instance.EndStepProcessEvent -= OnEndStep;
         TurnManager.Instance.ClawOpenEvent -= OnClawDroppingOpen;
         TurnManager.Instance.ClawCloseEvent -= OnClawDroppingClose;
+        TurnManager.Instance.CheckInteractionEvent -= OnCheckInteraction;
 
     }
     #region Input Event Subscribers
     private void OnMoveInput(Direction direction)
     {
         Cell upperCell = this.cell.grid.GetClosestCell(this.cell, Direction.Above);
-        if (clawState == ClawState.Close)
+        if (clawState == ClawState.Close || clawState == ClawState.Catch)
         {
             //The claw Will Push
             if (this.CheckMoveAndPushToNext(this.cell, direction, true)&& 
@@ -102,29 +113,23 @@ public class Claw : GridUnit, ITurnUndo
     }
     private void OnClawActionInput()
     {
-        if (isHolding)
+        if (clawState == ClawState.Catch)
         {
-            Release();
-            TurnManager.Instance.NextStep();
-        }
-        else
-        {
-            //Check if there is something to catch in this cell. 
-            if (CheckAndCatchUnit())
-            {
-                isDropping = true;
+            if(TryRelease())
                 TurnManager.Instance.NextStep();
-            }
-            //Otherwise, Check if it can move can catch something downwards
-            //Even thought it can not move, it will act if the claw needs to close
-            else if (CheckMoveToEnd(Direction.Below, true) || clawState == ClawState.Open)
+        }
+        else if(clawState == ClawState.Open || clawState == ClawState.Close)
+        {
+            if (CheckMoveToEnd(Direction.Below, true))
             {
                 isDropping = true;
                 TurnManager.Instance.NextStep();
             }
             else
             {
-                //TODO: can not move animation
+                //即使夹子没有移动空间，也会过一个回合
+                isDropping = true;
+                TurnManager.Instance.NextStep();
             }
         }
     }
@@ -172,7 +177,32 @@ public class Claw : GridUnit, ITurnUndo
         //Clear Cache
         targetCellCache = null;
     }
-
+    private float OnCheckInteraction()
+    {
+        var limiter = CheckLimitation();
+        if(limiter == null)
+        {
+            Debug.Log(this.name + " on End Limitation");
+            if (clawState == ClawState.Open)
+            {
+                //Do nothing
+            }
+        }
+        else
+        {
+            Debug.Log(this.name + " on Limitation");
+            if (clawState == ClawState.Close || clawState == ClawState.Catch)
+            {
+                if(TryRelease()) return animationDuration;
+            }
+            if(clawState == ClawState.Open)
+            {
+                animator.SetTrigger("OpenToOpen");
+                return animationDuration;
+            }
+        }
+        return 0;
+    }
     private float OnClawDroppingClose()
     {
         if (isDropping)
@@ -180,15 +210,14 @@ public class Claw : GridUnit, ITurnUndo
             var limiter = CheckLimitation();
             if (limiter != null)
             {
-                //TODO: Failed to catch anim, limiter anim
+                animator.SetTrigger("OpenToOpen");
                 clawState = ClawState.Open;
-                return 0.2f;
+                return animationDuration;
             }
             else
             {
-                Catch();
-
-                return 0.2f;
+                if(Catch())
+                    return animationDuration;
             }
         }
         return 0;
@@ -199,8 +228,7 @@ public class Claw : GridUnit, ITurnUndo
     {
         if (isDropping && clawState == ClawState.Close)
         {
-            Release();
-            return 0.2f;
+            if (TryRelease()) return animationDuration;
         }
         return 0;
     }
@@ -213,55 +241,53 @@ public class Claw : GridUnit, ITurnUndo
     {
         if (isDropping) isDropping = false;
     }
-
-    public override void OnLimitation()
-    {
-        Debug.Log(this.name + " on Limitation");
-        base.OnLimitation();
-        if (clawState == ClawState.Close)
-        {
-            Release();
-        }
-    }
-    public override void OnEndLimitation()
-    {
-        base.OnEndLimitation();
-        Debug.Log(this.name + " on End Limitation");
-        if (clawState == ClawState.Open)
-        {
-            Catch();
-        }
-    }
     #endregion
     #region Behaviours
-    public void Release()
+    /// <summary>
+    /// From catch or close to open
+    /// </summary>
+    public bool TryRelease()
     {
         //Release claw
-        clawState = ClawState.Open;
-
-        //TODO: Open Claw Animation
-        foreach (var unit in HoldingUnits)
+        if(clawState == ClawState.Close || clawState == ClawState.Catch)
         {
-            if (unit.CheckMoveToEnd(Direction.Below))
+            clawState = ClawState.Open;
+            animator.SetTrigger("ToOpen");
+
+            foreach (var unit in HoldingUnits)
             {
-                //Cache will be set. The unit will move when player turn
+                if (unit.CheckMoveToEnd(Direction.Below))
+                {
+                    //Cache will be set. The unit will move when player turn
+                }
             }
+            HoldingUnits.Clear();
+            Debug.Log(this.name + " Release Claw");
+            return true;
         }
-        HoldingUnits.Clear();
-        Debug.Log(this.name + " Release Claw");
+        return false;
+
     }
-    public void Catch()
+    public bool Catch()
     {
-        if (CheckAndCatchUnit())
+        if(clawState == ClawState.Catch || clawState == ClawState.Close)
+        {
+            return false;
+        }
+        else if (CheckAndCatchUnit())
         {
             Debug.Log("Claw Caught units");
+            animator.SetTrigger("OpenToCatch");
+            clawState = ClawState.Catch;
+            return true;
         }
         else
         {
             Debug.Log("Claw Caught nothing but still close");
+            animator.SetTrigger("OpenToClose");
+            clawState = ClawState.Close;
+            return true;
         }
-        clawState = ClawState.Close;
-        //TODO: Close Claw Animation
 
     }
     private bool CheckAndCatchUnit()
@@ -279,21 +305,7 @@ public class Claw : GridUnit, ITurnUndo
         return newCatch;
     }
 
-    private GridUnit CheckLimitation()
-    {
-        var cells = this.cell.grid.GetCellsFrom(this.cell, Direction.Below);
-        foreach(var cell in cells)
-        {
-            foreach(var unit in cell.gridUnits)
-            {
-                if(unit.unitType == UnitType.LimiterBox || unit.unitType == UnitType.LimiterGround)
-                {
-                    return unit;
-                }
-            }
-        }
-        return null;
-    }
+
     #endregion
     #region ITurnUndo
     [ShowInInspector]
@@ -324,6 +336,11 @@ public class Claw : GridUnit, ITurnUndo
 
     public void ResetAll()
     {
+        animator.ResetTrigger("OpenToClose");
+        animator.ResetTrigger("OpenToOpen");
+        animator.ResetTrigger("OpenToCatch");
+        animator.ResetTrigger("ToOpen");
+        animator.Play("Entry");
 
         Cell cellRef = cell;
         cellHistory.Push(cellRef);
