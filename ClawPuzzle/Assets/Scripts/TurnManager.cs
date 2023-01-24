@@ -38,11 +38,14 @@ public class TurnManager : MonoBehaviour
     #region Turn
     public enum Turn
     {
+        Waiting,
         PlayerTurn,
-        EnvTurn
+        PostPlayerTurn,
+        EnvTurn,
+        PostEnvTurn,
     }
     [ReadOnly]
-    public Turn currentTurn = Turn.PlayerTurn;
+    public Turn currentTurn = Turn.Waiting;
     [field: SerializeField]
     public float playerTurnDuration { get; private set; } = 0.5f;
     [field: SerializeField]
@@ -55,8 +58,8 @@ public class TurnManager : MonoBehaviour
     //Undo methods of each object are called from here
     //Events are called during a NextStepCoroutine() to broadcast
     public event Action StartStepProcessEvent;
-    public event Action PlayerTurnEvent;
-    public event Action EnvTurnEvent;
+    public event Func<float> PlayerTurnEvent;
+    public event Func<float> EnvTurnEvent;
     public event Func<float> ClawOpenEvent;
     public event Func<float> ClawCloseEvent;
     public event Func<float> CheckInteractionEvent;
@@ -90,6 +93,7 @@ public class TurnManager : MonoBehaviour
 
     IEnumerator NextStepCoroutine()
     {
+        currentTurn = Turn.PlayerTurn;
         StartStepProcessEvent?.Invoke();
 
         //Disable more command
@@ -103,39 +107,61 @@ public class TurnManager : MonoBehaviour
         totalStep++;
 
         //Open the claw if needed
-        var timeOpen = ClawOpenEvent?.Invoke();
+        var timeOpen = InvokeEventsReturnMax(ClawOpenEvent);
         yield return new WaitForSeconds((float)timeOpen);
 
         //Player Turn (anim/audio)
-        PlayerTurnEvent?.Invoke();
-        yield return new WaitForSeconds(playerTurnDuration);
+        var timePlayer = InvokeEventsReturnMax(PlayerTurnEvent);
+        yield return new WaitForSeconds((float)timePlayer);
 
         //Close the claw
-        var timeClose = ClawCloseEvent?.Invoke();
+        var timeClose = InvokeEventsReturnMax(ClawCloseEvent);
         yield return new WaitForSeconds((float)timeClose);
 
-        //After claw actions, check interactions (Limiter)
-        var timeInteraction = CheckInteractionEvent?.Invoke();
-        yield return new WaitForSeconds((float)timeInteraction);
+        //After claw actions, check interactions (Limiter) and gravity
+        currentTurn = Turn.PostPlayerTurn;
+        var timeInteraction = InvokeEventsReturnMax(CheckInteractionEvent);
+
+        float timeGravity = 0;
+        float totalTimeGravity = 0;
+        timeGravity = (float)InvokeEventsReturnMax(GravityEvent);
+  
+        while(timeGravity > 0)
+        {
+            yield return new WaitForSeconds(timeGravity);
+            totalTimeGravity += timeGravity;
+            timeGravity = (float)InvokeEventsReturnMax(GravityEvent);
+        }
+        if(timeInteraction > totalTimeGravity) 
+            yield return new WaitForSeconds(timeInteraction - totalTimeGravity);
 
 
         //Then Env Turn
         currentTurn = Turn.EnvTurn;
         //Tell every env units to execute
-        EnvTurnEvent?.Invoke();
+        var timeEnv = InvokeEventsReturnMax(EnvTurnEvent);
+        yield return new WaitForSeconds((float)timeEnv);
 
-        yield return new WaitForSeconds(envTurnDuration);
-        //After env actions, check interactions
-        var timeInteraction2 = CheckInteractionEvent?.Invoke();
-        yield return new WaitForSeconds((float)timeInteraction2);
+        //PostEnv: Gravity and Limitation
+        currentTurn = Turn.PostEnvTurn;
+        var timeInteraction2 = InvokeEventsReturnMax(CheckInteractionEvent);
+        float timeGravity2 = 0;
+        float totalTimeGravity2 = 0;
+        timeGravity2 = (float)InvokeEventsReturnMax(GravityEvent);
 
-        //TODO: 如果此时CheckInteraction造成有的unit要移动，额外回合？ （额外回合会不会造成更多的额外回合？
+        while (timeGravity2 > 0)
+        {
+            yield return new WaitForSeconds(timeGravity2);
+            totalTimeGravity2 += timeGravity2;
+            timeGravity2 = (float)InvokeEventsReturnMax(GravityEvent);
+        }
+        if (timeInteraction2 > totalTimeGravity2)
+            yield return new WaitForSeconds(timeInteraction2 - totalTimeGravity2);
+
         //Accept command
-        currentTurn = Turn.PlayerTurn;
+        currentTurn = Turn.Waiting;
         InputManager.Instance.EnableMove(true);
-
         EndStepProcessEvent?.Invoke();
-
     }
     private void StopNextTurnCoroutine()
     {
@@ -187,5 +213,22 @@ public class TurnManager : MonoBehaviour
     }
 
     #endregion
-
+    #region Helper Functions
+    /// <summary>
+    /// Invoke every subscriber of an event, and return that max returned values (min: 0)
+    /// </summary>
+    /// <param name="targetEvent"></param>
+    /// <returns></returns>
+    private float InvokeEventsReturnMax(Func<float> targetEvent)
+    {
+        if (targetEvent == null) return 0;
+        float maxValue = 0;
+        foreach(var eventHandler in targetEvent.GetInvocationList())
+        {
+            float value =(float)eventHandler.DynamicInvoke();
+            if (value > maxValue) value = maxValue;
+        }
+        return maxValue;
+    }
+    #endregion
 }

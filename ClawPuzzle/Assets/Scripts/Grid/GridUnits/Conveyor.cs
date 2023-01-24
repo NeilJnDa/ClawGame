@@ -16,8 +16,9 @@ public class Conveyor : GridUnit
         TurnManager.Instance.EnvTurnEvent -= OnEnvTurn;
     }
 
-    private void OnEnvTurn()
+    private float OnEnvTurn()
     {
         Debug.Log(this.name + "EnvTurn");
+        return 0; ;
     }
 }

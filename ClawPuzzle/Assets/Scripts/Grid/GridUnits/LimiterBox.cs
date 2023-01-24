@@ -10,34 +10,14 @@ public class LimiterBox : GridUnit, ITurnUndo
     public override bool pushable { get { return true; } }
     private void Start()
     {
-        
-        TurnManager.Instance.PlayerTurnEvent += OnPlayerTurn;
-        TurnManager.Instance.EnvTurnEvent += OnEnvTurn;
+       
 
     }
     private void OnDestroy()
     {
-        TurnManager.Instance.PlayerTurnEvent -= OnPlayerTurn;
-        TurnManager.Instance.EnvTurnEvent -= OnEnvTurn;
+
     }
 
-
-    private void OnPlayerTurn()
-    {
-        if (targetCellCache != null)
-        {
-            MoveToCell(targetCellCache, TurnManager.Instance.playerTurnDuration);
-            targetCellCache = null;
-        }
-    }
-    private void OnEnvTurn()
-    {
-        if (targetCellCache != null)
-        {
-            MoveToCell(targetCellCache, TurnManager.Instance.playerTurnDuration);
-            targetCellCache = null;
-        }
-    }
 
     #region ITurnUndo
     [ShowInInspector]

@@ -45,7 +45,6 @@ public class Claw : GridUnit, ITurnUndo
         InputManager.Instance.liftEvent += OnLiftInput;
 
         TurnManager.Instance.PlayerTurnEvent += OnPlayerTurn;
-        TurnManager.Instance.EnvTurnEvent += OnEnvTurn;
         TurnManager.Instance.EndStepProcessEvent += OnEndStep;
         TurnManager.Instance.ClawOpenEvent += OnClawDroppingOpen;
         TurnManager.Instance.ClawCloseEvent += OnClawDroppingClose;
@@ -63,7 +62,6 @@ public class Claw : GridUnit, ITurnUndo
         InputManager.Instance.liftEvent -= OnLiftInput;
 
         TurnManager.Instance.PlayerTurnEvent -= OnPlayerTurn;
-        TurnManager.Instance.EnvTurnEvent -= OnEnvTurn;
         TurnManager.Instance.EndStepProcessEvent -= OnEndStep;
         TurnManager.Instance.ClawOpenEvent -= OnClawDroppingOpen;
         TurnManager.Instance.ClawCloseEvent -= OnClawDroppingClose;
@@ -136,15 +134,16 @@ public class Claw : GridUnit, ITurnUndo
 
     #endregion
     #region Turn Event Subscribers
-    private void OnPlayerTurn()
+    private float OnPlayerTurn()
     {
         if(targetCellCache == null || targetCellCache == this.cell)
         {
             //No need to move
-            return;
+            targetCellCache = null;
+            return 0;
         }
-        //Calculate move duration
 
+        //Calculate move duration
         float distance = cell.grid.AbsoluteDistance(this.cell, targetCellCache);
         float duration = TurnManager.Instance.playerTurnDuration;
         if (isHolding)
@@ -163,19 +162,7 @@ public class Claw : GridUnit, ITurnUndo
         }
         //Clear Cache
         targetCellCache = null;
-    }
-    private void OnEnvTurn()
-    {
-        if (targetCellCache != null)
-        {
-            MoveToCell(targetCellCache, TurnManager.Instance.envTurnDuration);
-            foreach (var unit in HoldingUnits)
-            {
-                unit.MoveToCell(targetCellCache, TurnManager.Instance.envTurnDuration);
-            }
-        }
-        //Clear Cache
-        targetCellCache = null;
+        return duration;
     }
     private float OnCheckInteraction()
     {

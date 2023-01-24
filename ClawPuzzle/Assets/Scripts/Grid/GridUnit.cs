@@ -31,7 +31,7 @@ public abstract class GridUnit : MonoBehaviour
     public virtual bool catchable { get { return false; } }
     public virtual bool pushable { get { return false; } }
 
-    //Initial setting cache
+    //Initial setting cache, saved for reset
     [ShowInInspector][ReadOnly]
     protected GridUnitInfo initGridUnitInfo;
     [ShowInInspector]

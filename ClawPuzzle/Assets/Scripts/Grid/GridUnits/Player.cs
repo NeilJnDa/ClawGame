@@ -12,45 +12,11 @@ public class Player : GridUnit, ITurnUndo
 
     private void Start()
     {
-        TurnManager.Instance.PlayerTurnEvent += OnPlayerTurn;
-        TurnManager.Instance.EnvTurnEvent += OnEnvTurn;
-        TurnManager.Instance.CheckInteractionEvent += OnCheckInteraction;
-        TurnManager.Instance.EndStepProcessEvent += OnEndStep;
     }
     private void OnDestroy()
     {
-        TurnManager.Instance.PlayerTurnEvent -= OnPlayerTurn;
-        TurnManager.Instance.EnvTurnEvent -= OnEnvTurn;
-        TurnManager.Instance.CheckInteractionEvent -= OnCheckInteraction;
-        TurnManager.Instance.EndStepProcessEvent -= OnEndStep;
     }
 
-    private void OnEndStep()
-    {
-    }
-
-    private float OnCheckInteraction()
-    {
-        return 0;
-    }
-
-    private void OnEnvTurn()
-    {
-        if (targetCellCache != null)
-        {
-            MoveToCell(targetCellCache, TurnManager.Instance.playerTurnDuration);
-            targetCellCache = null;
-        }
-    }
-
-    private void OnPlayerTurn()
-    {
-        if(targetCellCache != null)
-        {
-            MoveToCell(targetCellCache, TurnManager.Instance.playerTurnDuration);
-            targetCellCache = null;
-        }
-    }
 
     #region ITurnUndo
     [ShowInInspector]
