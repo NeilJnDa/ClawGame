@@ -4,6 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using Sirenix.OdinInspector;
 using System.Linq;
+using System;
 
 [System.Serializable]
 public enum UnitType
@@ -74,7 +75,7 @@ public abstract class GridUnit : MonoBehaviour
     /// <returns></returns>
     public virtual bool CheckMoveAndPushToNext(GridUnit gridUnit, Cell from, Direction direction)
     {
-        var targetCell = cell.grid.GetClosestCell(from, direction);
+        var targetCell = from.NextCell(direction);
         if (targetCell == null)
         {
             Debug.Log("Checking: " + gridUnit.name + " Move and Push " + direction + "failed, can not get target cell" );
@@ -99,7 +100,7 @@ public abstract class GridUnit : MonoBehaviour
     }
     public virtual bool CheckMoveNoPush(GridUnit gridUnit, Cell from, Direction direction)
     {
-        var targetCell = cell.grid.GetClosestCell(from, direction);
+        var targetCell = from.NextCell(direction);
         if (targetCell == null)
         {
             Debug.Log("Checking: " + gridUnit.name + " Move and No Push " + direction + "failed, can not get target cell");
@@ -126,12 +127,31 @@ public abstract class GridUnit : MonoBehaviour
     /// </summary>
     /// <param name="targetCell"></param>
     /// <param name="duration"></param>
-    public virtual void MoveToCell(Cell targetCell, float duration)
+    public virtual void MoveToCell(Cell targetCell, Direction direction, float duration)
     {
+        CheckMoveUnitsAbove(direction, duration);
         this.cell.Leave(this);
         targetCell.Enter(this);
         Debug.Log(this.name + " move to " + targetCell.name + " succeeded");
-        this.transform.DOMove(targetCell.CellToWorld(targetCell), duration);
+        this.transform.DOMove(targetCell.CellToWorld(targetCell), duration).SetEase(Ease.Linear);
+    }
+
+    private void CheckMoveUnitsAbove(Direction direction, float duration)
+    {
+        Cell upperCell = this.cell.NextCell(Direction.Above);
+        if (upperCell == null) return;
+        foreach(var unit in upperCell.gridUnits.ToArray())
+        {
+            if(!unit.isCaught && unit.pushable)
+            {
+                if(unit.CheckMoveNoPush(unit, upperCell, direction))
+                {
+                    Debug.Log("Carry move : " + unit.name + " is tweenning? " + DOTween.IsTweening(unit.transform));
+                    if(!DOTween.IsTweening(unit.transform))
+                        unit.MoveToCell(upperCell.NextCell(direction), direction, duration);
+                }
+            }
+        }
     }
     #endregion
 

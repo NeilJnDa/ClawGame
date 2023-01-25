@@ -94,13 +94,13 @@ public class Claw : GridUnit, ITurnUndo
     private void OnMoveInput(Direction direction)
     {
         clawCommandCache = new ClawCommandCache();
-        Cell upperCell = this.cell.grid.GetClosestCell(this.cell, Direction.Above);
+        Cell upperCell = this.cell.NextCell(Direction.Above);
         List<Cell> stickCells = null;
         if(upperCell != null)
         {
             stickCells = upperCell.grid.GetCellsFrom(upperCell, Direction.Above);
         }
-        Cell targetCell = this.cell.grid.GetClosestCell(this.cell, direction);
+        Cell targetCell = this.cell.NextCell(direction);
 
         
         bool success = true;
@@ -139,7 +139,7 @@ public class Claw : GridUnit, ITurnUndo
         {
             if (CheckMoveAndPushToNext(this, this.cell, Direction.Above))
             {
-                clawCommandCache.targetCell = this.cell.grid.GetClosestCell(this.cell, Direction.Above);
+                clawCommandCache.targetCell = this.cell.NextCell(Direction.Above);
                 clawCommandCache.clawCommand = ClawCommand.Lift;
                 clawCommandCache.direction = Direction.Above;
                 TurnManager.Instance.NextStep();
@@ -199,25 +199,38 @@ public class Claw : GridUnit, ITurnUndo
 
         if (clawCommandCache.willPush)
         {
-            Cell next2Cell = clawCommandCache.targetCell.grid.GetClosestCell(clawCommandCache.targetCell, clawCommandCache.direction);
-            if(next2Cell != null)
-                PushIterator(clawCommandCache.targetCell, next2Cell, Direction.Right, duration);
+            Cell next2Cell = clawCommandCache.targetCell.NextCell(clawCommandCache.direction);
+            if (next2Cell != null)
+                PushIterator(clawCommandCache.targetCell, next2Cell, clawCommandCache.direction, duration);
         }
-        MoveToCell(clawCommandCache.targetCell, duration);
+        //The stick will always push
+        List<Cell> upperCells = null;
+        Cell upperOneCell = this.cell.NextCell(Direction.Above);
+        if (upperOneCell) upperCells = upperOneCell.grid.GetCellsFrom(upperOneCell, Direction.Above);
+        if (upperCells != null)
+        {
+            foreach (var upperCell in upperCells)
+            {
+                Cell upperTargetCell = upperCell?.NextCell(clawCommandCache.direction);
+                Cell upperNext2Cell = upperTargetCell?.NextCell(clawCommandCache.direction);
+                if (upperNext2Cell != null)
+                    PushIterator(upperTargetCell, upperNext2Cell, clawCommandCache.direction, duration);
+            }
+        }
+
+        //Move this
+        MoveToCell(clawCommandCache.targetCell, clawCommandCache.direction, duration);
 
         //Move all Holding Units as well, No Rule Checking
         foreach (var unit in HoldingUnits)
         {
-            unit.MoveToCell(clawCommandCache.targetCell, duration);
+            unit.MoveToCell(clawCommandCache.targetCell, clawCommandCache.direction, duration);
         }
         return duration;
     }
     private void PushIterator(Cell from, Cell to, Direction direction, float duration)
     {
-        Debug.Log(from.name);
-        Cell nextTwo = to.grid.GetClosestCell(to, direction);
-        Debug.Log(nextTwo.name);
-        Debug.Log(nextTwo.gridUnits.Count);
+        Cell nextTwo = to.NextCell(direction);
 
         if (nextTwo != null && from.gridUnits.Exists(x => x.pushable))
         {
@@ -225,10 +238,8 @@ public class Claw : GridUnit, ITurnUndo
         }
         foreach(var unit in from.gridUnits.ToArray())
         {
-            Debug.Log(unit.name);
-
             if (unit.pushable)
-                unit.MoveToCell(to, duration);
+                unit.MoveToCell(to, direction, duration);
         }
 
     }
@@ -397,7 +408,7 @@ public class Claw : GridUnit, ITurnUndo
         //Check cells of this direction one by one until find the last plausible one
         while (true)
         {
-            targetCell = cell.grid.GetClosestCell(currentCell, direction);
+            targetCell = currentCell.NextCell(direction);
             if (targetCell != null && Rules.Instance.CheckEnterCell(this, currentCell, targetCell, direction, false, isClawToCatch))
             {
                 //If this is a claw to catch, first time the next cell has a catachble object, end the iteraion

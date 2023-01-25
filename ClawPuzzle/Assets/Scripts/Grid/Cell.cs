@@ -33,6 +33,8 @@ public class Cell : MonoBehaviour
     [BoxGroup("Solid Surface/Has a glass")]
     public bool[] solidSurface = new bool[6];
 
+
+
     public void Initialize(int i, int j, int k, Grid3D grid, bool[] GetCellSolidSurface)
     {
         //Length pos_x : axis_x
@@ -85,6 +87,35 @@ public class Cell : MonoBehaviour
     }
 
     #region HelperFunctions
+    public Cell NextCell(Direction direction)
+    {
+        Vector3Int nextCellPos = new Vector3Int(i, j, k);
+        switch (direction)
+        {
+            case Direction.Up:
+                nextCellPos.y += 1;
+                break;
+            case Direction.Down:
+                nextCellPos.y -= 1;
+                break;
+            case Direction.Left:
+                nextCellPos.x -= 1;
+                break;
+            case Direction.Right:
+                nextCellPos.x += 1;
+                break;
+            case Direction.Above:
+                nextCellPos.z += 1;
+                break;
+            case Direction.Below:
+                nextCellPos.z -= 1;
+                break;
+        }
+        if (this.grid.CheckPosValid(nextCellPos)){
+            return this.grid.GetCell(nextCellPos);
+        }
+        return null;
+    }
     public Vector3 CellToWorld(Cell cell)
     {
         //Length i : axis_x

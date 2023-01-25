@@ -24,7 +24,7 @@ public class Box : GridUnit, ITurnUndo
         if (isCaught) return 0;
         if(CheckMoveAndPushToNext(this, this.cell, Direction.Below))
         {
-            this.MoveToCell(cell.grid.GetClosestCell(this.cell, Direction.Below), TurnManager.Instance.gravityMoveEachDuration);
+            this.MoveToCell(cell.NextCell(Direction.Below), Direction.Below, TurnManager.Instance.gravityMoveEachDuration);
             return TurnManager.Instance.gravityMoveEachDuration;
         }
         return 0;

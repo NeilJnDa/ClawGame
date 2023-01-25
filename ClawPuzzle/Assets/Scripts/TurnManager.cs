@@ -48,7 +48,8 @@ public class TurnManager : MonoBehaviour
     public Turn currentTurn = Turn.Waiting;
     [field: SerializeField]
     public float playerTurnMaxDuration { get; private set; } = 0.5f;
-    public float gravityMoveEachDuration { get; private set; } = 0.3f;
+    [field: SerializeField]
+    public float gravityMoveEachDuration { get; private set; } = 0.15f;
 
 
     #endregion

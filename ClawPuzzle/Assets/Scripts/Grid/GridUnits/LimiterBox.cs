@@ -23,7 +23,7 @@ public class LimiterBox : GridUnit, ITurnUndo
 
         if (CheckMoveAndPushToNext(this, this.cell, Direction.Below))
         {
-            this.MoveToCell(cell.grid.GetClosestCell(this.cell, Direction.Below), TurnManager.Instance.gravityMoveEachDuration);
+            this.MoveToCell(cell.NextCell(Direction.Below), Direction.Below, TurnManager.Instance.gravityMoveEachDuration);
             return TurnManager.Instance.gravityMoveEachDuration;
         }
         return 0;
