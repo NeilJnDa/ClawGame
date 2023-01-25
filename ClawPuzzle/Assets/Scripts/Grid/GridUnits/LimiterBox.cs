@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
+using DG.Tweening;  
 
 public class LimiterBox : GridUnit, ITurnUndo
 {
@@ -18,6 +19,8 @@ public class LimiterBox : GridUnit, ITurnUndo
     }
     private float OnGravity()
     {
+        if (isCaught) return 0;
+
         if (CheckMoveAndPushToNext(this, this.cell, Direction.Below))
         {
             this.MoveToCell(cell.grid.GetClosestCell(this.cell, Direction.Below), TurnManager.Instance.gravityMoveEachDuration);
@@ -40,6 +43,8 @@ public class LimiterBox : GridUnit, ITurnUndo
         cell = cellHistory.Pop();
         cell.Enter(this);
         setting = settingHistory.Pop();
+        this.transform.DOKill();
+
         this.transform.position = cell.transform.position;
     }
 
@@ -64,6 +69,7 @@ public class LimiterBox : GridUnit, ITurnUndo
         {
             setting = new List<Pair>(initGridUnitInfo.setting);
         }
+        this.transform.DOKill();
 
         this.transform.position = cell.transform.position;
     }

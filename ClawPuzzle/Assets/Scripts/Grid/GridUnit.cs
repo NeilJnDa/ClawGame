@@ -135,21 +135,4 @@ public abstract class GridUnit : MonoBehaviour
     }
     #endregion
 
-    #region Limiter HelpFunction
-    protected GridUnit CheckLimitation()
-    {
-        var cells = this.cell.grid.GetCellsFrom(this.cell, Direction.Below);
-        foreach (var cell in cells)
-        {
-            foreach (var unit in cell.gridUnits)
-            {
-                if (unit.unitType == UnitType.LimiterBox || unit.unitType == UnitType.LimiterGround)
-                {
-                    return unit;
-                }
-            }
-        }
-        return null;
-    }
-    #endregion
 }

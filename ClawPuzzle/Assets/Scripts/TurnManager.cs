@@ -108,14 +108,19 @@ public class TurnManager : MonoBehaviour
 
         //Open the claw if needed
         var timeOpen = InvokeEventsReturnMax(ClawOpenEvent);
+        //Debug.Log("TimeOpen " + timeOpen);
         yield return new WaitForSeconds((float)timeOpen);
 
         //Player Turn (anim/audio)
         var timePlayer = InvokeEventsReturnMax(PlayerTurnEvent);
+        //Debug.Log("timePlayer " + timePlayer);
+
         yield return new WaitForSeconds((float)timePlayer);
 
         //Close the claw
         var timeClose = InvokeEventsReturnMax(ClawCloseEvent);
+        //Debug.Log("timeClose " + timeClose);
+
         yield return new WaitForSeconds((float)timeClose);
 
         //After claw actions, check interactions (Limiter) and gravity
@@ -126,7 +131,7 @@ public class TurnManager : MonoBehaviour
         float totalTimeGravity = 0;
         timeGravity = (float)InvokeEventsReturnMax(GravityEvent);
   
-        while(timeGravity > 0)
+        while(timeGravity > 1e5)
         {
             yield return new WaitForSeconds(timeGravity);
             totalTimeGravity += timeGravity;
@@ -134,6 +139,10 @@ public class TurnManager : MonoBehaviour
         }
         if(timeInteraction > totalTimeGravity) 
             yield return new WaitForSeconds(timeInteraction - totalTimeGravity);
+        //Debug.Log("timeGravity " + timeGravity);
+        //Debug.Log("timeInteraction " + timeInteraction);
+        //Debug.Log("totalTimeGravity " + totalTimeGravity);
+
 
 
         //Then Env Turn
@@ -226,7 +235,7 @@ public class TurnManager : MonoBehaviour
         foreach(var eventHandler in targetEvent.GetInvocationList())
         {
             float value =(float)eventHandler.DynamicInvoke();
-            if (value > maxValue) value = maxValue;
+            if (value > maxValue) maxValue = value;
         }
         return maxValue;
     }

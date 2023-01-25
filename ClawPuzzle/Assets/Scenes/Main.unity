@@ -1204,6 +1204,8 @@ MonoBehaviour:
   holdingSpeedMultiplier: 1
   animationDuration: 0.5
   targetCellCache: {fileID: 0}
+  willPush: 0
+  moveDirectionCache: 0
 --- !u!65 &23385182
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -12094,6 +12096,8 @@ MonoBehaviour:
   holdingSpeedMultiplier: 1
   animationDuration: 0.5
   targetCellCache: {fileID: 0}
+  willPush: 0
+  moveDirectionCache: 0
 --- !u!65 &238412526
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -12472,6 +12476,8 @@ MonoBehaviour:
   holdingSpeedMultiplier: 1
   animationDuration: 0.5
   targetCellCache: {fileID: 0}
+  willPush: 0
+  moveDirectionCache: 0
 --- !u!65 &250021000
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -40020,6 +40026,8 @@ MonoBehaviour:
   holdingSpeedMultiplier: 1
   animationDuration: 0.5
   targetCellCache: {fileID: 0}
+  willPush: 0
+  moveDirectionCache: 0
 --- !u!65 &838732634
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -53324,6 +53332,8 @@ MonoBehaviour:
   holdingSpeedMultiplier: 1
   animationDuration: 0.5
   targetCellCache: {fileID: 0}
+  willPush: 0
+  moveDirectionCache: 0
 --- !u!65 &1097380864
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -84468,6 +84478,8 @@ MonoBehaviour:
   holdingSpeedMultiplier: 1
   animationDuration: 0.5
   targetCellCache: {fileID: 0}
+  willPush: 0
+  moveDirectionCache: 0
 --- !u!65 &1735917002
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -95517,6 +95529,8 @@ MonoBehaviour:
   holdingSpeedMultiplier: 1
   animationDuration: 0.5
   targetCellCache: {fileID: 0}
+  willPush: 0
+  moveDirectionCache: 0
 --- !u!65 &1971368920
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -98000,7 +98014,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentTurn: 0
-  <playerTurnMaxDuration>k__BackingField: 0.5
+  <playerTurnMaxDuration>k__BackingField: 0.2
   currentStep: 0
   totalStep: 0
 --- !u!4 &2020378853
@@ -107645,19 +107659,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6045900794920053581, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_FollowOffset.y
-      value: 2.295035
+      value: 1.538549
       objectReference: {fileID: 0}
     - target: {fileID: 6045900794920053581, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_FollowOffset.z
-      value: -7.244896
+      value: -7.472884
       objectReference: {fileID: 0}
     - target: {fileID: 6045900795020062844, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_FollowOffset.y
-      value: 2.295035
+      value: 1.538549
       objectReference: {fileID: 0}
     - target: {fileID: 6045900795020062844, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_FollowOffset.z
-      value: -7.244896
+      value: -7.472884
       objectReference: {fileID: 0}
     - target: {fileID: 6045900795701854480, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_Follow
@@ -107749,11 +107763,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6045900796459830633, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_FollowOffset.y
-      value: 2.295035
+      value: 1.538549
       objectReference: {fileID: 0}
     - target: {fileID: 6045900796459830633, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_FollowOffset.z
-      value: -7.244896
+      value: -7.472884
       objectReference: {fileID: 0}
     - target: {fileID: 6045900796627784778, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_LocalPosition.y

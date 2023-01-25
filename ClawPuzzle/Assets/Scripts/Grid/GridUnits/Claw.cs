@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using System;
+using DG.Tweening;
 
 public enum ClawState
 {
@@ -39,6 +40,11 @@ public class Claw : GridUnit, ITurnUndo
 
     //A simple command cache. It will be set when player do something, and executed and cleared during player turn or env turn.
     public Cell targetCellCache = null;
+    public bool willPush = false;
+    public Direction moveDirectionCache;
+    
+    //Local flag for limitation
+    private bool isUnderLimitation = false;
 
     private void Start()
     {
@@ -87,11 +93,13 @@ public class Claw : GridUnit, ITurnUndo
         {
             //The claw Will Push
             success = success && this.CheckMoveAndPushToNext(this, this.cell, direction);
+            willPush = true;
         }
         else if (clawState == ClawState.Open)
         {
             //The claw Will not push
             success = success && this.CheckMoveNoPush(this, this.cell, direction);
+            willPush = false;
         }
 
         if (stickCells != null)
@@ -105,6 +113,7 @@ public class Claw : GridUnit, ITurnUndo
         if (success)
         {
             targetCellCache = targetCell;
+            moveDirectionCache = direction;
             TurnManager.Instance.NextStep();
         }
     }
@@ -133,6 +142,7 @@ public class Claw : GridUnit, ITurnUndo
     {
         if (clawState == ClawState.Catch)
         {
+            //TODO: ÏÈSaveToHistoryÔÙRelease
             if(TryRelease())
                 TurnManager.Instance.NextStep();
         }
@@ -167,11 +177,17 @@ public class Claw : GridUnit, ITurnUndo
 
         duration = Mathf.Clamp(duration, 0, TurnManager.Instance.playerTurnMaxDuration);
 
-        //Move Claw
-        //TODO: Move and Push
+        if (willPush)
+        {
+            Cell next2Cell = targetCellCache.grid.GetClosestCell(targetCellCache, moveDirectionCache);
+            if(next2Cell != null)
+                PushIterator(targetCellCache, next2Cell, Direction.Right, duration);
+        }
+        //If push
         MoveToCell(targetCellCache, duration);
+
         //Move all Holding Units as well, No Rule Checking
-        foreach(var unit in HoldingUnits)
+        foreach (var unit in HoldingUnits)
         {
             unit.MoveToCell(targetCellCache, duration);
         }
@@ -179,31 +195,78 @@ public class Claw : GridUnit, ITurnUndo
         targetCellCache = null;
         return duration;
     }
+    private void PushIterator(Cell from, Cell to, Direction direction, float duration)
+    {
+        Debug.Log(from.name);
+        Cell nextTwo = to.grid.GetClosestCell(to, direction);
+        Debug.Log(nextTwo.name);
+        Debug.Log(nextTwo.gridUnits.Count);
+
+        if (nextTwo != null && from.gridUnits.Exists(x => x.pushable))
+        {
+            PushIterator(to, nextTwo, direction, duration);
+        }
+        foreach(var unit in from.gridUnits.ToArray())
+        {
+            Debug.Log(unit.name);
+
+            if (unit.pushable)
+                unit.MoveToCell(to, duration);
+        }
+
+    }
     private float OnCheckInteraction()
     {
         var limiter = CheckLimitation();
         if(limiter == null)
         {
-            Debug.Log(this.name + " on End Limitation");
-            if (clawState == ClawState.Open)
+            if (isUnderLimitation)
             {
-                //Do nothing
+                //From Limaitation to no limiation
+                Debug.Log(this.name + " on End Limitation");
+                isUnderLimitation = false;
+
+                if (clawState == ClawState.Open)
+                {
+                    if (Catch()) return animationDuration;
+                }
             }
         }
+
         else
         {
-            Debug.Log(this.name + " on Limitation");
-            if (clawState == ClawState.Close || clawState == ClawState.Catch)
+            if (!isUnderLimitation)
             {
-                if(TryRelease()) return animationDuration;
-            }
-            if(clawState == ClawState.Open)
-            {
-                animator.SetTrigger("OpenToOpen");
-                return animationDuration;
+                //From No Limaitation to Limiation
+                Debug.Log(this.name + " on Limitation");
+                isUnderLimitation = true;
+                if (clawState == ClawState.Close || clawState == ClawState.Catch)
+                {
+                    if (TryRelease()) return animationDuration;
+                }
+                if (clawState == ClawState.Open)
+                {
+                    animator.SetTrigger("OpenToOpen");
+                    return animationDuration;
+                }
             }
         }
         return 0;
+    }
+    protected GridUnit CheckLimitation()
+    {
+        var cells = this.cell.grid.GetCellsFrom(this.cell, Direction.Below);
+        foreach (var cell in cells)
+        {
+            foreach (var unit in cell.gridUnits)
+            {
+                if (unit.unitType == UnitType.LimiterBox || unit.unitType == UnitType.LimiterGround)
+                {
+                    return unit;
+                }
+            }
+        }
+        return null;
     }
     private float OnClawDroppingClose()
     {
@@ -242,6 +305,8 @@ public class Claw : GridUnit, ITurnUndo
     private void OnEndStep()
     {
         if (isDropping) isDropping = false;
+        willPush = false;
+        targetCellCache = null;
     }
     #endregion
     #region Behaviours
@@ -365,7 +430,9 @@ public class Claw : GridUnit, ITurnUndo
         clawState = clawStateHistory.Pop();
         HoldingUnits = holdingUnitsHistory.Pop();
 
+        animator.Play(clawState.ToString(), 0);
         targetCellCache = null;
+        this.transform.DOKill();
         this.transform.position = cell.transform.position;
     }
 
@@ -375,8 +442,8 @@ public class Claw : GridUnit, ITurnUndo
         animator.ResetTrigger("OpenToOpen");
         animator.ResetTrigger("OpenToCatch");
         animator.ResetTrigger("ToOpen");
-        animator.Play("Entry");
-
+        animator.Play("Close", 0);
+    
         Cell cellRef = cell;
         cellHistory.Push(cellRef);
         List<Pair> settingTemp = new List<Pair>(setting);
@@ -398,7 +465,7 @@ public class Claw : GridUnit, ITurnUndo
         }
         clawState = ClawState.Close;
         HoldingUnits.Clear();
-
+        this.transform.DOKill();
         this.transform.position = cell.transform.position;
         targetCellCache = null;
     }

@@ -111,14 +111,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 05202b169cd640a4daa60b806fd15aa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isCaught: 0
   setting: []
   cell: {fileID: 0}
-  targetCellCache: {fileID: 0}
   clawState: 0
   <HoldingUnits>k__BackingField: []
   <isDropping>k__BackingField: 0
   emptySpeedMultiplier: 4
   holdingSpeedMultiplier: 1
+  animationDuration: 0.2
+  targetCellCache: {fileID: 0}
+  willPush: 0
+  moveDirectionCache: 0
 --- !u!1001 &7292052183193457613
 PrefabInstance:
   m_ObjectHideFlags: 0
