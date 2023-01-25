@@ -1199,13 +1199,14 @@ MonoBehaviour:
   cell: {fileID: 405879996}
   clawState: 0
   <HoldingUnits>k__BackingField: []
-  <isDropping>k__BackingField: 0
   emptySpeedMultiplier: 4
   holdingSpeedMultiplier: 1
   animationDuration: 0.5
-  targetCellCache: {fileID: 0}
-  willPush: 0
-  moveDirectionCache: 0
+  clawCommandCache:
+    clawCommand: 0
+    targetCell: {fileID: 0}
+    willPush: 0
+    direction: 0
 --- !u!65 &23385182
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -12091,13 +12092,14 @@ MonoBehaviour:
   cell: {fileID: 554050018}
   clawState: 0
   <HoldingUnits>k__BackingField: []
-  <isDropping>k__BackingField: 0
   emptySpeedMultiplier: 4
   holdingSpeedMultiplier: 1
   animationDuration: 0.5
-  targetCellCache: {fileID: 0}
-  willPush: 0
-  moveDirectionCache: 0
+  clawCommandCache:
+    clawCommand: 0
+    targetCell: {fileID: 0}
+    willPush: 0
+    direction: 0
 --- !u!65 &238412526
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -12471,13 +12473,14 @@ MonoBehaviour:
   cell: {fileID: 90151949}
   clawState: 0
   <HoldingUnits>k__BackingField: []
-  <isDropping>k__BackingField: 0
   emptySpeedMultiplier: 4
   holdingSpeedMultiplier: 1
   animationDuration: 0.5
-  targetCellCache: {fileID: 0}
-  willPush: 0
-  moveDirectionCache: 0
+  clawCommandCache:
+    clawCommand: 0
+    targetCell: {fileID: 0}
+    willPush: 0
+    direction: 0
 --- !u!65 &250021000
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -40021,13 +40024,14 @@ MonoBehaviour:
   cell: {fileID: 135103701}
   clawState: 0
   <HoldingUnits>k__BackingField: []
-  <isDropping>k__BackingField: 0
   emptySpeedMultiplier: 4
   holdingSpeedMultiplier: 1
   animationDuration: 0.5
-  targetCellCache: {fileID: 0}
-  willPush: 0
-  moveDirectionCache: 0
+  clawCommandCache:
+    clawCommand: 0
+    targetCell: {fileID: 0}
+    willPush: 0
+    direction: 0
 --- !u!65 &838732634
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -53327,13 +53331,14 @@ MonoBehaviour:
   cell: {fileID: 1655573038}
   clawState: 0
   <HoldingUnits>k__BackingField: []
-  <isDropping>k__BackingField: 0
   emptySpeedMultiplier: 4
   holdingSpeedMultiplier: 1
   animationDuration: 0.5
-  targetCellCache: {fileID: 0}
-  willPush: 0
-  moveDirectionCache: 0
+  clawCommandCache:
+    clawCommand: 0
+    targetCell: {fileID: 0}
+    willPush: 0
+    direction: 0
 --- !u!65 &1097380864
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -84473,13 +84478,14 @@ MonoBehaviour:
   cell: {fileID: 1388921439}
   clawState: 0
   <HoldingUnits>k__BackingField: []
-  <isDropping>k__BackingField: 0
   emptySpeedMultiplier: 4
   holdingSpeedMultiplier: 1
   animationDuration: 0.5
-  targetCellCache: {fileID: 0}
-  willPush: 0
-  moveDirectionCache: 0
+  clawCommandCache:
+    clawCommand: 0
+    targetCell: {fileID: 0}
+    willPush: 0
+    direction: 0
 --- !u!65 &1735917002
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -95524,13 +95530,14 @@ MonoBehaviour:
   cell: {fileID: 1721259846}
   clawState: 0
   <HoldingUnits>k__BackingField: []
-  <isDropping>k__BackingField: 0
   emptySpeedMultiplier: 4
   holdingSpeedMultiplier: 1
   animationDuration: 0.5
-  targetCellCache: {fileID: 0}
-  willPush: 0
-  moveDirectionCache: 0
+  clawCommandCache:
+    clawCommand: 0
+    targetCell: {fileID: 0}
+    willPush: 0
+    direction: 0
 --- !u!65 &1971368920
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -107659,19 +107666,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6045900794920053581, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_FollowOffset.y
-      value: 1.538549
+      value: 2.381361
       objectReference: {fileID: 0}
     - target: {fileID: 6045900794920053581, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_FollowOffset.z
-      value: -7.472884
+      value: -7.168415
       objectReference: {fileID: 0}
     - target: {fileID: 6045900795020062844, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_FollowOffset.y
-      value: 1.538549
+      value: 2.381361
       objectReference: {fileID: 0}
     - target: {fileID: 6045900795020062844, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_FollowOffset.z
-      value: -7.472884
+      value: -7.168415
       objectReference: {fileID: 0}
     - target: {fileID: 6045900795701854480, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_Follow
@@ -107763,11 +107770,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6045900796459830633, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_FollowOffset.y
-      value: 1.538549
+      value: 2.381361
       objectReference: {fileID: 0}
     - target: {fileID: 6045900796459830633, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_FollowOffset.z
-      value: -7.472884
+      value: -7.168415
       objectReference: {fileID: 0}
     - target: {fileID: 6045900796627784778, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_LocalPosition.y
