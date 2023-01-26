@@ -1339,6 +1339,8 @@ MonoBehaviour:
     targetCell: {fileID: 0}
     willPush: 0
     direction: 0
+  clawOpenCloseSound: {fileID: 0}
+  clawCatchSound: {fileID: 0}
 --- !u!65 &23066862
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1472,6 +1474,8 @@ MonoBehaviour:
     targetCell: {fileID: 0}
     willPush: 0
     direction: 0
+  clawOpenCloseSound: {fileID: 0}
+  clawCatchSound: {fileID: 0}
 --- !u!65 &23385182
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -20792,6 +20796,8 @@ MonoBehaviour:
     targetCell: {fileID: 0}
     willPush: 0
     direction: 0
+  clawOpenCloseSound: {fileID: 0}
+  clawCatchSound: {fileID: 0}
 --- !u!65 &379512378
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -32527,6 +32533,8 @@ MonoBehaviour:
     targetCell: {fileID: 0}
     willPush: 0
     direction: 0
+  clawOpenCloseSound: {fileID: 0}
+  clawCatchSound: {fileID: 0}
 --- !u!65 &628535629
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -64350,6 +64358,8 @@ MonoBehaviour:
     targetCell: {fileID: 0}
     willPush: 0
     direction: 0
+  clawOpenCloseSound: {fileID: 0}
+  clawCatchSound: {fileID: 0}
 --- !u!65 &1258487130
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -71059,6 +71069,8 @@ MonoBehaviour:
     targetCell: {fileID: 0}
     willPush: 0
     direction: 0
+  clawOpenCloseSound: {fileID: 0}
+  clawCatchSound: {fileID: 0}
 --- !u!65 &1396685639
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -71806,6 +71818,8 @@ MonoBehaviour:
     targetCell: {fileID: 0}
     willPush: 0
     direction: 0
+  clawOpenCloseSound: {fileID: 0}
+  clawCatchSound: {fileID: 0}
 --- !u!65 &1402205026
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -114644,19 +114658,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6045900794920053581, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_FollowOffset.y
-      value: 1.45
+      value: 1.452571
       objectReference: {fileID: 0}
     - target: {fileID: 6045900794920053581, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_FollowOffset.z
-      value: -7.42
+      value: -7.421996
       objectReference: {fileID: 0}
     - target: {fileID: 6045900795020062844, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_FollowOffset.y
-      value: 1.45
+      value: 1.452571
       objectReference: {fileID: 0}
     - target: {fileID: 6045900795020062844, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_FollowOffset.z
-      value: -7.42
+      value: -7.421996
       objectReference: {fileID: 0}
     - target: {fileID: 6045900795701854480, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_Follow
@@ -114748,11 +114762,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6045900796459830633, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_FollowOffset.y
-      value: 1.45
+      value: 1.452571
       objectReference: {fileID: 0}
     - target: {fileID: 6045900796459830633, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_FollowOffset.z
-      value: -7.42
+      value: -7.421996
       objectReference: {fileID: 0}
     - target: {fileID: 6045900796627784778, guid: 5d31f5f8d36b35b498b2facdf88149f4, type: 3}
       propertyPath: m_LocalPosition.y

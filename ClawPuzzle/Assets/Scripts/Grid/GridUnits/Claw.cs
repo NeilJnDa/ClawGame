@@ -60,6 +60,11 @@ public class Claw : GridUnit, ITurnUndo
     [ShowInInspector][ReadOnly]
     private bool isUnderLimitation = false;
 
+    [Title("Audio")]
+    public AudioClip clawOpenCloseSound;
+    public AudioClip clawCatchSound;
+
+
     private void Start()
     {
         InputManager.Instance.moveEvent += OnMoveInput;
@@ -362,6 +367,7 @@ public class Claw : GridUnit, ITurnUndo
                 unit.isCaught = false;
             }
             HoldingUnits.Clear();
+            AudioSource.PlayClipAtPoint(clawOpenCloseSound, this.transform.position);
             Debug.Log(this.name + " Release Claw");
             return true;
         }
@@ -378,6 +384,7 @@ public class Claw : GridUnit, ITurnUndo
         {
             Debug.Log("Claw Caught units");
             animator.SetTrigger("OpenToCatch");
+            AudioSource.PlayClipAtPoint(clawOpenCloseSound, this.transform.position);
             clawState = ClawState.Catch;
             return true;
         }
@@ -385,6 +392,7 @@ public class Claw : GridUnit, ITurnUndo
         {
             Debug.Log("Claw Caught nothing but still close");
             animator.SetTrigger("OpenToClose");
+            AudioSource.PlayClipAtPoint(clawOpenCloseSound, this.transform.position);
             clawState = ClawState.Close;
             return true;
         }
@@ -406,6 +414,7 @@ public class Claw : GridUnit, ITurnUndo
             toCatch.isCaught = true;
             Debug.Log(this.name + " catch " + toCatch.name);
             newCatch = true;
+            AudioSource.PlayClipAtPoint(clawCatchSound, this.transform.position);
         }
         return newCatch;
     }
