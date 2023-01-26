@@ -131,8 +131,8 @@ public class TurnManager : MonoBehaviour
         float timeGravity = 0;
         float totalTimeGravity = 0;
         timeGravity = (float)InvokeEventsReturnMax(GravityEvent);
-  
-        while(timeGravity > 1e5)
+
+        while (timeGravity > 1e-5)
         {
             yield return new WaitForSeconds(timeGravity);
             totalTimeGravity += timeGravity;
@@ -152,21 +152,25 @@ public class TurnManager : MonoBehaviour
         var timeEnv = InvokeEventsReturnMax(EnvTurnEvent);
         yield return new WaitForSeconds((float)timeEnv);
 
-        //PostEnv: Gravity and Limitation
-        currentTurn = Turn.PostEnvTurn;
-        var timeInteraction2 = InvokeEventsReturnMax(CheckInteractionEvent);
-        float timeGravity2 = 0;
-        float totalTimeGravity2 = 0;
-        timeGravity2 = (float)InvokeEventsReturnMax(GravityEvent);
-
-        while (timeGravity2 > 0)
+        if(timeEnv > 1e-5)
         {
-            yield return new WaitForSeconds(timeGravity2);
-            totalTimeGravity2 += timeGravity2;
+            //PostEnv: Gravity and Limitation
+            currentTurn = Turn.PostEnvTurn;
+            var timeInteraction2 = InvokeEventsReturnMax(CheckInteractionEvent);
+            float timeGravity2 = 0;
+            float totalTimeGravity2 = 0;
             timeGravity2 = (float)InvokeEventsReturnMax(GravityEvent);
+
+            while (timeGravity2 > 0)
+            {
+                yield return new WaitForSeconds(timeGravity2);
+                totalTimeGravity2 += timeGravity2;
+                timeGravity2 = (float)InvokeEventsReturnMax(GravityEvent);
+            }
+            if (timeInteraction2 > totalTimeGravity2)
+                yield return new WaitForSeconds(timeInteraction2 - totalTimeGravity2);
         }
-        if (timeInteraction2 > totalTimeGravity2)
-            yield return new WaitForSeconds(timeInteraction2 - totalTimeGravity2);
+
 
         //Accept command
         currentTurn = Turn.Waiting;
@@ -235,8 +239,9 @@ public class TurnManager : MonoBehaviour
         float maxValue = 0;
         foreach(var eventHandler in targetEvent.GetInvocationList())
         {
-            float value =(float)eventHandler.DynamicInvoke();
+            float value = (float)eventHandler.DynamicInvoke();
             if (value > maxValue) maxValue = value;
+
         }
         return maxValue;
     }

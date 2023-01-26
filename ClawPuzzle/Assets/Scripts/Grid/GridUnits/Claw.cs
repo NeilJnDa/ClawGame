@@ -412,7 +412,7 @@ public class Claw : GridUnit, ITurnUndo
         while (true)
         {
             targetCell = currentCell.NextCell(direction);
-            if (targetCell != null && Rules.Instance.CheckEnterCell(this, currentCell, targetCell, direction, false, isClawToCatch))
+            if (targetCell != null && Rules.Instance.CheckEnterCell(this, currentCell, targetCell, direction, isClawToCatch))
             {
                 //If this is a claw to catch, first time the next cell has a catachble object, end the iteraion
                 if (isClawToCatch && targetCell.gridUnits.Exists(x => x.pushable)) break;
@@ -449,6 +449,10 @@ public class Claw : GridUnit, ITurnUndo
     [ShowInInspector]
     [ReadOnly]
     Stack<List<GridUnit>> holdingUnitsHistory = new Stack<List<GridUnit>>();
+    [ShowInInspector]
+    [ReadOnly]
+    Stack<bool> isUnderLimitationHistory = new Stack<bool>();
+
     public void UndoOneStep()
     {
         cell.Leave(this);
@@ -458,6 +462,7 @@ public class Claw : GridUnit, ITurnUndo
         setting = settingHistory.Pop();
         clawState = clawStateHistory.Pop();
         HoldingUnits = holdingUnitsHistory.Pop();
+        isUnderLimitation = isUnderLimitationHistory.Pop();
 
         animator.Play(clawState.ToString(), 0);
         clawCommandCache = default(ClawCommandCache);
@@ -481,6 +486,7 @@ public class Claw : GridUnit, ITurnUndo
         clawStateHistory.Push(clawState);
         List<GridUnit> holdingUnitsTemp = new List<GridUnit>(HoldingUnits);
         holdingUnitsHistory.Push(holdingUnitsTemp);
+        isUnderLimitationHistory.Push(CheckLimitation() ? true : false);
 
         cell.Leave(this);
         cell = initCell;
@@ -512,6 +518,9 @@ public class Claw : GridUnit, ITurnUndo
 
         List<GridUnit> holdingUnitsTemp = new List<GridUnit>(HoldingUnits);
         holdingUnitsHistory.Push(holdingUnitsTemp);
+
+        isUnderLimitationHistory.Push(isUnderLimitation);
+
     }
     #endregion
 

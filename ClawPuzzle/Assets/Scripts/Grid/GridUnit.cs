@@ -86,12 +86,13 @@ public abstract class GridUnit : MonoBehaviour
         bool success = true;
         foreach (var unit in targetCell.gridUnits)
         {       
-            if (unit.pushable == false) {
-                Debug.Log(gridUnit.name + " can not enter " + targetCell.name + " since " + unit.name + " is not pushable");
+            if (!Rules.Instance.CheckCompatible(gridUnit, unit, from, targetCell, direction, true)) {
+                Debug.Log(gridUnit.name + " can not enter " + targetCell.name);
                 return false; 
             }
-            else
+            else if(unit.pushable)
             {
+                //This is an iteration to check all pushed units can move.
                 success = success && unit.CheckMoveAndPushToNext(unit, targetCell, direction);
                 if (success == false) return false;
             }
@@ -108,16 +109,17 @@ public abstract class GridUnit : MonoBehaviour
         }
         Debug.Log("Checking: " + gridUnit.name + " Move but No Push into" + targetCell.name);
 
-        bool success = true;
         foreach (var unit in targetCell.gridUnits)
         {
-            if (unit.pushable == false)
+            if (!Rules.Instance.CheckCompatible(gridUnit, unit, from, targetCell, direction, true))
             {
-                Debug.Log(gridUnit.name + " can not enter " + targetCell.name + " since " + unit.name + " is not pushable (Ground)");
+                //No Iteration, only check once
+                
+                Debug.Log(gridUnit.name + " can not enter " + targetCell.name);
                 return false;
             }
         }
-        return success;
+        return true;
     }
 
    
