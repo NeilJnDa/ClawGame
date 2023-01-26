@@ -253,6 +253,7 @@ public class Claw : GridUnit, ITurnUndo
                 //From Limaitation to no limiation
                 Debug.Log(this.name + " on End Limitation");
                 isUnderLimitation = false;
+                GetComponentInChildren<ClawLineIndicator>().ChangeLineToWhite();
 
                 if (clawState == ClawState.Open)
                 {
@@ -267,6 +268,8 @@ public class Claw : GridUnit, ITurnUndo
             {
                 //From No Limaitation to Limiation
                 Debug.Log(this.name + " on Limitation");
+                GetComponentInChildren<ClawLineIndicator>().ChangeLineToRed();
+
                 isUnderLimitation = true;
                 if (clawState == ClawState.Close || clawState == ClawState.Catch)
                 {

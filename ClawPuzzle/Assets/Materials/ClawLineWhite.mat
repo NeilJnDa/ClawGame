@@ -7,23 +7,23 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Claw2
-  m_Shader: {fileID: 4800000, guid: 933f24cde1e3f6a41818f56d729421ab, type: 3}
-  m_ShaderKeywords: _HALFTONESHAPE_DOT _OUTLINE _SPECULARHIGHLIGHTS_OFF _TOON_SHADING_ON
+  m_Name: ClawLineWhite
+  m_Shader: {fileID: 4800000, guid: e88aeddd2ef1f934d805981244872e27, type: 3}
+  m_ShaderKeywords: _ALPHATEST_ON _HALFTONESHAPE_DOT _RECEIVE_SHADOWS_OFF _SPECULAR_COLOR
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2000
+  m_CustomRenderQueue: 2450
   stringTagMap:
-    RenderType: Opaque
+    RenderType: TransparentCutout
   disabledShaderPasses:
   - SRPDEFAULTUNLIT
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 5, y: 5}
+        m_Texture: {fileID: 2800000, guid: be9aaa19cef17ca40be3bfa3e6ad529c, type: 3}
+        m_Scale: {x: 4.6, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
@@ -98,8 +98,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 5, y: 5}
+        m_Texture: {fileID: 2800000, guid: be9aaa19cef17ca40be3bfa3e6ad529c, type: 3}
+        m_Scale: {x: 4.6, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
@@ -140,22 +140,31 @@ Material:
     m_Ints: []
     m_Floats:
     - _ActiveRenderFeature: 1
-    - _AlphaClip: 0
+    - _AlphaClip: 1
     - _Blend: 0
+    - _BlendOp: 0
     - _BrushLowerCut: 0
     - _BrushSize: 0.8
     - _BumpScale: 1
     - _CameraDistanceImpact: 0
+    - _CameraFadingEnabled: 0
+    - _CameraFarFadeDistance: 2
+    - _CameraNearFadeDistance: 1
     - _CelExtraEnabled: 0
     - _CelNumSteps: 3
     - _CelPrimaryMode: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
+    - _ColorMode: 0
     - _Cull: 2
-    - _Cutoff: 0.5
+    - _Cutoff: 1
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
-    - _DiffuseStep: -0.19
+    - _DiffuseStep: -1
+    - _DistortionBlend: 0.5
+    - _DistortionEnabled: 0
+    - _DistortionStrength: 1
+    - _DistortionStrengthScaled: 0.1
     - _DitherTexelSize: 1
     - _DitherThreshold: 1
     - _DotSize: 0.7
@@ -177,9 +186,13 @@ Material:
     - _FlatSpecularSize: 0.1
     - _Flatness: 1
     - _FlatnessExtra: 1
+    - _FlattenGI: 0
+    - _FlipbookBlending: 0
+    - _FlipbookMode: 0
     - _GlitterEnabled: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
+    - _GlossinessSource: 0
     - _GlossyReflections: 1
     - _GradientAngle: 0
     - _GradientCenterX: 0
@@ -212,6 +225,7 @@ Material:
     - _HatchingEnabled: 0
     - _HatchingRotation: 0
     - _HatchingSmoothness: 0.1
+    - _InvFade: 1
     - _LightContribution: 1
     - _LightFalloffSize: 1
     - _LightmapDirectionPitch: 0
@@ -223,15 +237,16 @@ Material:
     - _NoiseStrength: 0.1
     - _OcclusionStrength: 1
     - _OutlineDepthOffset: 0
-    - _OutlineEnabled: 1
+    - _OutlineEnabled: 0
     - _OutlineMode: 0
     - _OutlineScale: 1
     - _OutlineWidth: 3
     - _Outline_Width: 0
     - _OverrideLightmapDir: 0
+    - _OverrideShadowColor: 0
     - _Parallax: 0.02
     - _QueueOffset: 50
-    - _ReceiveShadows: 1
+    - _ReceiveShadows: 0
     - _RemapInputMax: 1
     - _RemapInputMin: 0
     - _RemapOutputMax: 0.95
@@ -239,7 +254,7 @@ Material:
     - _RimEnabled: 0
     - _RimLightAlign: 0.358
     - _RimLightSmoothness: 0.463
-    - _RimPower: 0.318
+    - _RimPower: 0.248
     - _SSOutlineDepthThredshold: 1
     - _SSOutlineNdotVThredshold: 0.2
     - _SSOutlineNormalThredshold: 0.305
@@ -249,11 +264,17 @@ Material:
     - _SelfShadingSizeExtra: 0.6
     - _ShadowEdgeSize: 0.05
     - _ShadowEdgeSizeExtra: 0.05
+    - _Shininess: 0
     - _SizeFalloff: 0
     - _Smoothness: 0
+    - _SmoothnessSource: 0
     - _SmoothnessTextureChannel: 0
+    - _SoftParticlesEnabled: 0
+    - _SoftParticlesFarFadeDistance: 1
+    - _SoftParticlesNearFadeDistance: 0
     - _SpecClipMaskScale: 1
     - _SpecShadowStrength: 1
+    - _SpecSource: 0
     - _SpecularClipStrength: 0
     - _SpecularEnabled: 0
     - _SpecularFalloff: 0.217
@@ -265,7 +286,7 @@ Material:
     - _SrcBlend: 1
     - _StencilComp: 0
     - _StencilRef: 0
-    - _StepViaRampTexture: 1
+    - _StepViaRampTexture: 0
     - _Surface: 0
     - _TOON_SHADING: 1
     - _TextureBlendingMode: 0
@@ -284,7 +305,9 @@ Material:
     - _ZWrite: 1
     - _brushScale: 8
     m_Colors:
-    - _BaseColor: {r: 0.5327996, g: 0.50783193, b: 0.8490566, a: 1}
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
+    - _BaseColorAddSubDiff: {r: 0, g: 0, b: 0, a: 0}
+    - _CameraFadeParams: {r: 0, g: Infinity, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _ColorDim: {r: 0.5660378, g: 0.258989, b: 0.258989, a: 1}
     - _ColorDimCurve: {r: 0.85023, g: 0.85034, b: 0.85045, a: 0.85056}
@@ -306,9 +329,11 @@ Material:
     - _LightmapDirection: {r: 0, g: 1, b: 0, a: 0}
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _OutlineDistancFade: {r: -25, g: 50, b: 0, a: 0}
-    - _RimColor: {r: 0.80893326, g: 1, b: 0, a: 1}
+    - _RimColor: {r: 0, g: 0, b: 0, a: 1}
     - _ShadowColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
+    - _SoftParticleFadeParams: {r: 0, g: 0, b: 0, a: 0}
+    - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 0}
     - _SpherizeNormalOrigin: {r: 0, g: 0, b: 0, a: 1}
+    - _TintColor: {r: 0.5, g: 0.5, b: 0.5, a: 0.5}
     - _UnityShadowColor: {r: 0.85023, g: 0.85034, b: 0.85045, a: 0.85056}
   m_BuildTextureStacks: []
