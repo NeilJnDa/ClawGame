@@ -34,6 +34,7 @@ public class GameManager : MonoBehaviour
     public List<string> levelList = new List<string>();
     public int currentLevelIndex = 0;
     public Level currentLevel;
+    public List<AudioClip> successSounds = new List<AudioClip>();
     // Start is called before the first frame update
     void Start()
     {
@@ -51,6 +52,9 @@ public class GameManager : MonoBehaviour
     }
     IEnumerator CompleteLevelExecutor()
     {
+        if(successSounds.Count > 0)
+            AudioSource.PlayClipAtPoint(successSounds[Random.Range(0, successSounds.Count)], Vector3.zero);
+
         var playerRB = FindObjectOfType<Player>().transform.GetComponent<Rigidbody>();
         playerRB.useGravity = true;
         playerRB.isKinematic = false;

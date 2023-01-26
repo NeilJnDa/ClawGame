@@ -76,6 +76,10 @@ public class TurnManager : MonoBehaviour
     public int totalStep = 0;
     private IEnumerator NextStepInst = null;
 
+    [Title("Audio")]
+    public AudioClip undoSound;
+    public AudioClip resetSound;
+
     public void Initialize()
     {
         currentTurn = Turn.Waiting;
@@ -197,6 +201,7 @@ public class TurnManager : MonoBehaviour
 
     public void UndoOneStep()
     {
+        AudioSource.PlayClipAtPoint(undoSound, transform.position);
         StopNextTurnCoroutine();
         if (totalStep <= 0) return;
         currentStep = currentStepHistory.Pop();
@@ -212,6 +217,8 @@ public class TurnManager : MonoBehaviour
     }
     public void ResetAll()
     {
+        AudioSource.PlayClipAtPoint(resetSound, transform.position);
+
         StopNextTurnCoroutine();
         if (currentStep <= 0) return;
         totalStep++;

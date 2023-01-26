@@ -57,6 +57,7 @@ public class Claw : GridUnit, ITurnUndo
     
     
     //Local flag for limitation
+    [ShowInInspector][ReadOnly]
     private bool isUnderLimitation = false;
 
     private void Start()
@@ -475,9 +476,6 @@ public class Claw : GridUnit, ITurnUndo
     [ShowInInspector]
     [ReadOnly]
     Stack<List<GridUnit>> holdingUnitsHistory = new Stack<List<GridUnit>>();
-    [ShowInInspector]
-    [ReadOnly]
-    Stack<bool> isUnderLimitationHistory = new Stack<bool>();
 
     public void UndoOneStep()
     {
@@ -488,7 +486,7 @@ public class Claw : GridUnit, ITurnUndo
         setting = settingHistory.Pop();
         clawState = clawStateHistory.Pop();
         HoldingUnits = holdingUnitsHistory.Pop();
-        isUnderLimitation = isUnderLimitationHistory.Pop();
+        isUnderLimitation = CheckLimitation() != null ? true : false;
 
         animator.Play(clawState.ToString(), 0);
         clawCommandCache = default(ClawCommandCache);
@@ -512,7 +510,7 @@ public class Claw : GridUnit, ITurnUndo
         clawStateHistory.Push(clawState);
         List<GridUnit> holdingUnitsTemp = new List<GridUnit>(HoldingUnits);
         holdingUnitsHistory.Push(holdingUnitsTemp);
-        isUnderLimitationHistory.Push(CheckLimitation() ? true : false);
+
 
         cell.Leave(this);
         cell = initCell;
@@ -527,6 +525,8 @@ public class Claw : GridUnit, ITurnUndo
         }
         clawState = ClawState.Close;
         HoldingUnits.Clear();
+        isUnderLimitation = CheckLimitation() != null ? true : false;
+
         this.transform.DOKill();
         this.transform.position = cell.transform.position;
         clawCommandCache = default(ClawCommandCache);
@@ -543,9 +543,7 @@ public class Claw : GridUnit, ITurnUndo
         clawStateHistory.Push(clawState);
 
         List<GridUnit> holdingUnitsTemp = new List<GridUnit>(HoldingUnits);
-        holdingUnitsHistory.Push(holdingUnitsTemp);
-
-        isUnderLimitationHistory.Push(isUnderLimitation);
+        holdingUnitsHistory.Push(holdingUnitsTemp);       
 
     }
     #endregion
