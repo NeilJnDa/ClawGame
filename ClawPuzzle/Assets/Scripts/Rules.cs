@@ -120,54 +120,7 @@ public class Rules : MonoBehaviour
         return success;
     }
         
-        //}
-        /// <summary>
-        /// TODO: More Rules
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <returns></returns>
-    //    public bool CheckEnterCell(GridUnit gridUnit, Cell from, Cell to, Direction direction, bool ignorePushable = false, bool isClawToCatch = false)
-    //{
-    //    //We assume the target cell exists ("to" can not be null. This is already checked before this method)
-    //    Debug.Log("Check " + gridUnit.name + " to " + to.name);
-
-    //    if (!CheckSolidSurface(gridUnit, from, to, direction))
-    //    {
-    //        return false;
-    //    }
-
-    //    //Claw Try To catch
-    //    if (isClawToCatch)
-    //    {
-    //        if (to.gridUnits.Exists(x => x.pushable == false))
-    //        {
-    //            Debug.LogWarning("Checking: " + gridUnit.name + " (Claw) move and catch from " + from.name + " " + direction + " failed, Rules not allowed since there is an a ground/conveyor/hole (Not catchable)");
-    //            return false;
-    //        }
-    //    }
-
-    //    //Other grid units
-    //    else if (ignorePushable)
-    //    {
-    //        if(to.gridUnits.Exists(x=> x.pushable == false))
-    //        {
-    //            Debug.LogWarning("Checking: " + gridUnit + " move from " + from.name + " to " + direction + " failed, Rules not allowed since target has unPushable units");
-    //            return false;
-    //        }
-    //    }
-    //    else
-    //    {
-    //        if (to.gridUnits.Count != 0)
-    //        {
-    //            Debug.LogWarning("Checking: " + gridUnit + " move from " + from.name + " to " + direction + " failed, Rules not allowed since target has " + to.gridUnits.Count + " units");
-    //            return false;
-    //        }
-    //    }
-
-    //    return true;
-    //}
-    private bool CheckSolidSurface(GridUnit gridUnit, Cell from, Cell to, Direction direction)
+    public bool CheckSolidSurface(GridUnit gridUnit, Cell from, Cell to, Direction direction)
     {
         //Glass Obstacles
         if (from.solidSurface[((int)direction)])

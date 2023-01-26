@@ -81,6 +81,9 @@ public abstract class GridUnit : MonoBehaviour
         }
         Debug.Log("Checking: " + gridUnit.name + " Move and Push into" + targetCell.name);
 
+        if (!Rules.Instance.CheckSolidSurface(gridUnit, from, targetCell, direction)){
+            return false;
+        }
         bool success = true;
         foreach (var unit in targetCell.gridUnits)
         {       
@@ -106,7 +109,9 @@ public abstract class GridUnit : MonoBehaviour
             return false;
         }
         Debug.Log("Checking: " + gridUnit.name + " Move but No Push into" + targetCell.name);
-
+        if (!Rules.Instance.CheckSolidSurface(gridUnit, from, targetCell, direction)){
+            return false;
+        }
         foreach (var unit in targetCell.gridUnits)
         {
             if (!Rules.Instance.CheckCompatible(gridUnit, unit, from, targetCell, direction, true))

@@ -119,7 +119,7 @@ public class LevelData
     }
     public void SetCellSpace(int i, int j, int k, bool[] solidSurface)
     {
-        if (i >= gridSetting.length || j >= gridSetting.width || k >= gridSetting.height)
+        if (i >= gridSetting.length || j >= gridSetting.width || k >= gridSetting.height || i < 0 || j < 0 || k < 0)
         {
             Debug.LogError("Unit Index out of boundary. Check if the grid is to small or the unit is too far.");
         }
@@ -127,7 +127,7 @@ public class LevelData
     }
     public void SetGridUnit(int i, int j, int k, UnitType unitType, List<Pair> setting)
     {
-        if (i >= gridSetting.length || j >= gridSetting.width || k >= gridSetting.height)
+        if (i >= gridSetting.length || j >= gridSetting.width || k >= gridSetting.height || i < 0 || j < 0 || k < 0)
         {
             Debug.LogError(unitType + ": Unit Index out of boundary. Check if the grid is to small or the unit is too far.");
         }
