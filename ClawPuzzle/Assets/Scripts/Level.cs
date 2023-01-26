@@ -103,7 +103,7 @@ public class Level : MonoBehaviour
         Initialize();
     }
 
-    private void Initialize()
+    public void Initialize()
     {
         Debug.Log("Delete " + transform.childCount + " children of " + transform.name);
 

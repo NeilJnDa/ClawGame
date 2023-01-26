@@ -76,6 +76,14 @@ public class TurnManager : MonoBehaviour
     public int totalStep = 0;
     private IEnumerator NextStepInst = null;
 
+    public void Initialize()
+    {
+        currentTurn = Turn.Waiting;
+        currentStep = 0;
+        currentStepHistory.Clear();
+        totalStep = 0;
+        NextStepInst = null;
+    }
     /// <summary>
     /// Skip One PlayerTurn
     /// </summary>
@@ -183,14 +191,6 @@ public class TurnManager : MonoBehaviour
         {
             StopCoroutine(NextStepInst);
             InputManager.Instance.EnableMove(true);
-            if (currentTurn == Turn.PlayerTurn)
-            {
-                //TODO: Stop Player Anim
-            }
-            else if (currentTurn == Turn.EnvTurn)
-            {
-                //TODO: Stop env units anim
-            }
             currentTurn = Turn.PlayerTurn;
         }
     }
