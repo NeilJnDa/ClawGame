@@ -13,6 +13,11 @@ public class HoleBottom : GridUnit
         TurnManager.Instance.EndStepProcessEvent += CheckPlayerWin;
     }
 
+    private void OnDestroy()
+    {
+        TurnManager.Instance.EndStepProcessEvent -= CheckPlayerWin;
+
+    }
     private void CheckPlayerWin()
     {
         if(this.cell.gridUnits.Find(x=> x.unitType == UnitType.Player))

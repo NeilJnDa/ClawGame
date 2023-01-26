@@ -27,7 +27,6 @@ public struct ClawCommandCache
     public Cell targetCell; //Default null
     public bool willPush;   //Default false
     public Direction direction; //Default first one
-
 }
 public class Claw : GridUnit, ITurnUndo
 {
@@ -167,9 +166,16 @@ public class Claw : GridUnit, ITurnUndo
         }
         else if(clawState == ClawState.Open || clawState == ClawState.Close)
         {
-            Cell targetCell = CheckMoveToEnd(Direction.Below, true);
+            if (ExistToCatchUnit())
+            {
+                //本格内有可夹的物品，直接夹并且过一回合。
+            }
+            else
+            {
+                Cell targetCell = CheckMoveToEnd(Direction.Below, true);
+                clawCommandCache.targetCell = targetCell;
+            }
             //即使夹子没有移动空间，也会过一个回合
-            clawCommandCache.targetCell = targetCell;
             clawCommandCache.clawCommand = ClawCommand.Drop;
             clawCommandCache.direction = Direction.Below;
             TurnManager.Instance.NextStep();
@@ -350,7 +356,7 @@ public class Claw : GridUnit, ITurnUndo
             clawState = ClawState.Open;
             animator.SetTrigger("ToOpen");
 
-            foreach (var unit in HoldingUnits)
+            foreach (PushableGridUnit unit in HoldingUnits)
             {
                 unit.isCaught = false;
             }
@@ -367,7 +373,7 @@ public class Claw : GridUnit, ITurnUndo
         {
             return false;
         }
-        else if (CheckAndCatchUnit())
+        else if (TryCatchUnit())
         {
             Debug.Log("Claw Caught units");
             animator.SetTrigger("OpenToCatch");
@@ -383,17 +389,37 @@ public class Claw : GridUnit, ITurnUndo
         }
 
     }
-    private bool CheckAndCatchUnit()
+    /// <summary>
+    /// Execute in the CheckInteraction event or ClawDroppingClose Event
+    /// </summary>
+    /// <returns></returns>
+    private bool TryCatchUnit()
     {
         var toCatchList = cell.gridUnits.FindAll(x => x.pushable == true);
         bool newCatch = false;
-        foreach (var toCatch in toCatchList)
+        foreach (PushableGridUnit toCatch in toCatchList)
         {
             //Skip caught units 
             if (HoldingUnits.Contains(toCatch)) continue;
             HoldingUnits.Add(toCatch);
             toCatch.isCaught = true;
             Debug.Log(this.name + " catch " + toCatch.name);
+            newCatch = true;
+        }
+        return newCatch;
+    }
+    /// <summary>
+    /// Check if this cell has units to catch
+    /// </summary>
+    /// <returns></returns>
+    private bool ExistToCatchUnit()
+    {
+        var toCatchList = cell.gridUnits.FindAll(x => x.pushable == true);
+        bool newCatch = false;
+        foreach (PushableGridUnit toCatch in toCatchList)
+        {
+            //Skip caught units 
+            if (HoldingUnits.Contains(toCatch)) continue;
             newCatch = true;
         }
         return newCatch;

@@ -30,8 +30,6 @@ public abstract class GridUnit : MonoBehaviour
     //Must be overrided
     public virtual UnitType unitType { get { return UnitType.Empty; } }
     public virtual bool pushable { get { return false; } }
-    [ReadOnly]
-    public bool isCaught = false;
 
     //Initial setting cache, saved for reset
     [ShowInInspector][ReadOnly]
@@ -144,7 +142,7 @@ public abstract class GridUnit : MonoBehaviour
         if (upperCell == null) return;
         foreach(var unit in upperCell.gridUnits.ToArray())
         {
-            if(!unit.isCaught && unit.pushable)
+            if(unit.pushable && !((PushableGridUnit)unit).isCaught)
             {
                 if(unit.CheckMoveNoPush(unit, upperCell, direction))
                 {
