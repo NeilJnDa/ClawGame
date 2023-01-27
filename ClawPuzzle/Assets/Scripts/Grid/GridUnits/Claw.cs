@@ -74,7 +74,6 @@ public class Claw : GridUnit, ITurnUndo
         InputManager.Instance.liftEvent += OnLiftInput;
 
         TurnManager.Instance.PlayerTurnEvent += OnPlayerTurn;
-        TurnManager.Instance.EndStepProcessEvent += OnEndStep;
         TurnManager.Instance.ClawOpenEvent += OnClawDroppingOpen;
         TurnManager.Instance.ClawCloseEvent += OnClawDroppingClose;
         TurnManager.Instance.CheckInteractionEvent += OnCheckInteraction;
@@ -91,7 +90,6 @@ public class Claw : GridUnit, ITurnUndo
         InputManager.Instance.liftEvent -= OnLiftInput;
 
         TurnManager.Instance.PlayerTurnEvent -= OnPlayerTurn;
-        TurnManager.Instance.EndStepProcessEvent -= OnEndStep;
         TurnManager.Instance.ClawOpenEvent -= OnClawDroppingOpen;
         TurnManager.Instance.ClawCloseEvent -= OnClawDroppingClose;
         TurnManager.Instance.CheckInteractionEvent -= OnCheckInteraction;
@@ -142,6 +140,7 @@ public class Claw : GridUnit, ITurnUndo
     }
     private void OnLiftInput()
     {
+        clawCommandCache = new ClawCommandCache();
         if (isHolding)
         {
             if (CheckMoveAndPushToNext(this, this.cell, Direction.Above))
@@ -167,6 +166,8 @@ public class Claw : GridUnit, ITurnUndo
     }
     private void OnClawActionInput()
     {
+        clawCommandCache = new ClawCommandCache();
+
         if (clawState == ClawState.Catch)
         {
             clawCommandCache.clawCommand = ClawCommand.Release;
@@ -343,15 +344,7 @@ public class Claw : GridUnit, ITurnUndo
         }
         return 0;
     }
-    /// <summary>
-    /// Return true if new units are caught
-    /// </summary>
-    /// <returns></returns>
 
-    private void OnEndStep()
-    {
-        clawCommandCache = default(ClawCommandCache);
-    }
     #endregion
     #region Behaviours
     /// <summary>

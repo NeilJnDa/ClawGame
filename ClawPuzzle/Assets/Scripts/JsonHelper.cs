@@ -11,12 +11,13 @@ public static class JsonHelper
 {
     /// <summary>
     /// Path should be like "/XXXX"
+    /// Note: Only run this in Editor!
     /// </summary>
-    /// <param name="path"></param>
+    /// <param name="relativePath"></param>
     /// <param name="obj"></param>
-    public static void SaveToFile(string path, string name, object obj)
+    public static void SaveToJsonFile(string relativePath, object obj)
     {
-        string fullPath = Application.dataPath + path + "/" + name + ".json";
+        string fullPath = Application.dataPath + relativePath + ".json";
 
         //Unity JsonUtility
         string content = JsonUtility.ToJson(obj);
@@ -28,18 +29,19 @@ public static class JsonHelper
         File.WriteAllText(fullPath, content);
     }
     /// <summary>
-    /// Path should be like "/XXXX"
+    /// Path should be like "/XXXX/XXX"  without .json or .txt
     /// </summary>
-    /// <param name="path"></param>
+    /// <param name="relativePath"></param>
     /// <param name="name"></param>
     /// <param name="obj"></param>
-    public static T LoadFromFile<T>(string path, string name)
+    public static T LoadFromJsonFile<T>(string relativePath)
     {
-        var content = File.ReadAllText(Application.dataPath + path + "/" + name + ".json");
+        //var content = File.ReadAllText(Application.dataPath + relativePath+ ".json");
+        var content = Resources.Load<TextAsset>(relativePath);
 
         //Unity JsonUtility
         //JsonUtility.FromJsonOverwrite(content, obj);
-        T obj = JsonUtility.FromJson<T>(content);
+        T obj = JsonUtility.FromJson<T>(content.ToString());
         return obj;
 
         //Unity In app purchasing minijson

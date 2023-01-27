@@ -61,7 +61,7 @@ public class Level : MonoBehaviour
 
         try
         {
-            JsonHelper.SaveToFile("/LevelData", levelName, levelData);
+            JsonHelper.SaveToJsonFile("/LevelData/"+levelName, levelData);
         }
         catch
         {
@@ -80,7 +80,7 @@ public class Level : MonoBehaviour
     {
         try
         {
-            levelData = JsonHelper.LoadFromFile<LevelData>("/LevelData", levelName);
+            levelData = JsonHelper.LoadFromJsonFile<LevelData>("LevelData/" + levelName);
         }
         catch (Exception e)
         {
