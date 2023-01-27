@@ -85,8 +85,6 @@ public class InputManager : MonoBehaviour, IDefaultActions
     public event Action<Direction> moveEvent;
     public event Action clawActionEvent;
     public event Action liftEvent;
-    public event Action undoEvent;
-    public event Action resetEvent;
 
     public void OnDown(InputAction.CallbackContext context)
     {
