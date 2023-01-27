@@ -234,7 +234,7 @@ public class Claw : GridUnit, ITurnUndo
 
         //Move this
         MoveToCell(clawCommandCache.targetCell, clawCommandCache.direction, duration);
-        AudioSource.PlayClipAtPoint(clawMoveSound, this.transform.position);
+        AudioSource.PlayClipAtPoint(clawCatchSound, this.transform.position);
 
         //Move all Holding Units as well, No Rule Checking
         foreach (var unit in HoldingUnits)

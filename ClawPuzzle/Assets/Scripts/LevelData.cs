@@ -97,6 +97,7 @@ public struct GridSetting
 public class LevelData
 {
     public string levelName;
+    public string displayName;
     public GridSetting gridSetting;
     public List<GridUnitInfo> gridUnitInfos = new List<GridUnitInfo>();
     public List<CellInfo> cellInfos = new List<CellInfo>();

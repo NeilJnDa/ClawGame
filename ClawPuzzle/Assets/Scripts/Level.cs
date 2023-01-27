@@ -9,6 +9,7 @@ public class Level : MonoBehaviour
 {
     //[InfoBox("@\"Init Cell Matrix Length: \" + (levelData != null && levelData.initCellMatrix != null ? levelData.initCellMatrix.Length : 0)")]
     public string levelName;
+    public string displayName;
     private Grid3D grid;
     private LevelData levelData;
 
@@ -23,7 +24,7 @@ public class Level : MonoBehaviour
     {
         //Create a new levelData every time. Unity GC will deal with the old one
         levelData = new LevelData(levelName, gridSetting);
-
+        levelData.displayName = displayName;
         Debug.Log("Saving Level Data to Json");
         try
         {
@@ -106,7 +107,6 @@ public class Level : MonoBehaviour
     public void Initialize()
     {
         Debug.Log("Delete " + transform.childCount + " children of " + transform.name);
-
         
         if (Application.isPlaying)
         {
@@ -125,6 +125,8 @@ public class Level : MonoBehaviour
 
 
         ParseJsonToLevelData();
+        displayName = levelData.displayName;
+        gridSetting = levelData.gridSetting;
         grid = new Grid3D(transform, levelData);
         Debug.Log("New cells created"); 
     }
