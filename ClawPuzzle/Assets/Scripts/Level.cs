@@ -63,9 +63,9 @@ public class Level : MonoBehaviour
         {
             JsonHelper.SaveToJsonFile("/LevelData/"+levelName, levelData);
         }
-        catch
+        catch(Exception e)
         {
-            Debug.LogError(levelName + ": Save to Json Failed");
+            Debug.LogError(levelName + ": Save to Json Failed: " + e);
         } 
         Debug.Log(levelName + ": level data saved to /LevelData as Json");
     }

@@ -17,7 +17,7 @@ public static class JsonHelper
     /// <param name="obj"></param>
     public static void SaveToJsonFile(string relativePath, object obj)
     {
-        string fullPath = Application.dataPath + relativePath + ".json";
+        string fullPath = Application.dataPath + "/Resources/" + relativePath + ".json";
 
         //Unity JsonUtility
         string content = JsonUtility.ToJson(obj);
@@ -25,8 +25,12 @@ public static class JsonHelper
         //Unity In app purchasing minijson
         //string content = Json.Serialize(obj);
 
-        Debug.Log("JsonHelper: Writing " + content);
+        Debug.Log("JsonHelper: Writing " + content + " to " + fullPath);
         File.WriteAllText(fullPath, content);
+#if UNITY_EDITOR
+        string path = "Assets/Resources/" + relativePath + ".json";
+        UnityEditor.AssetDatabase.ImportAsset(path);
+#endif
     }
     /// <summary>
     /// Path should be like "/XXXX/XXX"  without .json or .txt
@@ -38,6 +42,7 @@ public static class JsonHelper
     {
         //var content = File.ReadAllText(Application.dataPath + relativePath+ ".json");
         var content = Resources.Load<TextAsset>(relativePath);
+
 
         //Unity JsonUtility
         //JsonUtility.FromJsonOverwrite(content, obj);

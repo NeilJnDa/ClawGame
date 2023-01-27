@@ -98,7 +98,6 @@ public class GameManager : MonoBehaviour
         else {
             displayText.text = "";
             endText.SetActive(true);
-
         }
 
     }

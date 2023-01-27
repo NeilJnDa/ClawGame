@@ -64,6 +64,8 @@ public class Claw : GridUnit, ITurnUndo
     public AudioClip clawOpenCloseSound;
     public AudioClip clawCatchSound;
     public AudioClip clawMoveSound;
+    public AudioClip clawOepnToOpenSound;
+
 
 
 
@@ -294,6 +296,7 @@ public class Claw : GridUnit, ITurnUndo
                 if (clawState == ClawState.Open)
                 {
                     animator.SetTrigger("OpenToOpen");
+                    AudioSource.PlayClipAtPoint(clawOepnToOpenSound, this.transform.position);
                     return animationDuration;
                 }
             }
@@ -323,6 +326,7 @@ public class Claw : GridUnit, ITurnUndo
             if (limiter != null)
             {
                 animator.SetTrigger("OpenToOpen");
+                AudioSource.PlayClipAtPoint(clawOepnToOpenSound, this.transform.position);
                 clawState = ClawState.Open;
                 return animationDuration;
             }
