@@ -11,6 +11,11 @@ public class ClawLineIndicator : MonoBehaviour, ITurnUndo
     {
         lineRenderer = GetComponent<LineRenderer>();
     }
+    private void Update()
+    {
+        Vector3 endPos = new Vector3(0, this.transform.root.position.y - this.transform.position.y, 0);
+        lineRenderer.SetPosition(1, endPos);
+    }
     public void ChangeLineToRed()
     {
         lineRenderer.material = red;

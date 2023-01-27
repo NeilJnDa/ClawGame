@@ -63,6 +63,8 @@ public class Claw : GridUnit, ITurnUndo
     [Title("Audio")]
     public AudioClip clawOpenCloseSound;
     public AudioClip clawCatchSound;
+    public AudioClip clawMoveSound;
+
 
 
     private void Start()
@@ -232,6 +234,7 @@ public class Claw : GridUnit, ITurnUndo
 
         //Move this
         MoveToCell(clawCommandCache.targetCell, clawCommandCache.direction, duration);
+        AudioSource.PlayClipAtPoint(clawMoveSound, this.transform.position);
 
         //Move all Holding Units as well, No Rule Checking
         foreach (var unit in HoldingUnits)

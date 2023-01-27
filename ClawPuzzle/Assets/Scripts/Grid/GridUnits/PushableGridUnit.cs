@@ -51,7 +51,7 @@ public class PushableGridUnit : GridUnit, ITurnUndo
     [ShowInInspector]
     [ReadOnly]
     Stack<bool> isCaughtHistory = new Stack<bool>();
-    public void UndoOneStep()
+    public virtual void UndoOneStep()
     {
         cell.Leave(this);
         cell = cellHistory.Pop();
@@ -63,7 +63,7 @@ public class PushableGridUnit : GridUnit, ITurnUndo
         this.transform.position = cell.transform.position;
     }
 
-    public void ResetAll()
+    public virtual void ResetAll()
     {
 
         Cell cellRef = cell;
@@ -88,7 +88,7 @@ public class PushableGridUnit : GridUnit, ITurnUndo
         this.transform.position = cell.transform.position;
     }
 
-    public void SaveToHistory()
+    public virtual void SaveToHistory()
     {
         Cell cellRef = cell;
         cellHistory.Push(cellRef);

@@ -126,7 +126,8 @@ MonoBehaviour:
     willPush: 0
     direction: 0
   clawOpenCloseSound: {fileID: 8300000, guid: 20acc0ac27b454c4ca2b14c63adc969c, type: 3}
-  clawCatchSound: {fileID: 8300000, guid: f23017b8633ae984a9eca0fdb7e75dbf, type: 3}
+  clawCatchSound: {fileID: 8300000, guid: 522ce20c4dc5158419d1365431074485, type: 3}
+  clawMoveSound: {fileID: 8300000, guid: f23017b8633ae984a9eca0fdb7e75dbf, type: 3}
 --- !u!1 &2939249262761245647
 GameObject:
   m_ObjectHideFlags: 0
