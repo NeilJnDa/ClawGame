@@ -47,7 +47,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 701b18d0e5a43604d9a496975a61de1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isCaught: 0
   setting:
   - key: 
     value: 
@@ -60,6 +59,7 @@ MonoBehaviour:
   - key: 
     value: 
   cell: {fileID: 0}
+  isCaught: 0
 --- !u!54 &5698576919140768915
 Rigidbody:
   m_ObjectHideFlags: 0
